@@ -65,44 +65,50 @@ const VALUES = {
   Celebration:   { year:3, emoji:"🥂", color:"#C9A84C", description:"Celebration is the practice of honoring how far you've come — not waiting until you've arrived. It is gratitude in motion.", alignment:"You mark milestones. You make space for joy after hard work. You celebrate others without diminishing yourself.", misalignment:"Moving the goalpost every time you arrive. Never pausing long enough to receive what you've earned." },
 };
 
-// photo: replace null with your Cloudinary URL to guarantee images everywhere
 const WOMEN = [
-  { name:"Oprah Winfrey",            title:"Media Mogul & Philanthropist",             wiki:"Oprah_Winfrey",            photo:null, values:["Authenticity","Abundance","Leadership"] },
-  { name:"Michelle Obama",           title:"Former First Lady & Author",                wiki:"Michelle_Obama",           photo:null, values:["Purpose","Excellence","Legacy"] },
-  { name:"Beyoncé",                  title:"Artist, Director & Entrepreneur",           wiki:"Beyoncé",                  photo:null, values:["Excellence","Creativity","Ambition"] },
-  { name:"Serena Williams",          title:"Tennis Legend & Venture Capitalist",        wiki:"Serena_Williams",          photo:null, values:["Resilience","Excellence","Discipline"] },
-  { name:"Malala Yousafzai",         title:"Nobel Peace Laureate & Activist",           wiki:"Malala_Yousafzai",         photo:null, values:["Courage","Service","Faith"] },
-  { name:"Rihanna",                  title:"Artist, Founder & Billionaire",             wiki:"Rihanna",                  photo:null, values:["Creativity","Ambition","Freedom"] },
-  { name:"Kamala Harris",            title:"49th Vice President of the USA",            wiki:"Kamala_Harris",            photo:null, values:["Leadership","Courage","Power"] },
-  { name:"Viola Davis",              title:"EGOT-Winning Actress & Producer",           wiki:"Viola_Davis",              photo:null, values:["Authenticity","Courage","Self-Worth"] },
-  { name:"Misty Copeland",           title:"First Black Principal Ballerina, ABT",      wiki:"Misty_Copeland",           photo:null, values:["Resilience","Excellence","Creativity"] },
-  { name:"Lizzo",                    title:"Artist & Body Positivity Advocate",         wiki:"Lizzo",                    photo:null, values:["Authenticity","Freedom","Joy"] },
-  { name:"Simone Biles",             title:"Most Decorated Gymnast in History",         wiki:"Simone_Biles",             photo:null, values:["Resilience","Courage","Boundaries"] },
-  { name:"Lupita Nyong'o",           title:"Oscar-Winning Actress & Activist",          wiki:"Lupita_Nyong'o",           photo:null, values:["Authenticity","Radiance","Self-Worth"] },
-  { name:"Brené Brown",              title:"Researcher, Author & Speaker",              wiki:"Bren%C3%A9_Brown",         photo:null, values:["Vulnerability","Authenticity","Courage"] },
-  { name:"Toni Morrison",            title:"Nobel Prize-Winning Author",                wiki:"Toni_Morrison",            photo:null, values:["Wisdom","Creativity","Truth"] },
-  { name:"Chimamanda Ngozi Adichie", title:"Author & Feminist Icon",                    wiki:"Chimamanda_Ngozi_Adichie", photo:null, values:["Authenticity","Wisdom","Boldness"] },
-  { name:"Ruth Bader Ginsburg",      title:"Supreme Court Justice & Icon",              wiki:"Ruth_Bader_Ginsburg",      photo:null, values:["Courage","Leadership","Service"] },
-  { name:"Maya Angelou",             title:"Poet, Author & Civil Rights Activist",      wiki:"Maya_Angelou",             photo:null, values:["Wisdom","Authenticity","Grace"] },
-  { name:"Harriet Tubman",           title:"Abolitionist & Liberation Leader",          wiki:"Harriet_Tubman",           photo:null, values:["Courage","Freedom","Service"] },
-  { name:"Issa Rae",                 title:"Creator, Producer & Entrepreneur",          wiki:"Issa_Rae",                 photo:null, values:["Authenticity","Creativity","Reinvention"] },
-  { name:"Sheryl Sandberg",          title:"Tech Executive & Author",                   wiki:"Sheryl_Sandberg",          photo:null, values:["Leadership","Ambition","Vulnerability"] },
-  { name:"Gabrielle Union",          title:"Actress & Activist",                        wiki:"Gabrielle_Union",          photo:null, values:["Healing","Resilience","Authenticity"] },
-  { name:"Kerry Washington",         title:"Actress, Director & Activist",              wiki:"Kerry_Washington",         photo:null, values:["Service","Purpose","Influence"] },
-  { name:"Ava DuVernay",             title:"Director, Producer & Activist",             wiki:"Ava_DuVernay",             photo:null, values:["Vision","Creativity","Leadership"] },
-  { name:"Janelle Monáe",            title:"Artist, Actress & Futurist",                wiki:"Janelle_Mon%C3%A1e",       photo:null, values:["Boldness","Creativity","Sovereignty"] },
-  { name:"Tracee Ellis Ross",        title:"Actress, Producer & Entrepreneur",          wiki:"Tracee_Ellis_Ross",        photo:null, values:["Joy","Authenticity","Radiance"] },
-  { name:"Alicia Keys",              title:"Grammy-Winning Artist & Activist",          wiki:"Alicia_Keys",              photo:null, values:["Authenticity","Creativity","Self-Worth"] },
-  { name:"Naomi Osaka",              title:"Tennis Champion & Mental Health Advocate",  wiki:"Naomi_Osaka",              photo:null, values:["Courage","Boundaries","Resilience"] },
-  { name:"Stacey Abrams",            title:"Author, Politician & Voting Rights Leader", wiki:"Stacey_Abrams",            photo:null, values:["Service","Vision","Discipline"] },
-  { name:"Angela Davis",             title:"Scholar, Activist & Author",                wiki:"Angela_Davis",             photo:null, values:["Courage","Freedom","Truth"] },
-  { name:"Eartha Kitt",              title:"Actress, Singer & Icon",                    wiki:"Eartha_Kitt",              photo:null, values:["Authenticity","Sovereignty","Boldness"] },
-  { name:"Nina Simone",              title:"Musician, Singer & Civil Rights Activist",  wiki:"Nina_Simone",              photo:null, values:["Truth","Creativity","Power"] },
-  { name:"Tina Turner",              title:"Queen of Rock & Roll",                      wiki:"Tina_Turner",              photo:null, values:["Resilience","Reinvention","Courage"] },
-  { name:"Cicely Tyson",             title:"Actress & Cultural Icon",                   wiki:"Cicely_Tyson",             photo:null, values:["Grace","Excellence","Legacy"] },
-  { name:"Shonda Rhimes",            title:"Showrunner, Producer & Author",             wiki:"Shonda_Rhimes",            photo:null, values:["Vision","Boldness","Creativity"] },
-  { name:"Janet Jackson",            title:"Performer, Actress & Icon",                 wiki:"Janet_Jackson",            photo:null, values:["Reinvention","Creativity","Power"] },
-  { name:"Mary J. Blige",            title:"Singer, Actress & Activist",                wiki:"Mary_J._Blige",            photo:null, values:["Healing","Resilience","Truth"] },
+  // Black American women
+  { name:"Oprah Winfrey",            title:"Media Mogul & Philanthropist",              wiki:"Oprah_Winfrey",              photo:null, values:["Authenticity","Abundance","Leadership"] },
+  { name:"Michelle Obama",           title:"Former First Lady & Author",                 wiki:"Michelle_Obama",             photo:null, values:["Purpose","Excellence","Legacy"] },
+  { name:"Beyoncé",                  title:"Artist, Director & Entrepreneur",            wiki:"Beyoncé",                    photo:null, values:["Excellence","Creativity","Ambition"] },
+  { name:"Serena Williams",          title:"Tennis Legend & Venture Capitalist",         wiki:"Serena_Williams",            photo:null, values:["Resilience","Excellence","Discipline"] },
+  { name:"Viola Davis",              title:"EGOT-Winning Actress & Producer",            wiki:"Viola_Davis",                photo:null, values:["Authenticity","Courage","Self-Worth"] },
+  { name:"Simone Biles",             title:"Most Decorated Gymnast in History",          wiki:"Simone_Biles",               photo:null, values:["Resilience","Courage","Boundaries"] },
+  { name:"Maya Angelou",             title:"Poet, Author & Civil Rights Activist",       wiki:"Maya_Angelou",               photo:null, values:["Wisdom","Authenticity","Grace"] },
+  { name:"Harriet Tubman",           title:"Abolitionist & Liberation Leader",           wiki:"Harriet_Tubman",             photo:null, values:["Courage","Freedom","Service"] },
+  { name:"Ava DuVernay",             title:"Director, Producer & Activist",              wiki:"Ava_DuVernay",               photo:null, values:["Vision","Creativity","Leadership"] },
+  { name:"Tracee Ellis Ross",        title:"Actress, Producer & Entrepreneur",           wiki:"Tracee_Ellis_Ross",          photo:null, values:["Joy","Authenticity","Radiance"] },
+  { name:"Misty Copeland",           title:"First Black Principal Ballerina, ABT",       wiki:"Misty_Copeland",             photo:null, values:["Resilience","Excellence","Creativity"] },
+  { name:"Toni Morrison",            title:"Nobel Prize-Winning Author",                 wiki:"Toni_Morrison",              photo:null, values:["Wisdom","Creativity","Truth"] },
+  // Latina women
+  { name:"Sonia Sotomayor",          title:"U.S. Supreme Court Justice",                 wiki:"Sonia_Sotomayor",            photo:null, values:["Leadership","Resilience","Purpose"] },
+  { name:"Frida Kahlo",              title:"Iconic Artist & Cultural Symbol",            wiki:"Frida_Kahlo",                photo:null, values:["Authenticity","Creativity","Resilience"] },
+  { name:"Dolores Huerta",           title:"Labor Rights & Civil Rights Leader",         wiki:"Dolores_Huerta",             photo:null, values:["Courage","Service","Community"] },
+  { name:"America Ferrera",          title:"Actress, Director & Activist",               wiki:"America_Ferrera",            photo:null, values:["Authenticity","Community","Boldness"] },
+  { name:"Jennifer Lopez",           title:"Artist, Actress & Entrepreneur",             wiki:"Jennifer_Lopez",             photo:null, values:["Ambition","Resilience","Reinvention"] },
+  { name:"Ellen Ochoa",              title:"First Latina Astronaut & NASA Director",     wiki:"Ellen_Ochoa",                photo:null, values:["Courage","Excellence","Vision"] },
+  // South Asian & Southeast Asian women
+  { name:"Malala Yousafzai",         title:"Nobel Peace Laureate & Activist",            wiki:"Malala_Yousafzai",           photo:null, values:["Courage","Service","Faith"] },
+  { name:"Kamala Harris",            title:"49th Vice President of the USA",             wiki:"Kamala_Harris",              photo:null, values:["Leadership","Courage","Power"] },
+  { name:"Priyanka Chopra Jonas",    title:"Actress, Producer & Philanthropist",         wiki:"Priyanka_Chopra",            photo:null, values:["Ambition","Freedom","Influence"] },
+  { name:"Indra Nooyi",              title:"Former CEO of PepsiCo",                      wiki:"Indra_Nooyi",                photo:null, values:["Leadership","Discipline","Excellence"] },
+  { name:"Michelle Yeoh",            title:"Oscar-Winning Actress & Activist",           wiki:"Michelle_Yeoh",              photo:null, values:["Excellence","Resilience","Boldness"] },
+  // East Asian women
+  { name:"Yayoi Kusama",             title:"Avant-Garde Artist & Visionary",             wiki:"Yayoi_Kusama",               photo:null, values:["Creativity","Resilience","Vision"] },
+  { name:"Naomi Osaka",              title:"Tennis Champion & Mental Health Advocate",   wiki:"Naomi_Osaka",                photo:null, values:["Courage","Boundaries","Authenticity"] },
+  // White & European women
+  { name:"Marie Curie",              title:"Nobel Prize-Winning Physicist & Chemist",    wiki:"Marie_Curie",                photo:null, values:["Excellence","Discipline","Wisdom"] },
+  { name:"Amelia Earhart",           title:"Aviation Pioneer & Adventurer",              wiki:"Amelia_Earhart",             photo:null, values:["Courage","Freedom","Boldness"] },
+  { name:"Ruth Bader Ginsburg",      title:"Supreme Court Justice & Icon",               wiki:"Ruth_Bader_Ginsburg",        photo:null, values:["Courage","Leadership","Service"] },
+  { name:"Brené Brown",              title:"Researcher, Author & Speaker",               wiki:"Bren%C3%A9_Brown",           photo:null, values:["Vulnerability","Authenticity","Courage"] },
+  { name:"Meryl Streep",             title:"Most Nominated Actress in Oscar History",    wiki:"Meryl_Streep",               photo:null, values:["Excellence","Creativity","Presence"] },
+  { name:"Glennon Doyle",            title:"Author, Activist & Untamed Voice",           wiki:"Glennon_Doyle",              photo:null, values:["Vulnerability","Authenticity","Healing"] },
+  // African women
+  { name:"Chimamanda Ngozi Adichie", title:"Author & Feminist Icon",                     wiki:"Chimamanda_Ngozi_Adichie",   photo:null, values:["Authenticity","Wisdom","Boldness"] },
+  { name:"Wangari Maathai",          title:"Nobel Peace Laureate & Environmentalist",    wiki:"Wangari_Maathai",            photo:null, values:["Service","Legacy","Courage"] },
+  // Additional diverse voices
+  { name:"Shonda Rhimes",            title:"Showrunner, Producer & Author",              wiki:"Shonda_Rhimes",              photo:null, values:["Vision","Boldness","Creativity"] },
+  { name:"Mary J. Blige",            title:"Singer, Actress & Activist",                 wiki:"Mary_J._Blige",              photo:null, values:["Healing","Resilience","Truth"] },
+  { name:"Stacey Abrams",            title:"Author, Politician & Voting Rights Leader",  wiki:"Stacey_Abrams",              photo:null, values:["Service","Vision","Discipline"] },
 ];
 
 const BG_FALLBACKS = [
@@ -426,6 +432,7 @@ function DesignHerQuiz() {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<DesignHerQuiz/>);
+
   </script>
-  </body>
+</body>
 </html>
