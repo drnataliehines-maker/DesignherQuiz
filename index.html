@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>DesignHer · Values Discovery Quiz</title>
-  <meta name="description" content="Discover your 5 core values through the women you admire most."/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -13,426 +11,632 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
-    html,body{height:100%;background:#0E0A06;}
+    html,body{height:100%;background:#FAF7F0;}
     #root{height:100%;}
-    input::placeholder{color:rgba(245,237,216,0.28);}
-    input:focus{border-color:rgba(201,168,76,0.55)!important;box-shadow:0 0 0 3px rgba(201,168,76,0.08);}
-    ::-webkit-scrollbar{width:3px;}
-    ::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.18);border-radius:2px;}
+    input::placeholder{color:rgba(26,18,8,0.32);}
+    input:focus{outline:none;border-color:rgba(139,105,20,0.65)!important;box-shadow:0 0 0 3px rgba(139,105,20,0.1);}
+    ::-webkit-scrollbar{width:4px;}
+    ::-webkit-scrollbar-thumb{background:rgba(139,105,20,0.25);border-radius:2px;}
   </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+<div id="root"></div>
+<script type="text/babel">
+  const { useState, useEffect, useRef } = React;
 
-const VALUES = {
-  Authenticity:  { year:1, emoji:"✨", color:"#C9A84C", description:"Being fully yourself — no performance, no shrinking — is a revolutionary act. You are most powerful when you are most real.", alignment:"Deep trust in relationships, magnetic presence, energy that doesn't deplete because you're not maintaining a mask.", misalignment:"Suffocating in environments that reward performance over truth. Feeling unseen even in a crowd." },
-  Courage:       { year:1, emoji:"🔥", color:"#C0392B", description:"Courage isn't the absence of fear — it's choosing your truth, your growth, or someone else's freedom, even when afraid.", alignment:"You speak up when it costs you something. You act before you feel ready. People draw strength from your nerve.", misalignment:"Confusing recklessness with bravery. Burning out from always being the one who steps up." },
-  Purpose:       { year:1, emoji:"🌟", color:"#E8A838", description:"You are not here by accident. Purpose is the thread that connects your gifts to the world's deepest needs.", alignment:"Your work feels meaningful even when it's hard. You return to your 'why' during difficulty and it steadies you.", misalignment:"Busyness without direction. Achieving goals that don't satisfy because they were never truly yours." },
-  Resilience:    { year:1, emoji:"🌊", color:"#4A7FA5", description:"You have an extraordinary capacity to absorb difficulty, adapt, and rise stronger. Setbacks are data — not defeat.", alignment:"You navigate change with grace. Your track record proves you don't stay down. Others draw strength from watching you rebuild.", misalignment:"Pushing through pain when rest is needed. Confusing relentless endurance with actual healing." },
-  Boundaries:    { year:1, emoji:"🛡️", color:"#7A6A9E", description:"Boundaries are not walls — they are the perimeter of your self-respect. They teach others how to love you well.", alignment:"You protect your energy without guilt. Your relationships are honest and mutual because limits make love sustainable.", misalignment:"Chronic exhaustion from over-giving. Resentment building where boundaries were needed but never voiced." },
-  "Self-Worth":  { year:1, emoji:"💛", color:"#D4A017", description:"Your value is not earned. It is inherent. Self-worth is the foundation everything else is built on.", alignment:"You make choices from worthiness, not fear. You don't settle — in love, work, or life — because you know what you deserve.", misalignment:"Overworking to prove value. Staying in rooms, relationships, or roles that don't honor who you are." },
-  Clarity:       { year:1, emoji:"🔮", color:"#5B8A72", description:"Clarity is the luxury of truly knowing yourself — what you want, what you won't tolerate, and what matters most.", alignment:"You make decisions with confidence. Distractions don't derail you. You can say no easily because you know your yes.", misalignment:"Chronically overwhelmed by options. Saying yes to everything because you haven't named your priorities." },
-  Creativity:    { year:1, emoji:"🎨", color:"#D4856A", description:"Ideas flow through you — in art, strategy, conversation, or design. Creative expression is a form of freedom and a way of making meaning.", alignment:"You thrive when given room to innovate, experiment, and make things beautiful. You're bored by the status quo.", misalignment:"Withering in rigid, repetitive environments. Work that doesn't allow invention drains your energy fast." },
-  Leadership:    { year:1, emoji:"👑", color:"#9B59B6", description:"You are drawn to guiding, inspiring, and mobilizing others. You don't wait for permission — you set the vision and bring people along.", alignment:"You lead teams, mentor others, take initiative, and create environments where people feel seen and empowered.", misalignment:"Feeling stifled when micromanaged. Depleted when you're the only one carrying the vision forward." },
-  Abundance:     { year:1, emoji:"🌿", color:"#27AE60", description:"Abundance is a way of seeing — one that notices what is present rather than mourning what is absent. It is the opposite of scarcity thinking.", alignment:"You give freely because you trust there is more. You receive compliments, opportunities, and help without deflecting.", misalignment:"Chronic comparison. Hoarding time, money, or credit out of fear there won't be enough." },
-  Gratitude:     { year:1, emoji:"🌸", color:"#E91E8C", description:"Gratitude is not toxic positivity — it is the practice of noticing what is good while still naming what needs to change.", alignment:"You find meaning in ordinary moments. Difficulty doesn't cancel your appreciation for what is right.", misalignment:"Using gratitude to bypass legitimate grief or frustration. Dismissing your own needs as 'not that bad'." },
-  Legacy:        { year:1, emoji:"🏛️", color:"#8D6E63", description:"Legacy is the answer to the question: What will remain when I'm gone? It is built in daily choices, not grand gestures.", alignment:"You make decisions with the long view in mind. You invest in people. You build things meant to outlast you.", misalignment:"So focused on leaving a mark that you miss the present. Or so present-focused that you never plant seeds." },
-  Ambition:      { year:2, emoji:"🚀", color:"#6C5CE7", description:"You have a fire in you that won't be contained. You are driven to build, achieve, and create something that matters.", alignment:"You set audacious goals and pursue them relentlessly. You are energized by growth and momentum.", misalignment:"Restless in stagnant environments. Achievement becoming a substitute for actual fulfillment." },
-  Freedom:       { year:2, emoji:"🦋", color:"#E8A838", description:"Autonomy is oxygen for you. You need space to think, move, decide, and live on your own terms.", alignment:"You thrive in flexible, self-directed environments. You are entrepreneurial, boundary-pushing, fiercely independent.", misalignment:"Rigid structures and controlling people feel suffocating. Commitment without choice feels like a trap." },
-  Service:       { year:2, emoji:"🕊️", color:"#7A9E9F", description:"You are fueled by giving — your time, wisdom, gifts — to lift others. Purpose lives in contribution.", alignment:"You are the person people call when they need real help. You find deep meaning in mentorship and advocacy.", misalignment:"Over-giving, neglecting your own needs. Attracting people who take without reciprocating." },
-  Excellence:    { year:2, emoji:"💎", color:"#2ECC71", description:"Mediocrity is not an option for you. Whatever is worth doing is worth doing with skill, care, and mastery.", alignment:"Your work reflects precision and pride. You elevate every room you're in. People count on you to deliver.", misalignment:"Perfectionism and burnout. Frustration with others' 'good enough.' Rest feeling like falling behind." },
-  Wisdom:        { year:2, emoji:"🌙", color:"#2C3E6E", description:"You move from deep knowing — not just information, but discernment. You see patterns and offer perspective that transforms.", alignment:"People seek your counsel. You reflect before reacting. Your decisions are grounded in evidence and intuition.", misalignment:"Frustration when others won't slow down to think. Carrying the weight of seeing what others can't yet see." },
-  Joy:           { year:2, emoji:"☀️", color:"#F1C40F", description:"Joy is not happiness — it's a deeper current that runs beneath circumstances. Choosing joy is an act of resistance.", alignment:"You find delight in small things. Lightness is your natural state when you're living in alignment. You make rooms brighter.", misalignment:"Using busyness to avoid joy. Feeling guilty for having fun when so much needs to be done." },
-  Vulnerability: { year:2, emoji:"💧", color:"#3498DB", description:"Vulnerability is not weakness — it is the birthplace of connection, creativity, and courage. It takes strength to be seen.", alignment:"You form deep bonds quickly. People trust you because you trust them first. Your openness disarms walls.", misalignment:"Oversharing without discernment. Or sealing yourself off because someone weaponized your openness." },
-  Power:         { year:2, emoji:"⚡", color:"#E74C3C", description:"Power is your capacity to act, influence, and create change. Owning it without apology is one of the most radical things a woman can do.", alignment:"You take up space deliberately. You advocate for yourself and others. You don't dim your light for comfort.", misalignment:"Using power to control rather than elevate. Or giving your power away to avoid standing out." },
-  Faith:         { year:2, emoji:"🌠", color:"#8E44AD", description:"Faith is trusting the unseen — in yourself, in the process, in something larger. It is the courage to act before proof arrives.", alignment:"You move forward before all conditions are perfect. Uncertainty doesn't stop you. You have a track record of surviving your hardest moments.", misalignment:"Passivity disguised as trust. Waiting for signs instead of doing the work. Or refusing to rest because you don't trust the process." },
-  Community:     { year:2, emoji:"🤝", color:"#16A085", description:"You understand that we rise together. Community isn't just support — it's accountability, belonging, and collective power.", alignment:"You invest in relationships. You show up for others. You build tables, not just climb ladders.", misalignment:"Isolation in the name of independence. Or losing yourself in community and forgetting your individual needs." },
-  Discipline:    { year:2, emoji:"🎯", color:"#D35400", description:"Discipline is devotion in practice — the daily choices that make your vision real. It is not punishment; it is love for your future self.", alignment:"Your habits match your goals. You show up consistently, even without motivation. You trust the process.", misalignment:"Rigidity that leaves no room for grace. Or using discipline as a cover for fear of rest and play." },
-  Vision:        { year:2, emoji:"🔭", color:"#1ABC9C", description:"You see what doesn't exist yet — and you believe it enough to build toward it. Vision is the architecture of the future you're creating.", alignment:"You think long-term. You inspire others with the picture of what's possible. You plan with intention and flexibility.", misalignment:"Living so far in the future you miss the present. Or using vision as a substitute for execution." },
-  Influence:     { year:3, emoji:"🌊", color:"#2980B9", description:"Influence is the ripple effect of your presence — it travels further than you can see. The way you show up changes rooms.", alignment:"People are moved by your story. Your reputation precedes you in the best way. You lead without needing a title.", misalignment:"Chasing visibility for its own sake. Influence becoming performance instead of genuine contribution." },
-  Healing:       { year:3, emoji:"🌱", color:"#27AE60", description:"Healing is wholeness in progress — not erasing the past, but integrating it so it makes you whole, not broken.", alignment:"You have done the inner work. You respond rather than react. Your past informs but doesn't define your choices.", misalignment:"Wearing wounds as identity. Or bypassing genuine healing by staying perpetually busy or performing wellness." },
-  Reinvention:   { year:3, emoji:"🦚", color:"#8E44AD", description:"Reinvention is the courage to become someone new without abandoning who you've always been. It is evolution, not erasure.", alignment:"You shed outdated versions of yourself without grief. You embrace new chapters. Change is exciting, not threatening.", misalignment:"Reinventing to escape rather than to evolve. Or resisting all change to protect an identity that no longer fits." },
-  Radiance:      { year:3, emoji:"🌟", color:"#F39C12", description:"Radiance is what happens when you stop hiding. It's your natural light, freed from performance, fear, and the need to be palatable.", alignment:"Your presence is felt before you speak. You glow with the confidence of someone who has decided to take up space.", misalignment:"Dimming your light to make others comfortable. Or confusing radiance with performance and exhausting yourself keeping it up." },
-  Presence:      { year:3, emoji:"🕯️", color:"#BDC3C7", description:"Presence is the gift of being fully here — in your body, in this moment, in this conversation. It is increasingly rare and always remembered.", alignment:"People feel seen when they're with you. You're not half-distracted. Your attention is a form of love.", misalignment:"Chronic distraction, even from things you love. Living in past regret or future anxiety instead of right now." },
-  Balance:       { year:3, emoji:"⚖️", color:"#7F8C8D", description:"Balance isn't equal weight — it's intentional integration. It means nothing is starved of attention for so long it collapses.", alignment:"You make conscious trade-offs. You can be ambitious and rested, driven and present, giving and boundaried.", misalignment:"The illusion of balance through busyness. Or using 'balance' to justify under-committing to things that matter." },
-  Sovereignty:   { year:3, emoji:"🗝️", color:"#9B59B6", description:"Sovereignty is ruling your own life. It is the refusal to outsource your happiness, your decisions, or your sense of self to anyone else.", alignment:"You are the CEO of your life. You take full responsibility — for your choices, your energy, your direction.", misalignment:"Rebellion without direction — being contrarian as a form of sovereignty rather than genuinely self-governed." },
-  Boldness:      { year:3, emoji:"🦁", color:"#E74C3C", description:"Boldness is the willingness to be seen — fully, loudly, unapologetically. It is taking the risk of standing out.", alignment:"You pitch the audacious idea. You wear the statement look. You say the thing nobody else will. You own the room.", misalignment:"Performing boldness for validation. Or being bold in safe contexts but shrinking where it actually costs something." },
-  Generosity:    { year:3, emoji:"🎁", color:"#E91E8C", description:"True generosity flows from overflow — not depletion. It is giving your best, not your leftovers, from a place of wholeness.", alignment:"You give freely with no strings. Your generosity creates ripples. People feel genuinely nourished by what you offer.", misalignment:"Giving from empty. Confusing people-pleasing with generosity. Expecting return in ways you haven't stated." },
-  Truth:         { year:3, emoji:"🪞", color:"#2C3E50", description:"Truth is the most intimate relationship you'll ever have — the one with yourself. Everything else is built on it.", alignment:"You name things as they are. Your word is trusted. You don't require agreement — you require honesty.", misalignment:"Harsh truth without compassion. Or protecting others from truth in ways that ultimately harm them." },
-  Grace:         { year:3, emoji:"🌺", color:"#C0392B", description:"Grace is the quality of moving through life with ease, composure, and mercy — for yourself and others.", alignment:"You extend patience where others rush to judgment. You handle difficulty with dignity. You are not easily rattled.", misalignment:"Grace becoming a mask for suppressed emotion. Performing composure while falling apart inside." },
-  Celebration:   { year:3, emoji:"🥂", color:"#C9A84C", description:"Celebration is the practice of honoring how far you've come — not waiting until you've arrived. It is gratitude in motion.", alignment:"You mark milestones. You make space for joy after hard work. You celebrate others without diminishing yourself.", misalignment:"Moving the goalpost every time you arrive. Never pausing long enough to receive what you've earned." },
-};
+  // ─── VALUES ──────────────────────────────────────────────────────────────────
+  const VALUES = {
+    Authenticity: { year:1, emoji:"✨", color:"#8B6914", bg:"#FFF8E7", description:"Being fully yourself — no performance, no shrinking — is a revolutionary act. You are most powerful when you are most real.", alignment:"Deep trust in relationships, magnetic presence, energy that doesn't deplete because you're not maintaining a mask.", misalignment:"Suffocating in environments that reward performance over truth. Feeling unseen even in a crowd." },
+    Legacy:       { year:1, emoji:"🏛️", color:"#6B4226", bg:"#FDF3EC", description:"Legacy is the answer to: What will remain when I'm gone? It is built in daily choices, not grand gestures.", alignment:"You make decisions with the long view in mind. You invest in people. You build things meant to outlast you.", misalignment:"So focused on leaving a mark that you miss the present. Or so present-focused that you never plant seeds." },
+    Excellence:   { year:2, emoji:"💎", color:"#276B2E", bg:"#F1F8F2", description:"Mediocrity is not an option for you. Whatever is worth doing is worth doing with skill, care, and mastery.", alignment:"Your work reflects precision and pride. You elevate every room you're in. People count on you to deliver.", misalignment:"Perfectionism and burnout. Frustration with others' good enough. Rest feeling like falling behind." },
+    Resilience:   { year:1, emoji:"🌊", color:"#1A5F8A", bg:"#EEF6FB", description:"You have an extraordinary capacity to absorb difficulty, adapt, and rise stronger. Setbacks are data, not defeat.", alignment:"You navigate change with grace. Your track record proves you don't stay down. Others draw strength from watching you rebuild.", misalignment:"Pushing through pain when rest is needed. Confusing relentless endurance with actual healing." },
+    Courage:      { year:1, emoji:"🔥", color:"#A8301F", bg:"#FDF0EE", description:"Courage isn't the absence of fear — it's choosing your truth, your growth, or someone else's freedom, even when afraid.", alignment:"You speak up when it costs you something. You act before you feel ready. People draw strength from your nerve.", misalignment:"Confusing recklessness with bravery. Burning out from always being the one who steps up." },
+    Ambition:     { year:2, emoji:"🚀", color:"#512A80", bg:"#F5F0FB", description:"You have a fire in you that won't be contained. You are driven to build, achieve, and create something that matters.", alignment:"You set audacious goals and pursue them relentlessly. You are energized by growth and momentum.", misalignment:"Restless in stagnant environments. Achievement becoming a substitute for actual fulfillment." },
+    Leadership:   { year:1, emoji:"👑", color:"#6B328E", bg:"#F8F1FC", description:"You are drawn to guiding, inspiring, and mobilizing others. You don't wait for permission — you set the vision.", alignment:"You lead teams, mentor others, take initiative, and create environments where people feel seen and empowered.", misalignment:"Feeling stifled when micromanaged. Depleted when you're the only one carrying the vision forward." },
+    "Self-Worth": { year:1, emoji:"💛", color:"#8B6914", bg:"#FFF8E7", description:"Your value is not earned. It is inherent. Self-worth is the foundation everything else is built on.", alignment:"You make choices from worthiness, not fear. You don't settle in love, work, or life, because you know what you deserve.", misalignment:"Overworking to prove value. Staying in rooms, relationships, or roles that don't honor who you are." },
+    Creativity:   { year:1, emoji:"🎨", color:"#B8440A", bg:"#FEF3EC", description:"Ideas flow through you in art, strategy, conversation, or design. Creative expression is a form of freedom.", alignment:"You thrive when given room to innovate, experiment, and make things beautiful. You're bored by the status quo.", misalignment:"Withering in rigid, repetitive environments. Work that doesn't allow invention drains your energy fast." },
+    Joy:          { year:2, emoji:"☀️", color:"#A06800", bg:"#FFFBEF", description:"Joy is not happiness — it's a deeper current that runs beneath circumstances. Choosing joy is an act of resistance.", alignment:"You find delight in small things. Lightness is your natural state when you're living in alignment. You make rooms brighter.", misalignment:"Using busyness to avoid joy. Feeling guilty for having fun when so much needs to be done." },
+    Boundaries:   { year:1, emoji:"🛡️", color:"#4A3878", bg:"#F4F1F9", description:"Boundaries are not walls — they are the perimeter of your self-respect. They teach others how to love you well.", alignment:"You protect your energy without guilt. Your relationships are honest and mutual because limits make love sustainable.", misalignment:"Chronic exhaustion from over-giving. Resentment building where boundaries were needed but never voiced." },
+    Radiance:     { year:3, emoji:"🌟", color:"#A06800", bg:"#FFFBEF", description:"Radiance is what happens when you stop hiding. It's your natural light, freed from performance, fear, and the need to be palatable.", alignment:"Your presence is felt before you speak. You glow with the confidence of someone who has decided to take up space.", misalignment:"Dimming your light to make others comfortable. Or confusing radiance with performance and exhausting yourself." },
+    Vulnerability:{ year:2, emoji:"💧", color:"#1050A0", bg:"#EEF4FC", description:"Vulnerability is not weakness — it is the birthplace of connection, creativity, and courage. It takes strength to be seen.", alignment:"You form deep bonds quickly. People trust you because you trust them first. Your openness disarms walls.", misalignment:"Oversharing without discernment. Or sealing yourself off because someone weaponized your openness." },
+    Wisdom:       { year:2, emoji:"🌙", color:"#141E6E", bg:"#EEEFFE", description:"You move from deep knowing — not just information, but discernment. You see patterns and offer perspective that transforms.", alignment:"People seek your counsel. You reflect before reacting. Your decisions are grounded in evidence and intuition.", misalignment:"Frustration when others won't slow down to think. Carrying the weight of seeing what others can't yet see." },
+    Truth:        { year:3, emoji:"🪞", color:"#1A2A3A", bg:"#F0F2F4", description:"Truth is the most intimate relationship you'll ever have — the one with yourself. Everything else is built on it.", alignment:"You name things as they are. Your word is trusted. You don't require agreement — you require honesty.", misalignment:"Harsh truth without compassion. Or protecting others from truth in ways that ultimately harm them." },
+    Service:      { year:2, emoji:"🕊️", color:"#206060", bg:"#EEF9F8", description:"You are fueled by giving — your time, wisdom, gifts — to lift others. Purpose lives in contribution.", alignment:"You are the person people call when they need real help. You find deep meaning in mentorship and advocacy.", misalignment:"Over-giving, neglecting your own needs. Attracting people who take without reciprocating." },
+    Grace:        { year:3, emoji:"🌺", color:"#8A2820", bg:"#FDF0EE", description:"Grace is the quality of moving through life with ease, composure, and mercy — for yourself and others.", alignment:"You extend patience where others rush to judgment. You handle difficulty with dignity. You are not easily rattled.", misalignment:"Grace becoming a mask for suppressed emotion. Performing composure while falling apart inside." },
+    Freedom:      { year:2, emoji:"🦋", color:"#1A5F8A", bg:"#EEF6FB", description:"Autonomy is oxygen for you. You need space to think, move, decide, and live on your own terms.", alignment:"You thrive in flexible, self-directed environments. You are entrepreneurial, boundary-pushing, fiercely independent.", misalignment:"Rigid structures and controlling people feel suffocating. Commitment without choice feels like a trap." },
+    Reinvention:  { year:3, emoji:"🦚", color:"#5A1878", bg:"#F6EEFB", description:"Reinvention is the courage to become someone new without abandoning who you've always been. It is evolution, not erasure.", alignment:"You shed outdated versions of yourself without grief. You embrace new chapters. Change is exciting, not threatening.", misalignment:"Reinventing to escape rather than to evolve. Or resisting change to protect an identity that no longer fits." },
+    Vision:       { year:2, emoji:"🔭", color:"#005A4A", bg:"#EEF9F7", description:"You see what doesn't exist yet — and you believe it enough to build toward it. Vision is the architecture of the future you're creating.", alignment:"You think long-term. You inspire others with the picture of what's possible. You plan with intention and flexibility.", misalignment:"Living so far in the future you miss the present. Or using vision as a substitute for execution." },
+    Healing:      { year:3, emoji:"🌱", color:"#276B2E", bg:"#F1F8F2", description:"Healing is wholeness in progress — not erasing the past, but integrating it so it makes you whole, not broken.", alignment:"You have done the inner work. You respond rather than react. Your past informs but doesn't define your choices.", misalignment:"Wearing wounds as identity. Or bypassing genuine healing by staying perpetually busy or performing wellness." },
+    Influence:    { year:3, emoji:"🌊", color:"#1050A0", bg:"#EEF4FC", description:"Influence is the ripple effect of your presence — it travels further than you can see. The way you show up changes rooms.", alignment:"People are moved by your story. Your reputation precedes you in the best way. You lead without needing a title.", misalignment:"Chasing visibility for its own sake. Influence becoming performance instead of genuine contribution." },
+    Purpose:      { year:1, emoji:"🌟", color:"#A06800", bg:"#FFFBEF", description:"You are not here by accident. Purpose is the thread that connects your gifts to the world's deepest needs.", alignment:"Your work feels meaningful even when it's hard. You return to your why during difficulty and it steadies you.", misalignment:"Busyness without direction. Achieving goals that don't satisfy because they were never truly yours." },
+    Boldness:     { year:3, emoji:"🦁", color:"#A8301F", bg:"#FDF0EE", description:"Boldness is the willingness to be seen — fully, loudly, unapologetically. It is taking the risk of standing out.", alignment:"You pitch the audacious idea. You say the thing nobody else will. You own the room.", misalignment:"Performing boldness for validation. Or being bold in safe contexts but shrinking where it actually costs something." },
+    Celebration:  { year:3, emoji:"🥂", color:"#8B6914", bg:"#FFF8E7", description:"Celebration is the practice of honoring how far you've come — not waiting until you've arrived. It is gratitude in motion.", alignment:"You mark milestones. You make space for joy after hard work. You celebrate others without diminishing yourself.", misalignment:"Moving the goalpost every time you arrive. Never pausing long enough to receive what you've earned." },
+    Presence:     { year:3, emoji:"🕯️", color:"#4A3030", bg:"#F9F3F3", description:"Presence is the gift of being fully here — in your body, in this moment, in this conversation. It is increasingly rare and always remembered.", alignment:"People feel seen when they're with you. You're not half-distracted. Your attention is a form of love.", misalignment:"Chronic distraction, even from things you love. Living in past regret or future anxiety instead of right now." },
+    Clarity:      { year:1, emoji:"🔮", color:"#206060", bg:"#EEF9F8", description:"Clarity is the luxury of truly knowing yourself — what you want, what you won't tolerate, and what matters most.", alignment:"You make decisions with confidence. Distractions don't derail you. You can say no easily because you know your yes.", misalignment:"Chronically overwhelmed by options. Saying yes to everything because you haven't named your priorities." },
+    Discipline:   { year:2, emoji:"🎯", color:"#6E2A0A", bg:"#FDF3EC", description:"Discipline is devotion in practice — the daily choices that make your vision real. It is love for your future self.", alignment:"Your habits match your goals. You show up consistently, even without motivation. You trust the process.", misalignment:"Rigidity that leaves no room for grace. Or using discipline as a cover for fear of rest and play." },
+    Power:        { year:2, emoji:"⚡", color:"#A8301F", bg:"#FDF0EE", description:"Power is your capacity to act, influence, and create change. Owning it without apology is one of the most radical things a woman can do.", alignment:"You take up space deliberately. You advocate for yourself and others. You don't dim your light for comfort.", misalignment:"Using power to control rather than elevate. Or giving your power away to avoid standing out." },
+    Sovereignty:  { year:3, emoji:"🗝️", color:"#512A80", bg:"#F5F0FB", description:"Sovereignty is ruling your own life. It is the refusal to outsource your happiness, your decisions, or your sense of self to anyone else.", alignment:"You are the CEO of your life. You take full responsibility for your choices, your energy, your direction.", misalignment:"Rebellion without direction — being contrarian as a form of sovereignty rather than genuinely self-governed." },
+    Community:    { year:2, emoji:"🤝", color:"#005A4A", bg:"#EEF9F7", description:"You understand that we rise together. Community isn't just support — it's accountability, belonging, and collective power.", alignment:"You invest in relationships. You show up for others. You build tables, not just climb ladders.", misalignment:"Isolation in the name of independence. Or losing yourself in community and forgetting your individual needs." },
+    Faith:        { year:2, emoji:"🌠", color:"#3A1870", bg:"#F5EEFB", description:"Faith is trusting the unseen — in yourself, in the process, in something larger. It is the courage to act before proof arrives.", alignment:"You move forward before all conditions are perfect. Uncertainty doesn't stop you. You have a track record of surviving your hardest moments.", misalignment:"Passivity disguised as trust. Waiting for signs instead of doing the work." },
+    Gratitude:    { year:1, emoji:"🌸", color:"#8A0E45", bg:"#FEF0F5", description:"Gratitude is not toxic positivity — it is the practice of noticing what is good while still naming what needs to change.", alignment:"You find meaning in ordinary moments. Difficulty doesn't cancel your appreciation for what is right.", misalignment:"Using gratitude to bypass legitimate grief or frustration. Dismissing your own needs as not that bad." },
+    Abundance:    { year:1, emoji:"🌿", color:"#276B2E", bg:"#F1F8F2", description:"Abundance is a way of seeing — one that notices what is present rather than mourning what is absent.", alignment:"You give freely because you trust there is more. You receive compliments, opportunities, and help without deflecting.", misalignment:"Chronic comparison. Hoarding time, money, or credit out of fear there won't be enough." },
+    Balance:      { year:3, emoji:"⚖️", color:"#3E5460", bg:"#EEF4F6", description:"Balance isn't equal weight — it's intentional integration. It means nothing is starved of attention for so long it collapses.", alignment:"You make conscious trade-offs. You can be ambitious and rested, driven and present, giving and boundaried.", misalignment:"The illusion of balance through busyness. Or using balance to justify under-committing to things that matter." },
+    Generosity:   { year:3, emoji:"🎁", color:"#8A0E45", bg:"#FEF0F5", description:"True generosity flows from overflow — not depletion. It is giving your best, not your leftovers, from a place of wholeness.", alignment:"You give freely with no strings. Your generosity creates ripples. People feel genuinely nourished by what you offer.", misalignment:"Giving from empty. Confusing people-pleasing with generosity. Expecting return in ways you haven't stated." },
+  };
 
-const WOMEN = [
-  // Black American women
-  { name:"Oprah Winfrey",            title:"Media Mogul & Philanthropist",              wiki:"Oprah_Winfrey",              photo:null, values:["Authenticity","Abundance","Leadership"] },
-  { name:"Michelle Obama",           title:"Former First Lady & Author",                 wiki:"Michelle_Obama",             photo:null, values:["Purpose","Excellence","Legacy"] },
-  { name:"Beyoncé",                  title:"Artist, Director & Entrepreneur",            wiki:"Beyoncé",                    photo:null, values:["Excellence","Creativity","Ambition"] },
-  { name:"Serena Williams",          title:"Tennis Legend & Venture Capitalist",         wiki:"Serena_Williams",            photo:null, values:["Resilience","Excellence","Discipline"] },
-  { name:"Viola Davis",              title:"EGOT-Winning Actress & Producer",            wiki:"Viola_Davis",                photo:null, values:["Authenticity","Courage","Self-Worth"] },
-  { name:"Simone Biles",             title:"Most Decorated Gymnast in History",          wiki:"Simone_Biles",               photo:null, values:["Resilience","Courage","Boundaries"] },
-  { name:"Maya Angelou",             title:"Poet, Author & Civil Rights Activist",       wiki:"Maya_Angelou",               photo:null, values:["Wisdom","Authenticity","Grace"] },
-  { name:"Harriet Tubman",           title:"Abolitionist & Liberation Leader",           wiki:"Harriet_Tubman",             photo:null, values:["Courage","Freedom","Service"] },
-  { name:"Ava DuVernay",             title:"Director, Producer & Activist",              wiki:"Ava_DuVernay",               photo:null, values:["Vision","Creativity","Leadership"] },
-  { name:"Tracee Ellis Ross",        title:"Actress, Producer & Entrepreneur",           wiki:"Tracee_Ellis_Ross",          photo:null, values:["Joy","Authenticity","Radiance"] },
-  { name:"Misty Copeland",           title:"First Black Principal Ballerina, ABT",       wiki:"Misty_Copeland",             photo:null, values:["Resilience","Excellence","Creativity"] },
-  { name:"Toni Morrison",            title:"Nobel Prize-Winning Author",                 wiki:"Toni_Morrison",              photo:null, values:["Wisdom","Creativity","Truth"] },
-  // Latina women
-  { name:"Sonia Sotomayor",          title:"U.S. Supreme Court Justice",                 wiki:"Sonia_Sotomayor",            photo:null, values:["Leadership","Resilience","Purpose"] },
-  { name:"Frida Kahlo",              title:"Iconic Artist & Cultural Symbol",            wiki:"Frida_Kahlo",                photo:null, values:["Authenticity","Creativity","Resilience"] },
-  { name:"Dolores Huerta",           title:"Labor Rights & Civil Rights Leader",         wiki:"Dolores_Huerta",             photo:null, values:["Courage","Service","Community"] },
-  { name:"America Ferrera",          title:"Actress, Director & Activist",               wiki:"America_Ferrera",            photo:null, values:["Authenticity","Community","Boldness"] },
-  { name:"Jennifer Lopez",           title:"Artist, Actress & Entrepreneur",             wiki:"Jennifer_Lopez",             photo:null, values:["Ambition","Resilience","Reinvention"] },
-  { name:"Ellen Ochoa",              title:"First Latina Astronaut & NASA Director",     wiki:"Ellen_Ochoa",                photo:null, values:["Courage","Excellence","Vision"] },
-  // South Asian & Southeast Asian women
-  { name:"Malala Yousafzai",         title:"Nobel Peace Laureate & Activist",            wiki:"Malala_Yousafzai",           photo:null, values:["Courage","Service","Faith"] },
-  { name:"Kamala Harris",            title:"49th Vice President of the USA",             wiki:"Kamala_Harris",              photo:null, values:["Leadership","Courage","Power"] },
-  { name:"Priyanka Chopra Jonas",    title:"Actress, Producer & Philanthropist",         wiki:"Priyanka_Chopra",            photo:null, values:["Ambition","Freedom","Influence"] },
-  { name:"Indra Nooyi",              title:"Former CEO of PepsiCo",                      wiki:"Indra_Nooyi",                photo:null, values:["Leadership","Discipline","Excellence"] },
-  { name:"Michelle Yeoh",            title:"Oscar-Winning Actress & Activist",           wiki:"Michelle_Yeoh",              photo:null, values:["Excellence","Resilience","Boldness"] },
-  // East Asian women
-  { name:"Yayoi Kusama",             title:"Avant-Garde Artist & Visionary",             wiki:"Yayoi_Kusama",               photo:null, values:["Creativity","Resilience","Vision"] },
-  { name:"Naomi Osaka",              title:"Tennis Champion & Mental Health Advocate",   wiki:"Naomi_Osaka",                photo:null, values:["Courage","Boundaries","Authenticity"] },
-  // White & European women
-  { name:"Marie Curie",              title:"Nobel Prize-Winning Physicist & Chemist",    wiki:"Marie_Curie",                photo:null, values:["Excellence","Discipline","Wisdom"] },
-  { name:"Amelia Earhart",           title:"Aviation Pioneer & Adventurer",              wiki:"Amelia_Earhart",             photo:null, values:["Courage","Freedom","Boldness"] },
-  { name:"Ruth Bader Ginsburg",      title:"Supreme Court Justice & Icon",               wiki:"Ruth_Bader_Ginsburg",        photo:null, values:["Courage","Leadership","Service"] },
-  { name:"Brené Brown",              title:"Researcher, Author & Speaker",               wiki:"Bren%C3%A9_Brown",           photo:null, values:["Vulnerability","Authenticity","Courage"] },
-  { name:"Meryl Streep",             title:"Most Nominated Actress in Oscar History",    wiki:"Meryl_Streep",               photo:null, values:["Excellence","Creativity","Presence"] },
-  { name:"Glennon Doyle",            title:"Author, Activist & Untamed Voice",           wiki:"Glennon_Doyle",              photo:null, values:["Vulnerability","Authenticity","Healing"] },
-  // African women
-  { name:"Chimamanda Ngozi Adichie", title:"Author & Feminist Icon",                     wiki:"Chimamanda_Ngozi_Adichie",   photo:null, values:["Authenticity","Wisdom","Boldness"] },
-  { name:"Wangari Maathai",          title:"Nobel Peace Laureate & Environmentalist",    wiki:"Wangari_Maathai",            photo:null, values:["Service","Legacy","Courage"] },
-  // Additional diverse voices
-  { name:"Shonda Rhimes",            title:"Showrunner, Producer & Author",              wiki:"Shonda_Rhimes",              photo:null, values:["Vision","Boldness","Creativity"] },
-  { name:"Mary J. Blige",            title:"Singer, Actress & Activist",                 wiki:"Mary_J._Blige",              photo:null, values:["Healing","Resilience","Truth"] },
-  { name:"Stacey Abrams",            title:"Author, Politician & Voting Rights Leader",  wiki:"Stacey_Abrams",              photo:null, values:["Service","Vision","Discipline"] },
-];
+  // ─── ARCHETYPES ───────────────────────────────────────────────────────────────
+  // Each archetype = a season theme + the values that most signal it
+  const ARCHETYPES = [
+    {
+      name: "The Sovereign",
+      season: "You are in a season of radical self-ownership.",
+      description: "This is your year to stop seeking permission. You are reclaiming authority over your own life — your choices, your energy, your direction. Nothing gets to take up space that you didn't consciously invite in.",
+      emoji: "🗝️",
+      color: "#512A80",
+      bg: "#F5F0FB",
+      values: ["Sovereignty","Power","Boundaries","Freedom","Boldness","Courage","Self-Worth"],
+    },
+    {
+      name: "The Architect",
+      season: "You are in a season of intentional building.",
+      description: "You are not just dreaming — you are constructing. This season is about laying foundations that last, executing with precision, and turning vision into something you can hold. You are building your life on purpose.",
+      emoji: "🏛️",
+      color: "#6B4226",
+      bg: "#FDF3EC",
+      values: ["Vision","Ambition","Excellence","Discipline","Leadership","Legacy","Purpose"],
+    },
+    {
+      name: "The Healer",
+      season: "You are in a season of restoration.",
+      description: "Something in you is mending — and you are making space for it. This isn't weakness; it's the most courageous kind of work. You are choosing wholeness over hustle, integration over performance.",
+      emoji: "🌱",
+      color: "#276B2E",
+      bg: "#F1F8F2",
+      values: ["Healing","Vulnerability","Grace","Presence","Balance","Gratitude","Faith"],
+    },
+    {
+      name: "The Truth-Teller",
+      season: "You are in a season of radical honesty.",
+      description: "You are done performing. The stories you've been telling yourself — and the ones others have told about you — are being examined and released. What remains is truer, and lighter, than anything that came before.",
+      emoji: "🪞",
+      color: "#1A2A3A",
+      bg: "#F0F2F4",
+      values: ["Truth","Authenticity","Wisdom","Clarity","Presence","Boundaries","Self-Worth"],
+    },
+    {
+      name: "The Creator",
+      season: "You are in a season of becoming.",
+      description: "Something new is emerging through you — and you are brave enough to let it. This season is defined by experimentation, expression, and the thrill of making something that didn't exist before you touched it.",
+      emoji: "🎨",
+      color: "#B8440A",
+      bg: "#FEF3EC",
+      values: ["Creativity","Reinvention","Boldness","Purpose","Freedom","Joy","Abundance"],
+    },
+    {
+      name: "The Light-Bearer",
+      season: "You are in a season of radiant overflow.",
+      description: "You have tended to yourself long enough that you are now spilling over. Joy is not something you earn — it is something you embody. This season, your presence alone is a gift to every room you enter.",
+      emoji: "🌟",
+      color: "#A06800",
+      bg: "#FFFBEF",
+      values: ["Joy","Radiance","Celebration","Gratitude","Abundance","Generosity","Presence"],
+    },
+    {
+      name: "The Connector",
+      season: "You are in a season of deep belonging.",
+      description: "You are learning that strength and softness are not opposites. This season is about the courage to be truly known — by others and by yourself. The connections you forge now will shape the next chapter of your life.",
+      emoji: "🤝",
+      color: "#005A4A",
+      bg: "#EEF9F7",
+      values: ["Community","Service","Vulnerability","Generosity","Influence","Legacy","Healing"],
+    },
+    {
+      name: "The Pathfinder",
+      season: "You are in a season of brave new chapters.",
+      description: "The road ahead has never been walked before — and that's exactly why you're the one to walk it. This season calls you forward into territory that requires more faith than certainty, and more courage than comfort.",
+      emoji: "🦋",
+      color: "#1A5F8A",
+      bg: "#EEF6FB",
+      values: ["Freedom","Courage","Reinvention","Faith","Resilience","Purpose","Vision"],
+    },
+  ];
 
-const BG_FALLBACKS = [
-  ["#1A0E00","#3D2200"],["#0A1A2A","#1A3A5A"],["#1A001A","#3D003D"],
-  ["#001A0A","#003D1A"],["#1A1A00","#3D3D00"],["#00001A","#00003D"],
-];
-
-function tallyValues(liked) {
-  const counts = {};
-  liked.forEach(w => w.values.forEach(v => { counts[v] = (counts[v] || 0) + 1; }));
-  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  const top = sorted.slice(0, 5).map(([v]) => v);
-  if (top.length < 5) {
-    const all = Object.keys(VALUES);
-    for (const v of all) { if (!top.includes(v)) { top.push(v); if (top.length === 5) break; } }
+  function getArchetype(topValues) {
+    let best = ARCHETYPES[0];
+    let bestScore = -1;
+    ARCHETYPES.forEach(arch => {
+      const score = topValues.filter(v => arch.values.includes(v)).length;
+      if (score > bestScore) { bestScore = score; best = arch; }
+    });
+    return best;
   }
-  return top;
-}
 
-function useWikiData(wikiTitle, skip) {
-  const [data, setData] = useState(null);
-  useEffect(() => {
-    if (skip) return;
-    let cancelled = false;
-    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${wikiTitle}`)
-      .then(r => r.json())
-      .then(d => { if (!cancelled) setData(d); })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, [wikiTitle, skip]);
-  return data;
-}
+  // ─── WOMEN (1:1 value mapping) ────────────────────────────────────────────────
+  const WOMEN = [
+    { name:"Oprah Winfrey",            title:"Media Mogul & Philanthropist",             wiki:"Oprah_Winfrey",            photo:null, value:"Authenticity" },
+    { name:"Michelle Obama",           title:"Former First Lady & Author",                wiki:"Michelle_Obama",           photo:null, value:"Legacy" },
+    { name:"Beyoncé",                  title:"Artist, Director & Entrepreneur",           wiki:"Beyoncé",                  photo:null, value:"Excellence" },
+    { name:"Serena Williams",          title:"Tennis Legend & Venture Capitalist",        wiki:"Serena_Williams",          photo:null, value:"Resilience" },
+    { name:"Malala Yousafzai",         title:"Nobel Peace Laureate & Activist",           wiki:"Malala_Yousafzai",         photo:null, value:"Courage" },
+    { name:"Rihanna",                  title:"Artist, Founder & Billionaire",             wiki:"Rihanna",                  photo:null, value:"Ambition" },
+    { name:"Kamala Harris",            title:"49th Vice President of the USA",            wiki:"Kamala_Harris",            photo:null, value:"Leadership" },
+    { name:"Viola Davis",              title:"EGOT-Winning Actress & Producer",           wiki:"Viola_Davis",              photo:null, value:"Self-Worth" },
+    { name:"Misty Copeland",           title:"First Black Principal Ballerina, ABT",      wiki:"Misty_Copeland",           photo:null, value:"Creativity" },
+    { name:"Lizzo",                    title:"Artist & Body Positivity Advocate",         wiki:"Lizzo",                    photo:null, value:"Joy" },
+    { name:"Simone Biles",             title:"Most Decorated Gymnast in History",         wiki:"Simone_Biles",             photo:null, value:"Boundaries" },
+    { name:"Lupita Nyong'o",           title:"Oscar-Winning Actress & Activist",          wiki:"Lupita_Nyong'o",           photo:null, value:"Radiance" },
+    { name:"Brené Brown",              title:"Researcher, Author & Speaker",              wiki:"Bren%C3%A9_Brown",         photo:null, value:"Vulnerability" },
+    { name:"Toni Morrison",            title:"Nobel Prize-Winning Author",                wiki:"Toni_Morrison",            photo:null, value:"Wisdom" },
+    { name:"Chimamanda Ngozi Adichie", title:"Author & Feminist Icon",                    wiki:"Chimamanda_Ngozi_Adichie", photo:null, value:"Truth" },
+    { name:"Ruth Bader Ginsburg",      title:"Supreme Court Justice & Icon",              wiki:"Ruth_Bader_Ginsburg",      photo:null, value:"Service" },
+    { name:"Maya Angelou",             title:"Poet, Author & Civil Rights Activist",      wiki:"Maya_Angelou",             photo:null, value:"Grace" },
+    { name:"Harriet Tubman",           title:"Abolitionist & Liberation Leader",          wiki:"Harriet_Tubman",           photo:null, value:"Freedom" },
+    { name:"Issa Rae",                 title:"Creator, Producer & Entrepreneur",          wiki:"Issa_Rae",                 photo:null, value:"Reinvention" },
+    { name:"Sheryl Sandberg",          title:"Tech Executive & Author",                   wiki:"Sheryl_Sandberg",          photo:null, value:"Vision" },
+    { name:"Gabrielle Union",          title:"Actress & Activist",                        wiki:"Gabrielle_Union",          photo:null, value:"Healing" },
+    { name:"Kerry Washington",         title:"Actress, Director & Activist",              wiki:"Kerry_Washington",         photo:null, value:"Influence" },
+    { name:"Ava DuVernay",             title:"Director, Producer & Activist",             wiki:"Ava_DuVernay",             photo:null, value:"Purpose" },
+    { name:"Janelle Monáe",            title:"Artist, Actress & Futurist",                wiki:"Janelle_Mon%C3%A1e",       photo:null, value:"Boldness" },
+    { name:"Tracee Ellis Ross",        title:"Actress, Producer & Entrepreneur",          wiki:"Tracee_Ellis_Ross",        photo:null, value:"Celebration" },
+    { name:"Alicia Keys",              title:"Grammy-Winning Artist & Activist",          wiki:"Alicia_Keys",              photo:null, value:"Presence" },
+    { name:"Naomi Osaka",              title:"Tennis Champion & Mental Health Advocate",  wiki:"Naomi_Osaka",              photo:null, value:"Clarity" },
+    { name:"Stacey Abrams",            title:"Author, Politician & Voting Rights Leader", wiki:"Stacey_Abrams",            photo:null, value:"Discipline" },
+    { name:"Angela Davis",             title:"Scholar, Activist & Author",                wiki:"Angela_Davis",             photo:null, value:"Power" },
+    { name:"Eartha Kitt",              title:"Actress, Singer & Icon",                    wiki:"Eartha_Kitt",              photo:null, value:"Sovereignty" },
+    { name:"Nina Simone",              title:"Musician, Singer & Civil Rights Activist",  wiki:"Nina_Simone",              photo:null, value:"Community" },
+    { name:"Tina Turner",              title:"Queen of Rock & Roll",                      wiki:"Tina_Turner",              photo:null, value:"Faith" },
+    { name:"Cicely Tyson",             title:"Actress & Cultural Icon",                   wiki:"Cicely_Tyson",             photo:null, value:"Gratitude" },
+    { name:"Shonda Rhimes",            title:"Showrunner, Producer & Author",             wiki:"Shonda_Rhimes",            photo:null, value:"Abundance" },
+    { name:"Janet Jackson",            title:"Performer, Actress & Icon",                 wiki:"Janet_Jackson",            photo:null, value:"Balance" },
+    { name:"Mary J. Blige",            title:"Singer, Actress & Activist",                wiki:"Mary_J._Blige",            photo:null, value:"Generosity" },
+  ];
 
-function BioPanel({ woman, wikiData, onClose, onLike, onPass }) {
-  return (
-    <div style={{position:"fixed",inset:0,zIndex:200,display:"flex",flexDirection:"column",justifyContent:"flex-end",background:"rgba(0,0,0,0.75)",backdropFilter:"blur(4px)"}} onClick={onClose}>
-      <div onClick={e => e.stopPropagation()} style={{background:"linear-gradient(170deg,#1A1208,#0E0A06)",borderRadius:"24px 24px 0 0",border:"1px solid rgba(201,168,76,0.2)",borderBottom:"none",padding:"28px 24px 40px",maxHeight:"70vh",overflowY:"auto"}}>
-        <div style={{width:40,height:3,background:"rgba(255,255,255,0.15)",borderRadius:2,margin:"0 auto 20px"}}/>
-        <div style={{display:"flex",gap:16,marginBottom:20,alignItems:"flex-start"}}>
-          {(woman.photo || wikiData?.thumbnail) && (
-            <img src={woman.photo || wikiData.thumbnail.source} alt={woman.name}
-              style={{width:70,height:70,borderRadius:12,objectFit:"cover",border:"1px solid rgba(201,168,76,0.3)",flexShrink:0}}/>
+  // ─── HELPERS ─────────────────────────────────────────────────────────────────
+  function tallyValues(liked) {
+    const counts = {};
+    liked.forEach(w => { counts[w.value] = (counts[w.value]||0)+1; });
+    const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+    const top = sorted.slice(0,5).map(([v])=>v);
+    if (top.length < 5) {
+      for (const v of Object.keys(VALUES)) { if(!top.includes(v)){top.push(v);if(top.length===5)break;} }
+    }
+    return top;
+  }
+
+  function useWikiData(wikiTitle, skip) {
+    const [data, setData] = useState(null);
+    useEffect(()=>{
+      if(skip) return;
+      let cancelled = false;
+      fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${wikiTitle}`)
+        .then(r=>r.json()).then(d=>{if(!cancelled)setData(d);}).catch(()=>{});
+      return ()=>{cancelled=true;};
+    },[wikiTitle, skip]);
+    return data;
+  }
+
+  // ─── BIO PANEL ───────────────────────────────────────────────────────────────
+  function BioPanel({ woman, wikiData, onClose, onLike, onPass }) {
+    const v = VALUES[woman.value];
+    return (
+      <div style={{position:"fixed",inset:0,zIndex:200,display:"flex",flexDirection:"column",justifyContent:"flex-end",background:"rgba(26,18,8,0.45)",backdropFilter:"blur(6px)"}} onClick={onClose}>
+        <div onClick={e=>e.stopPropagation()} style={{background:"#FFFDF8",borderRadius:"28px 28px 0 0",padding:"28px 24px 40px",maxHeight:"72vh",overflowY:"auto",boxShadow:"0 -8px 40px rgba(0,0,0,0.14)"}}>
+          <div style={{width:44,height:3,background:"rgba(26,18,8,0.1)",borderRadius:2,margin:"0 auto 22px"}}/>
+          <div style={{display:"inline-flex",alignItems:"center",gap:8,background:v.bg,border:`1px solid ${v.color}30`,borderRadius:20,padding:"6px 14px",marginBottom:18}}>
+            <span style={{fontSize:16}}>{v.emoji}</span>
+            <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:13,letterSpacing:2,textTransform:"uppercase",color:v.color,fontWeight:600}}>{woman.value}</span>
+          </div>
+          <div style={{display:"flex",gap:16,marginBottom:18,alignItems:"flex-start"}}>
+            {(woman.photo||wikiData?.thumbnail)&&(
+              <img src={woman.photo||wikiData.thumbnail.source} alt={woman.name}
+                style={{width:72,height:72,borderRadius:14,objectFit:"cover",border:`2px solid ${v.color}25`,flexShrink:0}}/>
+            )}
+            <div>
+              <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,color:"#1A1208",lineHeight:1.2,marginBottom:4}}>{woman.name}</div>
+              <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:13,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(26,18,8,0.4)"}}>{woman.title}</div>
+            </div>
+          </div>
+          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:18,color:"rgba(26,18,8,0.68)",lineHeight:1.7,marginBottom:20}}>
+            {wikiData?.extract ? wikiData.extract.split(". ").slice(0,3).join(". ")+"." : "Loading…"}
+          </p>
+          {wikiData?.content_urls?.desktop?.page&&(
+            <a href={wikiData.content_urls.desktop.page} target="_blank" rel="noopener noreferrer"
+              style={{display:"inline-block",fontFamily:"'Cormorant Garamond',serif",fontSize:13,letterSpacing:2,textTransform:"uppercase",color:v.color,textDecoration:"none",marginBottom:24,borderBottom:`1px solid ${v.color}40`,paddingBottom:2}}>
+              Learn More on Wikipedia ↗
+            </a>
           )}
-          <div>
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,color:"#F5EDD8",lineHeight:1.2,marginBottom:4}}>{woman.name}</div>
-            <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:2,textTransform:"uppercase",color:"#C9A84C"}}>{woman.title}</div>
+          <div style={{display:"flex",gap:12}}>
+            <button onClick={()=>{onClose();onPass();}} style={{flex:1,padding:"15px 0",background:"#fff",border:"1.5px solid rgba(168,48,31,0.28)",borderRadius:14,fontFamily:"'Cormorant Garamond',serif",fontSize:15,letterSpacing:2,textTransform:"uppercase",color:"rgba(168,48,31,0.75)",cursor:"pointer"}}>✕ Pass</button>
+            <button onClick={()=>{onClose();onLike();}} style={{flex:1,padding:"15px 0",background:v.color,border:"none",borderRadius:14,fontFamily:"'Cormorant Garamond',serif",fontSize:15,letterSpacing:2,textTransform:"uppercase",color:"#fff",cursor:"pointer",fontWeight:600}}>✦ Admire</button>
           </div>
         </div>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(245,237,216,0.7)",lineHeight:1.65,marginBottom:16}}>
-          {wikiData?.extract ? wikiData.extract.split(". ").slice(0,3).join(". ") + "." : "Loading…"}
+      </div>
+    );
+  }
+
+  // ─── WOMAN CARD ──────────────────────────────────────────────────────────────
+  // swipeDir is now controlled by the PARENT so buttons animate correctly
+  function WomanCard({ woman, isTop, forcedSwipeDir, onSwipeComplete, onInfo }) {
+    const v = VALUES[woman.value];
+    const wikiData = useWikiData(woman.wiki, !!woman.photo);
+    const [drag, setDrag] = useState({x:0,y:0,dragging:false});
+    const [localSwipe, setLocalSwipe] = useState(null);
+    const startRef = useRef(null);
+    const imgUrl = woman.photo || wikiData?.thumbnail?.source || null;
+
+    // either a forced swipe from parent buttons OR a local gesture
+    const activeSwipe = forcedSwipeDir || localSwipe;
+
+    useEffect(()=>{
+      if (forcedSwipeDir) {
+        const t = setTimeout(()=>{ onSwipeComplete(forcedSwipeDir==="right"?"like":"pass"); }, 400);
+        return ()=>clearTimeout(t);
+      }
+    },[forcedSwipeDir]);
+
+    const triggerLocal = (dir) => {
+      setLocalSwipe(dir);
+      setTimeout(()=>{ setLocalSwipe(null); onSwipeComplete(dir==="right"?"like":"pass"); }, 380);
+    };
+
+    const onPointerDown=(e)=>{ if(!isTop)return; if(e.target.closest("[data-info-btn]"))return; startRef.current={x:e.clientX,y:e.clientY}; setDrag({x:0,y:0,dragging:true}); };
+    const onPointerMove=(e)=>{ if(!drag.dragging||!startRef.current)return; setDrag({x:e.clientX-startRef.current.x,y:e.clientY-startRef.current.y,dragging:true}); };
+    const onPointerUp=()=>{
+      if(!drag.dragging) return;
+      if(drag.x>80) triggerLocal("right");
+      else if(drag.x<-80) triggerLocal("left");
+      else setDrag({x:0,y:0,dragging:false});
+      startRef.current=null;
+    };
+
+    const tilt = isTop&&drag.dragging ? drag.x/15 : 0;
+    const tx = activeSwipe==="right"?650:activeSwipe==="left"?-650:drag.x;
+    const ty = activeSwipe?-60:drag.y*0.3;
+    const likeVis = isTop&&(drag.x>20||activeSwipe==="right");
+    const passVis = isTop&&(drag.x<-20||activeSwipe==="left");
+
+    return (
+      <div onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp}
+        style={{position:"absolute",width:"100%",height:"100%",borderRadius:28,
+          cursor:isTop?"grab":"default",userSelect:"none",touchAction:"none",
+          transform:`translateX(${tx}px) translateY(${ty}px) rotate(${tilt}deg)`,
+          transition:activeSwipe||!drag.dragging?"transform 0.4s cubic-bezier(.25,.46,.45,.94),opacity 0.4s":"none",
+          opacity:activeSwipe?0:1}}>
+
+        <div style={{width:"100%",height:"100%",borderRadius:28,overflow:"hidden",position:"relative",
+          background:v.bg,
+          boxShadow:isTop?"0 20px 60px rgba(0,0,0,0.16),0 4px 16px rgba(0,0,0,0.06)":"0 8px 30px rgba(0,0,0,0.08)"}}>
+
+          {/* Photo — top 62% */}
+          {imgUrl && <img src={imgUrl} alt={woman.name} style={{position:"absolute",top:0,left:0,right:0,height:"62%",width:"100%",objectFit:"cover",objectPosition:"top center"}}/>}
+
+          {/* Monogram when no photo */}
+          {!imgUrl && (
+            <div style={{position:"absolute",top:"8%",left:"50%",transform:"translateX(-50%)",fontSize:110,fontFamily:"'Playfair Display',serif",fontWeight:700,color:`${v.color}10`,letterSpacing:4,lineHeight:1,userSelect:"none",pointerEvents:"none"}}>
+              {woman.name.split(" ").map(w=>w[0]).join("")}
+            </div>
+          )}
+
+          {/* Gradient fade from photo into card */}
+          {imgUrl && <div style={{position:"absolute",top:"46%",left:0,right:0,bottom:0,background:`linear-gradient(to bottom, transparent, ${v.bg} 72%)`}}/>}
+
+          {/* Info button — only on top card */}
+          {isTop && (
+            <button data-info-btn="1" onClick={e=>{e.stopPropagation();onInfo(woman,wikiData);}}
+              style={{position:"absolute",top:14,right:14,width:38,height:38,borderRadius:"50%",
+                background:"rgba(255,255,255,0.92)",border:`1.5px solid ${v.color}35`,
+                color:v.color,fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",
+                justifyContent:"center",zIndex:10,boxShadow:"0 2px 10px rgba(0,0,0,0.1)"}}>ℹ</button>
+          )}
+
+          {/* Text block — only show on top card to prevent stacked names showing through */}
+          {isTop && (
+            <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"16px 22px 24px"}}>
+              <div style={{fontFamily:"'Playfair Display',serif",fontSize:40,fontWeight:700,color:v.color,lineHeight:1,marginBottom:10,letterSpacing:-0.5}}>
+                {woman.value}
+              </div>
+              <div style={{width:32,height:2,background:`${v.color}45`,borderRadius:1,marginBottom:10}}/>
+              <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700,color:"#1A1208",lineHeight:1.15,marginBottom:3}}>
+                {woman.name}
+              </div>
+              <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:13,letterSpacing:1,color:"rgba(26,18,8,0.45)"}}>
+                {woman.title}
+              </div>
+            </div>
+          )}
+
+          {/* Swipe overlays */}
+          <div style={{position:"absolute",inset:0,borderRadius:28,border:"4px solid #27AE60",opacity:likeVis?Math.min(1,drag.x/100):0,transition:"opacity 0.1s",pointerEvents:"none",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <div style={{background:"rgba(255,255,255,0.95)",borderRadius:14,padding:"10px 24px",boxShadow:"0 4px 20px rgba(0,0,0,0.1)"}}>
+              <span style={{fontFamily:"'Playfair Display',serif",fontSize:26,color:"#27AE60",fontWeight:700}}>✦ Admire</span>
+            </div>
+          </div>
+          <div style={{position:"absolute",inset:0,borderRadius:28,border:"4px solid #C0392B",opacity:passVis?Math.min(1,Math.abs(drag.x)/100):0,transition:"opacity 0.1s",pointerEvents:"none",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <div style={{background:"rgba(255,255,255,0.95)",borderRadius:14,padding:"10px 24px",boxShadow:"0 4px 20px rgba(0,0,0,0.1)"}}>
+              <span style={{fontFamily:"'Playfair Display',serif",fontSize:26,color:"#C0392B",fontWeight:700}}>✕ Pass</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── WELCOME ─────────────────────────────────────────────────────────────────
+  function WelcomeScreen({ onStart }) {
+    return (
+      <div style={{textAlign:"center",padding:"44px 32px",maxWidth:400,margin:"0 auto"}}>
+        <div style={{fontSize:12,letterSpacing:5,textTransform:"uppercase",color:"#8B6914",fontFamily:"'Cormorant Garamond',serif",marginBottom:16}}>DesignHer · Values Discovery</div>
+        <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:48,fontWeight:700,color:"#1A1208",lineHeight:1.05,margin:"0 0 20px"}}>Who Do You<br/><em style={{color:"#8B6914"}}>Admire?</em></h1>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:20,color:"rgba(26,18,8,0.58)",lineHeight:1.6,marginBottom:36}}>
+          Each card shows a woman and the value she represents. Swipe right if that value resonates with you. Swipe left to pass. Don't know her — or disagree she embodies that value? Swipe on the value itself.
         </p>
-        <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:20}}>
-          {woman.values.map(v => (
-            <span key={v} style={{fontSize:11,fontFamily:"'Cormorant Garamond',serif",letterSpacing:2,textTransform:"uppercase",color:"rgba(245,237,216,0.6)",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:20,padding:"4px 12px"}}>{v}</span>
-          ))}
-        </div>
-        {wikiData?.content_urls?.desktop?.page && (
-          <a href={wikiData.content_urls.desktop.page} target="_blank" rel="noopener noreferrer"
-            style={{display:"inline-block",fontFamily:"'Cormorant Garamond',serif",fontSize:13,letterSpacing:2,textTransform:"uppercase",color:"#C9A84C",textDecoration:"none",marginBottom:24,borderBottom:"1px solid rgba(201,168,76,0.3)",paddingBottom:2}}>
-            Learn More on Wikipedia ↗
-          </a>
-        )}
-        <div style={{display:"flex",gap:12}}>
-          <button onClick={() => { onClose(); onPass(); }} style={{flex:1,padding:"14px 0",background:"rgba(231,76,60,0.1)",border:"1px solid rgba(231,76,60,0.3)",borderRadius:12,fontFamily:"'Cormorant Garamond',serif",fontSize:14,letterSpacing:2,textTransform:"uppercase",color:"rgba(231,76,60,0.8)",cursor:"pointer"}}>✕ Pass</button>
-          <button onClick={() => { onClose(); onLike(); }} style={{flex:1,padding:"14px 0",background:"rgba(201,168,76,0.15)",border:"1px solid rgba(201,168,76,0.4)",borderRadius:12,fontFamily:"'Cormorant Garamond',serif",fontSize:14,letterSpacing:2,textTransform:"uppercase",color:"#C9A84C",cursor:"pointer"}}>✦ Admire</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function WomanCard({ woman, onLike, onPass, onInfo, isTop, fallbackBg }) {
-  const wikiData = useWikiData(woman.wiki, !!woman.photo);
-  const [swipeDir, setSwipeDir] = useState(null);
-  const [drag, setDrag] = useState({ x:0, y:0, dragging:false });
-  const startRef = useRef(null);
-  const imgUrl = woman.photo || wikiData?.thumbnail?.source || null;
-
-  const triggerSwipe = (dir) => {
-    setSwipeDir(dir);
-    setTimeout(() => { setSwipeDir(null); dir === "right" ? onLike(woman) : onPass(woman); }, 380);
-  };
-  const onPointerDown = (e) => {
-    if (!isTop) return;
-    if (e.target.closest("[data-info-btn]")) return;
-    startRef.current = { x: e.clientX, y: e.clientY };
-    setDrag({ x:0, y:0, dragging:true });
-  };
-  const onPointerMove = (e) => {
-    if (!drag.dragging || !startRef.current) return;
-    setDrag({ x:e.clientX-startRef.current.x, y:e.clientY-startRef.current.y, dragging:true });
-  };
-  const onPointerUp = () => {
-    if (!drag.dragging) return;
-    if (drag.x > 80) triggerSwipe("right");
-    else if (drag.x < -80) triggerSwipe("left");
-    else setDrag({ x:0, y:0, dragging:false });
-    startRef.current = null;
-  };
-
-  const tilt = isTop && drag.dragging ? drag.x / 15 : 0;
-  const tx = swipeDir === "right" ? 620 : swipeDir === "left" ? -620 : drag.x;
-  const ty = swipeDir ? -60 : drag.y * 0.3;
-  const likeVis = isTop && (drag.x > 20 || swipeDir === "right");
-  const passVis = isTop && (drag.x < -20 || swipeDir === "left");
-
-  return (
-    <div onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp}
-      style={{position:"absolute",width:"100%",height:"100%",borderRadius:24,cursor:isTop?"grab":"default",userSelect:"none",touchAction:"none",
-        transform:`translateX(${tx}px) translateY(${ty}px) rotate(${tilt}deg)`,
-        transition:swipeDir||!drag.dragging?"transform 0.38s cubic-bezier(.25,.46,.45,.94),opacity 0.38s":"none",
-        opacity:swipeDir?0:1}}>
-      <div style={{width:"100%",height:"100%",borderRadius:24,overflow:"hidden",position:"relative",
-        background:imgUrl?"#111":`linear-gradient(160deg,${fallbackBg[0]},${fallbackBg[1]})`,
-        boxShadow:isTop?"0 30px 80px rgba(0,0,0,0.65),0 0 0 1px rgba(255,255,255,0.05)":"0 10px 40px rgba(0,0,0,0.4)"}}>
-        {imgUrl && <img src={imgUrl} alt={woman.name} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"top center"}}/>}
-        {!imgUrl && (
-          <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-58%)",
-            fontSize:woman.name.split(" ").map(w=>w[0]).join("").length>2?64:96,
-            fontFamily:"'Playfair Display',serif",fontWeight:700,color:"rgba(255,255,255,0.12)",letterSpacing:8,lineHeight:1}}>
-            {woman.name.split(" ").map(w=>w[0]).join("")}
+        {[["✦","Swipe on the value, not just the woman"],["✦","Don't know her? Tap ℹ for her story"],["✦","No right or wrong answers"]].map(([i,t])=>(
+          <div key={t} style={{display:"flex",gap:14,alignItems:"center",marginBottom:12,textAlign:"left"}}>
+            <span style={{color:"#8B6914",fontSize:12}}>{i}</span>
+            <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.55)"}}>{t}</span>
           </div>
-        )}
-        <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,rgba(0,0,0,0.1) 30%,rgba(0,0,0,0.88) 100%)"}}/>
-        {imgUrl && <div style={{position:"absolute",inset:0,background:"linear-gradient(160deg,rgba(0,0,0,0.2),transparent 50%)"}}/>}
-        {isTop && (
-          <button data-info-btn="1" onClick={(e) => { e.stopPropagation(); onInfo(woman, wikiData); }}
-            style={{position:"absolute",top:16,right:16,width:36,height:36,borderRadius:"50%",background:"rgba(0,0,0,0.45)",border:"1px solid rgba(255,255,255,0.25)",color:"rgba(255,255,255,0.85)",fontSize:15,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:10,fontFamily:"Georgia,serif",backdropFilter:"blur(4px)"}}>ℹ</button>
-        )}
-        <div style={{position:"absolute",top:16,left:16,display:"flex",gap:6,flexWrap:"wrap",maxWidth:"calc(100% - 70px)"}}>
-          {woman.values.map(v => (
-            <span key={v} style={{fontSize:9,fontFamily:"'Cormorant Garamond',serif",letterSpacing:2,textTransform:"uppercase",color:"rgba(255,255,255,0.75)",background:"rgba(0,0,0,0.4)",border:"1px solid rgba(255,255,255,0.18)",borderRadius:20,padding:"3px 9px",backdropFilter:"blur(6px)"}}>{v}</span>
-          ))}
-        </div>
-        <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"24px 22px 26px"}}>
-          <div style={{fontFamily:"'Playfair Display',serif",fontSize:26,fontWeight:700,color:"#fff",lineHeight:1.1,marginBottom:4}}>{woman.name}</div>
-          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:2,textTransform:"uppercase",color:"rgba(255,255,255,0.5)"}}>{woman.title}</div>
-        </div>
-        <div style={{position:"absolute",inset:0,borderRadius:24,border:"4px solid #2ECC71",opacity:likeVis?Math.min(1,drag.x/100):0,transition:"opacity 0.1s",pointerEvents:"none",display:"flex",alignItems:"center",justifyContent:"center"}}>
-          <span style={{fontSize:72,transform:"rotate(-12deg)",filter:"drop-shadow(0 0 24px rgba(46,204,113,0.9))"}}>✦</span>
-        </div>
-        <div style={{position:"absolute",inset:0,borderRadius:24,border:"4px solid #E74C3C",opacity:passVis?Math.min(1,Math.abs(drag.x)/100):0,transition:"opacity 0.1s",pointerEvents:"none",display:"flex",alignItems:"center",justifyContent:"center"}}>
-          <span style={{fontSize:72,transform:"rotate(12deg)",filter:"drop-shadow(0 0 24px rgba(231,76,60,0.9))"}}>✕</span>
-        </div>
+        ))}
+        <button onClick={onStart} style={{width:"100%",marginTop:32,padding:"20px 0",background:"linear-gradient(135deg,#8B6914,#B8920A)",border:"none",borderRadius:16,fontFamily:"'Cormorant Garamond',serif",fontSize:18,letterSpacing:3,textTransform:"uppercase",color:"#fff",fontWeight:700,cursor:"pointer",boxShadow:"0 8px 30px rgba(139,105,20,0.28)"}}>
+          Discover My Archetype
+        </button>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-function WelcomeScreen({ onStart }) {
-  return (
-    <div style={{textAlign:"center",padding:"40px 32px",maxWidth:380,margin:"0 auto"}}>
-      <div style={{fontSize:11,letterSpacing:5,textTransform:"uppercase",color:"#C9A84C",fontFamily:"'Cormorant Garamond',serif",marginBottom:14}}>DesignHer · Values Discovery</div>
-      <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:42,fontWeight:700,color:"#F5EDD8",lineHeight:1.1,margin:"0 0 18px"}}>Who Do You<br/><em style={{color:"#C9A84C"}}>Admire?</em></h1>
-      <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:18,color:"rgba(245,237,216,0.6)",lineHeight:1.65,marginBottom:32}}>
-        Swipe right on women who move you. Skip those who don't. We'll reveal the 5 core values at the heart of how you're meant to live.
-      </p>
-      {[["✦","No right or wrong answers"],["✦","Tap ℹ to learn about any woman"],["✦","Rooted in 36 monthly life themes"]].map(([i,t]) => (
-        <div key={t} style={{display:"flex",gap:12,alignItems:"center",marginBottom:10,textAlign:"left"}}>
-          <span style={{color:"#C9A84C",fontSize:10}}>{i}</span>
-          <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:15,color:"rgba(245,237,216,0.55)",letterSpacing:0.5}}>{t}</span>
-        </div>
-      ))}
-      <button onClick={onStart} style={{width:"100%",marginTop:28,padding:"18px 0",background:"linear-gradient(135deg,#C9A84C,#E8C87A)",border:"none",borderRadius:14,fontFamily:"'Cormorant Garamond',serif",fontSize:17,letterSpacing:3,textTransform:"uppercase",color:"#1A0E00",fontWeight:700,cursor:"pointer",boxShadow:"0 8px 30px rgba(201,168,76,0.4)"}}>Discover My Values</button>
-    </div>
-  );
-}
-
-function EmailScreen({ likedCount, onSubmit }) {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [error, setError] = useState("");
-  const submit = () => {
-    if (!name.trim()) { setError("Please enter your first name."); return; }
-    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { setError("Please enter a valid email."); return; }
-    onSubmit({ name: name.trim(), email: email.trim() });
-  };
-  const inp = {width:"100%",padding:"16px 18px",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(201,168,76,0.3)",borderRadius:12,fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"#F5EDD8",outline:"none",boxSizing:"border-box",marginBottom:12};
-  return (
-    <div style={{textAlign:"center",padding:"40px 32px",maxWidth:380,margin:"0 auto"}}>
-      <div style={{fontSize:48,marginBottom:14}}>✨</div>
-      <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:32,fontWeight:700,color:"#F5EDD8",lineHeight:1.2,marginBottom:12}}>Your Values Are<br/><em style={{color:"#C9A84C"}}>Ready.</em></h2>
-      <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(245,237,216,0.6)",marginBottom:6,lineHeight:1.5}}>You connected with <strong style={{color:"#C9A84C"}}>{likedCount} women</strong>.</p>
-      <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:15,color:"rgba(245,237,216,0.45)",marginBottom:30,lineHeight:1.5}}>Enter your details to reveal your 5 core values — with a full breakdown of alignment, misalignment, and how to live each one.</p>
-      <input value={name} onChange={e=>{setName(e.target.value);setError("");}} placeholder="First name" style={inp}/>
-      <input value={email} onChange={e=>{setEmail(e.target.value);setError("");}} placeholder="Email address" type="email" style={inp}/>
-      {error && <p style={{color:"#E74C3C",fontFamily:"'Cormorant Garamond',serif",fontSize:14,marginBottom:10}}>{error}</p>}
-      <button onClick={submit} style={{width:"100%",padding:"18px 0",background:"linear-gradient(135deg,#C9A84C,#E8C87A)",border:"none",borderRadius:14,fontFamily:"'Cormorant Garamond',serif",fontSize:17,letterSpacing:3,textTransform:"uppercase",color:"#1A0E00",fontWeight:700,cursor:"pointer",boxShadow:"0 8px 30px rgba(201,168,76,0.4)",marginBottom:14}}>Reveal My Values</button>
-      <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:12,color:"rgba(245,237,216,0.3)",letterSpacing:0.5}}>No spam. Your results will be sent to your inbox.</p>
-    </div>
-  );
-}
-
-function ValueCard({ valueName, index, expanded, onToggle }) {
-  const v = VALUES[valueName];
-  if (!v) return null;
-  const yearLabel = ["Foundation","Expansion","Mastery"][v.year - 1];
-  return (
-    <div onClick={onToggle} style={{background:"rgba(255,255,255,0.03)",border:`1px solid ${expanded?v.color+"70":"rgba(255,255,255,0.07)"}`,borderRadius:16,marginBottom:10,cursor:"pointer",overflow:"hidden",transition:"border-color 0.3s"}}>
-      <div style={{display:"flex",alignItems:"center",gap:14,padding:"16px 18px"}}>
-        <div style={{width:44,height:44,borderRadius:"50%",background:`${v.color}1A`,border:`1px solid ${v.color}50`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>{v.emoji}</div>
-        <div style={{flex:1}}>
-          <div style={{fontFamily:"'Playfair Display',serif",fontSize:17,color:"#F5EDD8",fontWeight:700}}>{valueName}</div>
-          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:10,letterSpacing:2,textTransform:"uppercase",color:v.color,marginTop:2}}>{yearLabel} · Value #{index+1}</div>
-        </div>
-        <div style={{color:"rgba(245,237,216,0.35)",fontSize:16,transition:"transform 0.3s",transform:expanded?"rotate(180deg)":"none"}}>▾</div>
+  // ─── EMAIL ───────────────────────────────────────────────────────────────────
+  function EmailScreen({ likedCount, onSubmit }) {
+    const [email,setEmail]=useState(""); const [name,setName]=useState(""); const [error,setError]=useState("");
+    const submit=()=>{
+      if(!name.trim()){setError("Please enter your first name.");return;}
+      if(!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)){setError("Please enter a valid email.");return;}
+      onSubmit({name:name.trim(),email:email.trim()});
+    };
+    const inp={width:"100%",padding:"16px 18px",background:"#fff",border:"1.5px solid rgba(139,105,20,0.28)",borderRadius:14,fontFamily:"'Cormorant Garamond',serif",fontSize:18,color:"#1A1208",boxSizing:"border-box",marginBottom:14};
+    return (
+      <div style={{textAlign:"center",padding:"44px 32px",maxWidth:400,margin:"0 auto"}}>
+        <div style={{fontSize:52,marginBottom:16}}>✨</div>
+        <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:38,fontWeight:700,color:"#1A1208",lineHeight:1.15,marginBottom:14}}>Your Archetype<br/><em style={{color:"#8B6914"}}>Awaits.</em></h2>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:19,color:"rgba(26,18,8,0.6)",marginBottom:8,lineHeight:1.5}}>You admired <strong style={{color:"#8B6914"}}>{likedCount} women</strong>.</p>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(26,18,8,0.42)",marginBottom:32,lineHeight:1.5}}>Enter your details to reveal your season archetype, your 5 core values, and what they mean for your life right now.</p>
+        <input value={name} onChange={e=>{setName(e.target.value);setError("");}} placeholder="First name" style={inp}/>
+        <input value={email} onChange={e=>{setEmail(e.target.value);setError("");}} placeholder="Email address" type="email" style={inp}/>
+        {error&&<p style={{color:"#A8301F",fontFamily:"'Cormorant Garamond',serif",fontSize:15,marginBottom:12}}>{error}</p>}
+        <button onClick={submit} style={{width:"100%",padding:"20px 0",background:"linear-gradient(135deg,#8B6914,#B8920A)",border:"none",borderRadius:16,fontFamily:"'Cormorant Garamond',serif",fontSize:18,letterSpacing:3,textTransform:"uppercase",color:"#fff",fontWeight:700,cursor:"pointer",boxShadow:"0 8px 30px rgba(139,105,20,0.28)",marginBottom:14}}>Reveal My Archetype</button>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:13,color:"rgba(26,18,8,0.3)"}}>No spam. Your results will be sent to your inbox.</p>
       </div>
-      {expanded && (
-        <div style={{padding:"0 18px 18px",borderTop:`1px solid ${v.color}18`}}>
-          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(245,237,216,0.72)",lineHeight:1.65,marginBottom:14,marginTop:14}}>{v.description}</p>
-          <div style={{background:`${v.color}0E`,borderLeft:`3px solid ${v.color}`,borderRadius:"0 8px 8px 0",padding:"12px 14px",marginBottom:8}}>
-            <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:10,letterSpacing:2,textTransform:"uppercase",color:v.color,marginBottom:5}}>✦ In Alignment</div>
-            <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:15,color:"rgba(245,237,216,0.62)",lineHeight:1.6,margin:0}}>{v.alignment}</p>
+    );
+  }
+
+  // ─── VALUE CARD (results) ─────────────────────────────────────────────────────
+  function ValueCard({ valueName, index, expanded, onToggle }) {
+    const v = VALUES[valueName]; if(!v) return null;
+    const yearLabel = ["Foundation","Expansion","Mastery"][v.year-1];
+    return (
+      <div onClick={onToggle} style={{background:expanded?v.bg:"#fff",border:`1.5px solid ${expanded?v.color+"45":"rgba(26,18,8,0.07)"}`,borderRadius:18,marginBottom:12,cursor:"pointer",overflow:"hidden",transition:"all 0.3s",boxShadow:expanded?"0 4px 20px rgba(0,0,0,0.07)":"0 2px 8px rgba(0,0,0,0.04)"}}>
+        <div style={{display:"flex",alignItems:"center",gap:16,padding:"18px 20px"}}>
+          <div style={{width:52,height:52,borderRadius:"50%",background:v.bg,border:`2px solid ${v.color}35`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,flexShrink:0}}>{v.emoji}</div>
+          <div style={{flex:1}}>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,color:"#1A1208",fontWeight:700}}>{valueName}</div>
+            <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:2,textTransform:"uppercase",color:v.color,marginTop:2}}>{yearLabel} · #{index+1}</div>
           </div>
-          <div style={{background:"rgba(231,76,60,0.05)",borderLeft:"3px solid rgba(231,76,60,0.45)",borderRadius:"0 8px 8px 0",padding:"12px 14px"}}>
-            <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:10,letterSpacing:2,textTransform:"uppercase",color:"rgba(231,76,60,0.65)",marginBottom:5}}>⚡ Out of Alignment</div>
-            <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:15,color:"rgba(245,237,216,0.57)",lineHeight:1.6,margin:0}}>{v.misalignment}</p>
-          </div>
+          <div style={{color:"rgba(26,18,8,0.28)",fontSize:18,transition:"transform 0.3s",transform:expanded?"rotate(180deg)":"none"}}>▾</div>
         </div>
-      )}
-    </div>
-  );
-}
-
-function ResultsScreen({ topValues, userName, onRestart }) {
-  const [expanded, setExpanded] = useState(0);
-  return (
-    <div style={{padding:"30px 22px",maxWidth:420,margin:"0 auto"}}>
-      <div style={{textAlign:"center",marginBottom:28}}>
-        <div style={{fontSize:11,letterSpacing:4,textTransform:"uppercase",color:"#C9A84C",fontFamily:"'Cormorant Garamond',serif",marginBottom:10}}>DesignHer · Values Report</div>
-        <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:34,fontWeight:700,color:"#F5EDD8",lineHeight:1.15,margin:"0 0 12px"}}>{userName.split(" ")[0]}, you are<br/><em style={{color:"#C9A84C"}}>beautifully clear.</em></h2>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(245,237,216,0.5)",lineHeight:1.6,margin:0}}>These 5 values are the architecture of your most authentic life. Tap each to explore what alignment — and misalignment — looks like for you.</p>
-      </div>
-      {topValues.map((v, i) => (
-        <ValueCard key={v} valueName={v} index={i} expanded={expanded===i} onToggle={()=>setExpanded(expanded===i?-1:i)}/>
-      ))}
-      <div style={{marginTop:24,background:"linear-gradient(135deg,rgba(201,168,76,0.1),rgba(201,168,76,0.05))",border:"1px solid rgba(201,168,76,0.22)",borderRadius:16,padding:"22px",textAlign:"center",marginBottom:14}}>
-        <div style={{fontSize:26,marginBottom:10}}>📖</div>
-        <div style={{fontFamily:"'Playfair Display',serif",fontSize:19,color:"#F5EDD8",fontWeight:700,marginBottom:8}}>Go Deeper with DesignHer</div>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:15,color:"rgba(245,237,216,0.55)",lineHeight:1.6,margin:"0 0 16px"}}>The Values Discovery Workbook walks you through all 36 monthly themes — from Foundation to Mastery — to help you build a life designed around who you actually are.</p>
-        <a href="https://designher.co" target="_blank" rel="noopener noreferrer" style={{display:"block",padding:"14px 0",background:"linear-gradient(135deg,#C9A84C,#E8C87A)",borderRadius:12,fontFamily:"'Cormorant Garamond',serif",fontSize:15,letterSpacing:3,textTransform:"uppercase",color:"#1A0E00",fontWeight:700,textDecoration:"none"}}>Get the Workbook →</a>
-      </div>
-      <div style={{textAlign:"center"}}>
-        <button onClick={onRestart} style={{background:"transparent",border:"1px solid rgba(245,237,216,0.12)",borderRadius:12,padding:"11px 22px",fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:2,textTransform:"uppercase",color:"rgba(245,237,216,0.35)",cursor:"pointer"}}>Retake Quiz</button>
-      </div>
-    </div>
-  );
-}
-
-function DesignHerQuiz() {
-  const [phase, setPhase] = useState("welcome");
-  const [deck, setDeck] = useState([...WOMEN]);
-  const [liked, setLiked] = useState([]);
-  const [bioPanel, setBioPanel] = useState(null);
-  const [userData, setUserData] = useState(null);
-  const [topValues, setTopValues] = useState([]);
-  const ci = deck.length - 1;
-  const handleLike = (woman) => setLiked(p => [...p, woman]);
-  const doLike = (woman) => { handleLike(woman); setDeck(p => p.slice(0,-1)); };
-  const doPass = () => setDeck(p => p.slice(0,-1));
-  useEffect(() => { if (phase === "quiz" && deck.length === 0) setPhase("email"); }, [deck, phase]);
-  const handleEmailSubmit = ({ name, email }) => { setUserData({ name, email }); setTopValues(tallyValues(liked)); setPhase("results"); };
-  const handleRestart = () => { setDeck([...WOMEN]); setLiked([]); setBioPanel(null); setUserData(null); setTopValues([]); setPhase("welcome"); };
-  const progress = ((WOMEN.length - deck.length) / WOMEN.length) * 100;
-
-  return (
-    <>
-      <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#0E0A06 0%,#1A1008 50%,#0E0A06 100%)",display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
-        <div style={{width:"100%",maxWidth:420,padding:"18px 24px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontStyle:"italic",color:"#C9A84C",letterSpacing:1}}>DesignHer</span>
-          {phase === "quiz" && <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:12,color:"rgba(245,237,216,0.35)",letterSpacing:1}}>{WOMEN.length - deck.length} / {WOMEN.length}</span>}
-        </div>
-        {phase === "quiz" && (
-          <div style={{width:"100%",maxWidth:420,padding:"8px 24px 0"}}>
-            <div style={{height:2,background:"rgba(255,255,255,0.05)",borderRadius:2}}>
-              <div style={{height:"100%",width:`${progress}%`,background:"linear-gradient(90deg,#C9A84C,#E8C87A)",borderRadius:2,transition:"width 0.4s ease"}}/>
+        {expanded&&(
+          <div style={{padding:"0 20px 20px",borderTop:`1px solid ${v.color}18`}}>
+            <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:18,color:"rgba(26,18,8,0.72)",lineHeight:1.7,marginBottom:16,marginTop:16}}>{v.description}</p>
+            <div style={{background:"#fff",borderLeft:`4px solid ${v.color}`,borderRadius:"0 10px 10px 0",padding:"14px 16px",marginBottom:10,boxShadow:"0 2px 8px rgba(0,0,0,0.04)"}}>
+              <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:11,letterSpacing:2,textTransform:"uppercase",color:v.color,marginBottom:6,fontWeight:600}}>✦ In Alignment</div>
+              <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.62)",lineHeight:1.65,margin:0}}>{v.alignment}</p>
+            </div>
+            <div style={{background:"#fff",borderLeft:"4px solid rgba(168,48,31,0.45)",borderRadius:"0 10px 10px 0",padding:"14px 16px",boxShadow:"0 2px 8px rgba(0,0,0,0.04)"}}>
+              <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:11,letterSpacing:2,textTransform:"uppercase",color:"rgba(168,48,31,0.65)",marginBottom:6,fontWeight:600}}>⚡ Out of Alignment</div>
+              <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.58)",lineHeight:1.65,margin:0}}>{v.misalignment}</p>
             </div>
           </div>
         )}
-        <div style={{flex:1,width:"100%",maxWidth:420,display:"flex",flexDirection:"column"}}>
-          {phase === "welcome" && <WelcomeScreen onStart={()=>setPhase("quiz")}/>}
-          {phase === "quiz" && (
-            <div style={{flex:1,display:"flex",flexDirection:"column",padding:"18px 22px 22px"}}>
-              <div style={{position:"relative",flex:1,minHeight:460,maxHeight:520}}>
-                {deck.length === 0 ? (
-                  <div style={{height:"100%",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                    <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(245,237,216,0.35)"}}>Tallying your results…</span>
-                  </div>
-                ) : deck.slice(-3).map((woman, i, arr) => {
-                  const isTop = i === arr.length - 1;
-                  const offset = arr.length - 1 - i;
-                  const fbIdx = WOMEN.findIndex(w => w.name === woman.name) % BG_FALLBACKS.length;
-                  return (
-                    <div key={woman.name} style={{position:"absolute",inset:0,transform:`scale(${1-offset*0.04}) translateY(${offset*14}px)`,zIndex:i,transition:"transform 0.3s ease"}}>
-                      <WomanCard woman={woman} isTop={isTop} fallbackBg={BG_FALLBACKS[fbIdx]} onLike={doLike} onPass={doPass} onInfo={(w,wd)=>setBioPanel({woman:w,wikiData:wd})}/>
-                    </div>
-                  );
-                })}
+      </div>
+    );
+  }
+
+  // ─── RESULTS ──────────────────────────────────────────────────────────────────
+  function ResultsScreen({ topValues, archetype, userName, onRestart }) {
+    const [expanded, setExpanded] = useState(-1);
+    const a = archetype;
+    return (
+      <div style={{padding:"36px 22px",maxWidth:440,margin:"0 auto"}}>
+
+        {/* Archetype hero card */}
+        <div style={{background:a.bg,border:`2px solid ${a.color}30`,borderRadius:24,padding:"28px 24px",marginBottom:28,textAlign:"center",boxShadow:"0 8px 32px rgba(0,0,0,0.08)"}}>
+          <div style={{fontSize:12,letterSpacing:4,textTransform:"uppercase",color:a.color,fontFamily:"'Cormorant Garamond',serif",marginBottom:16,fontWeight:600}}>
+            Your Season Archetype
+          </div>
+          <div style={{fontSize:52,marginBottom:10}}>{a.emoji}</div>
+          <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:36,fontWeight:700,color:"#1A1208",lineHeight:1.1,margin:"0 0 12px"}}>
+            {userName.split(" ")[0]}, you are<br/><em style={{color:a.color}}>{a.name}</em>
+          </h2>
+          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:a.color,fontStyle:"italic",fontWeight:600,marginBottom:14,lineHeight:1.4}}>
+            {a.season}
+          </p>
+          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.62)",lineHeight:1.7,margin:0}}>
+            {a.description}
+          </p>
+        </div>
+
+        {/* Your 5 values */}
+        <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,color:"#1A1208",marginBottom:6}}>Your 5 Core Values</div>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(26,18,8,0.45)",marginBottom:20,lineHeight:1.5}}>These are the values that called to you. Tap each to explore what alignment looks like in practice.</p>
+
+        {topValues.map((v,i)=>(
+          <ValueCard key={v} valueName={v} index={i} expanded={expanded===i} onToggle={()=>setExpanded(expanded===i?-1:i)}/>
+        ))}
+
+        {/* Workbook CTA */}
+        <div style={{marginTop:28,background:"linear-gradient(135deg,#FFF8E7,#FFFDF8)",border:"1.5px solid rgba(139,105,20,0.22)",borderRadius:20,padding:"26px",textAlign:"center",marginBottom:16,boxShadow:"0 4px 20px rgba(139,105,20,0.07)"}}>
+          <div style={{fontSize:32,marginBottom:12}}>📖</div>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,color:"#1A1208",fontWeight:700,marginBottom:10}}>Go Deeper with DesignHer</div>
+          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.52)",lineHeight:1.65,margin:"0 0 18px"}}>The Values Discovery Workbook walks you through all 36 monthly themes — from Foundation to Mastery — to help you build a life designed around who you actually are.</p>
+          <a href="https://designher.co" target="_blank" rel="noopener noreferrer" style={{display:"block",padding:"16px 0",background:"linear-gradient(135deg,#8B6914,#B8920A)",borderRadius:14,fontFamily:"'Cormorant Garamond',serif",fontSize:16,letterSpacing:3,textTransform:"uppercase",color:"#fff",fontWeight:700,textDecoration:"none",boxShadow:"0 6px 24px rgba(139,105,20,0.28)"}}>Get the Workbook →</a>
+        </div>
+
+        <div style={{textAlign:"center"}}>
+          <button onClick={onRestart} style={{background:"transparent",border:"1.5px solid rgba(26,18,8,0.14)",borderRadius:12,padding:"12px 24px",fontFamily:"'Cormorant Garamond',serif",fontSize:14,letterSpacing:2,textTransform:"uppercase",color:"rgba(26,18,8,0.38)",cursor:"pointer"}}>Retake Quiz</button>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── APP ──────────────────────────────────────────────────────────────────────
+  function DesignHerQuiz() {
+    const [phase, setPhase]         = useState("welcome");
+    const [deck, setDeck]           = useState([...WOMEN]);
+    const [liked, setLiked]         = useState([]);
+    const [bioPanel, setBioPanel]   = useState(null);
+    const [userData, setUserData]   = useState(null);
+    const [topValues, setTopValues] = useState([]);
+    const [archetype, setArchetype] = useState(null);
+    // Controls the top card's swipe animation from OUTSIDE (buttons)
+    const [forcedSwipe, setForcedSwipe] = useState(null);
+    const isAnimating = useRef(false);
+
+    const progress = ((WOMEN.length - deck.length) / WOMEN.length) * 100;
+
+    // Called when any swipe completes (gesture or button)
+    const handleSwipeComplete = (action) => {
+      isAnimating.current = false;
+      setForcedSwipe(null);
+      if (action === "like") {
+        const woman = deck[deck.length - 1];
+        setLiked(p => [...p, woman]);
+      }
+      setDeck(p => p.slice(0, -1));
+    };
+
+    // Button handlers — set forced swipe direction, card animates then calls handleSwipeComplete
+    const handlePassBtn = () => {
+      if (deck.length === 0 || isAnimating.current) return;
+      isAnimating.current = true;
+      setForcedSwipe("left");
+    };
+    const handleLikeBtn = () => {
+      if (deck.length === 0 || isAnimating.current) return;
+      isAnimating.current = true;
+      setForcedSwipe("right");
+    };
+
+    useEffect(()=>{ if(phase==="quiz"&&deck.length===0) setPhase("email"); },[deck,phase]);
+
+    const handleEmailSubmit = ({name,email}) => {
+      const tv = tallyValues(liked);
+      const arch = getArchetype(tv);
+      setUserData({name,email});
+      setTopValues(tv);
+      setArchetype(arch);
+      setPhase("results");
+    };
+
+    const handleRestart = () => {
+      setDeck([...WOMEN]); setLiked([]); setBioPanel(null);
+      setUserData(null); setTopValues([]); setArchetype(null);
+      setForcedSwipe(null); isAnimating.current=false;
+      setPhase("welcome");
+    };
+
+    return (
+      <>
+        <div style={{minHeight:"100vh",background:"#FAF7F0",display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
+          {/* Header */}
+          <div style={{width:"100%",maxWidth:440,padding:"20px 24px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <span style={{fontFamily:"'Playfair Display',serif",fontSize:16,fontStyle:"italic",color:"#8B6914",letterSpacing:1}}>DesignHer</span>
+            {phase==="quiz"&&<span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:14,color:"rgba(26,18,8,0.38)",letterSpacing:1}}>{WOMEN.length-deck.length} / {WOMEN.length}</span>}
+          </div>
+
+          {/* Progress */}
+          {phase==="quiz"&&(
+            <div style={{width:"100%",maxWidth:440,padding:"10px 24px 0"}}>
+              <div style={{height:3,background:"rgba(26,18,8,0.07)",borderRadius:2}}>
+                <div style={{height:"100%",width:`${progress}%`,background:"linear-gradient(90deg,#8B6914,#B8920A)",borderRadius:2,transition:"width 0.4s ease"}}/>
               </div>
-              <div style={{textAlign:"center",margin:"10px 0",fontFamily:"'Cormorant Garamond',serif",fontSize:12,color:"rgba(245,237,216,0.25)",letterSpacing:1}}>Swipe or use buttons · Tap ℹ to learn about her</div>
-              <div style={{display:"flex",gap:20,justifyContent:"center",alignItems:"center"}}>
-                <button onClick={()=>deck.length>0&&doPass()} style={{width:62,height:62,borderRadius:"50%",background:"rgba(231,76,60,0.1)",border:"2px solid rgba(231,76,60,0.28)",fontSize:22,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(231,76,60,0.75)",transition:"all 0.2s"}}
-                  onMouseEnter={e=>{e.currentTarget.style.background="rgba(231,76,60,0.22)";e.currentTarget.style.transform="scale(1.1)";}}
-                  onMouseLeave={e=>{e.currentTarget.style.background="rgba(231,76,60,0.1)";e.currentTarget.style.transform="scale(1)";}}>✕</button>
-                <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:10,letterSpacing:2,textTransform:"uppercase",color:"rgba(245,237,216,0.2)",textAlign:"center",lineHeight:2}}>Pass · <span style={{color:"#C9A84C"}}>✦</span> · Admire</div>
-                <button onClick={()=>deck.length>0&&doLike(deck[ci])} style={{width:62,height:62,borderRadius:"50%",background:"rgba(201,168,76,0.1)",border:"2px solid rgba(201,168,76,0.3)",fontSize:22,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(201,168,76,0.85)",transition:"all 0.2s"}}
-                  onMouseEnter={e=>{e.currentTarget.style.background="rgba(201,168,76,0.22)";e.currentTarget.style.transform="scale(1.1)";}}
-                  onMouseLeave={e=>{e.currentTarget.style.background="rgba(201,168,76,0.1)";e.currentTarget.style.transform="scale(1)";}}>✦</button>
-              </div>
-              {liked.length > 0 && <div style={{textAlign:"center",marginTop:12,fontFamily:"'Cormorant Garamond',serif",fontSize:12,color:"rgba(201,168,76,0.5)"}}>{liked.length} {liked.length===1?"woman":"women"} admired</div>}
             </div>
           )}
-          {phase === "email" && <EmailScreen likedCount={liked.length} onSubmit={handleEmailSubmit}/>}
-          {phase === "results" && userData && <ResultsScreen topValues={topValues} userName={userData.name} onRestart={handleRestart}/>}
+
+          <div style={{flex:1,width:"100%",maxWidth:440,display:"flex",flexDirection:"column"}}>
+            {phase==="welcome" && <WelcomeScreen onStart={()=>setPhase("quiz")}/>}
+
+            {phase==="quiz" && (
+              <div style={{flex:1,display:"flex",flexDirection:"column",padding:"18px 20px 22px"}}>
+                {/* Card stack */}
+                <div style={{position:"relative",flex:1,minHeight:470,maxHeight:530}}>
+                  {deck.length===0 ? (
+                    <div style={{height:"100%",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                      <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:18,color:"rgba(26,18,8,0.32)"}}>Tallying your values…</span>
+                    </div>
+                  ) : deck.slice(-3).map((woman,i,arr)=>{
+                    const isTop = i===arr.length-1;
+                    const offset = arr.length-1-i;
+                    return (
+                      <div key={woman.name} style={{position:"absolute",inset:0,
+                        transform:`scale(${1-offset*0.04}) translateY(${offset*16}px)`,
+                        zIndex:i,transition:"transform 0.3s ease"}}>
+                        <WomanCard
+                          woman={woman}
+                          isTop={isTop}
+                          forcedSwipeDir={isTop ? forcedSwipe : null}
+                          onSwipeComplete={handleSwipeComplete}
+                          onInfo={(w,wd)=>setBioPanel({woman:w,wikiData:wd})}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Hint */}
+                <div style={{textAlign:"center",margin:"12px 0",fontFamily:"'Cormorant Garamond',serif",fontSize:14,color:"rgba(26,18,8,0.28)",letterSpacing:1}}>
+                  Swipe on the value · Tap ℹ if you don't know her
+                </div>
+
+                {/* Buttons */}
+                <div style={{display:"flex",gap:20,justifyContent:"center",alignItems:"center"}}>
+                  <button onClick={handlePassBtn}
+                    style={{width:66,height:66,borderRadius:"50%",background:"#fff",border:"2px solid rgba(168,48,31,0.22)",fontSize:24,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(168,48,31,0.65)",transition:"all 0.2s",boxShadow:"0 4px 16px rgba(0,0,0,0.07)"}}
+                    onMouseEnter={e=>{e.currentTarget.style.background="rgba(168,48,31,0.06)";e.currentTarget.style.transform="scale(1.1)";}}
+                    onMouseLeave={e=>{e.currentTarget.style.background="#fff";e.currentTarget.style.transform="scale(1)";}}>✕</button>
+                  <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:11,letterSpacing:2,textTransform:"uppercase",color:"rgba(26,18,8,0.22)",textAlign:"center",lineHeight:2.2}}>
+                    Pass · <span style={{color:"#8B6914"}}>✦</span> · Admire
+                  </div>
+                  <button onClick={handleLikeBtn}
+                    style={{width:66,height:66,borderRadius:"50%",background:"#fff",border:"2px solid rgba(139,105,20,0.3)",fontSize:24,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#8B6914",transition:"all 0.2s",boxShadow:"0 4px 16px rgba(0,0,0,0.07)"}}
+                    onMouseEnter={e=>{e.currentTarget.style.background="rgba(139,105,20,0.06)";e.currentTarget.style.transform="scale(1.1)";}}
+                    onMouseLeave={e=>{e.currentTarget.style.background="#fff";e.currentTarget.style.transform="scale(1)";}}>✦</button>
+                </div>
+
+                {liked.length>0&&(
+                  <div style={{textAlign:"center",marginTop:14,fontFamily:"'Cormorant Garamond',serif",fontSize:14,color:"rgba(139,105,20,0.65)"}}>
+                    {liked.length} {liked.length===1?"woman":"women"} admired
+                  </div>
+                )}
+              </div>
+            )}
+
+            {phase==="email" && <EmailScreen likedCount={liked.length} onSubmit={handleEmailSubmit}/>}
+            {phase==="results" && userData && archetype &&
+              <ResultsScreen topValues={topValues} archetype={archetype} userName={userData.name} onRestart={handleRestart}/>}
+          </div>
         </div>
-      </div>
-      {bioPanel && <BioPanel woman={bioPanel.woman} wikiData={bioPanel.wikiData} onClose={()=>setBioPanel(null)} onLike={()=>{doLike(bioPanel.woman);setBioPanel(null);}} onPass={()=>{doPass();setBioPanel(null);}}/>}
-    </>
-  );
-}
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<DesignHerQuiz/>);
+        {bioPanel && (
+          <BioPanel
+            woman={bioPanel.woman} wikiData={bioPanel.wikiData}
+            onClose={()=>setBioPanel(null)}
+            onLike={()=>{ setBioPanel(null); handleLikeBtn(); }}
+            onPass={()=>{ setBioPanel(null); handlePassBtn(); }}
+          />
+        )}
+      </>
+    );
+  }
 
-  </script>
+  const root = ReactDOM.createRoot(document.getElementById("root"));
+  root.render(<DesignHerQuiz/>);
+</script>
 </body>
 </html>
