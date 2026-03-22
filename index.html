@@ -385,24 +385,53 @@
 
   // ─── EMAIL ───────────────────────────────────────────────────────────────────
   function EmailScreen({ likedCount, onSubmit }) {
-    const [email,setEmail]=useState(""); const [name,setName]=useState(""); const [error,setError]=useState("");
+    const [email,setEmail]=useState("");
+    const [name,setName]=useState("");
+    const [error,setError]=useState("");
+    const [optIn,setOptIn]=useState(false);
+
     const submit=()=>{
       if(!name.trim()){setError("Please enter your first name.");return;}
       if(!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)){setError("Please enter a valid email.");return;}
-      onSubmit({name:name.trim(),email:email.trim()});
+      // optIn=true  → subscribe to Kit (launches, new workbooks, updates)
+      // optIn=false → results delivery only, do NOT add to Kit marketing list
+      onSubmit({name:name.trim(), email:email.trim(), optIn});
     };
+
     const inp={width:"100%",padding:"16px 18px",background:"#fff",border:"1.5px solid rgba(139,105,20,0.28)",borderRadius:14,fontFamily:"'Cormorant Garamond',serif",fontSize:18,color:"#1A1208",boxSizing:"border-box",marginBottom:14};
+
     return (
       <div style={{textAlign:"center",padding:"44px 32px",maxWidth:400,margin:"0 auto"}}>
         <div style={{fontSize:52,marginBottom:16}}>✨</div>
         <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:38,fontWeight:700,color:"#1A1208",lineHeight:1.15,marginBottom:14}}>Your Archetype<br/><em style={{color:"#8B6914"}}>Awaits.</em></h2>
         <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:19,color:"rgba(26,18,8,0.6)",marginBottom:8,lineHeight:1.5}}>You admired <strong style={{color:"#8B6914"}}>{likedCount} women</strong>.</p>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(26,18,8,0.42)",marginBottom:32,lineHeight:1.5}}>Enter your details to reveal your season archetype, your 5 core values, and what they mean for your life right now.</p>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(26,18,8,0.42)",marginBottom:28,lineHeight:1.5}}>Enter your details to reveal your season archetype, your 5 core values, and what they mean for your life right now.</p>
+
         <input value={name} onChange={e=>{setName(e.target.value);setError("");}} placeholder="First name" style={inp}/>
         <input value={email} onChange={e=>{setEmail(e.target.value);setError("");}} placeholder="Email address" type="email" style={inp}/>
+
+        <div onClick={()=>setOptIn(p=>!p)}
+          style={{display:"flex",alignItems:"flex-start",gap:12,textAlign:"left",cursor:"pointer",
+            background:optIn?"#FFF8E7":"#fff",
+            border:"1.5px solid "+(optIn?"rgba(139,105,20,0.4)":"rgba(26,18,8,0.1)"),
+            borderRadius:12,padding:"14px 16px",marginBottom:8,transition:"all 0.2s"}}>
+          <div style={{width:22,height:22,borderRadius:6,
+            border:"2px solid "+(optIn?"#8B6914":"rgba(26,18,8,0.2)"),
+            background:optIn?"#8B6914":"#fff",flexShrink:0,marginTop:1,
+            display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.2s"}}>
+            {optIn&&<span style={{color:"#fff",fontSize:13,fontWeight:700,lineHeight:1}}>✓</span>}
+          </div>
+          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:15,color:"rgba(26,18,8,0.65)",lineHeight:1.55,margin:0}}>
+            Yes — keep me posted on new DesignHer workbooks, launches, and updates.
+          </p>
+        </div>
+
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:13,color:"rgba(26,18,8,0.38)",marginBottom:24,textAlign:"left",lineHeight:1.5,paddingLeft:2}}>
+          Leave unchecked to receive your results only. You can subscribe anytime at designher.co.
+        </p>
+
         {error&&<p style={{color:"#A8301F",fontFamily:"'Cormorant Garamond',serif",fontSize:15,marginBottom:12}}>{error}</p>}
-        <button onClick={submit} style={{width:"100%",padding:"20px 0",background:"linear-gradient(135deg,#8B6914,#B8920A)",border:"none",borderRadius:16,fontFamily:"'Cormorant Garamond',serif",fontSize:18,letterSpacing:3,textTransform:"uppercase",color:"#fff",fontWeight:700,cursor:"pointer",boxShadow:"0 8px 30px rgba(139,105,20,0.28)",marginBottom:14}}>Reveal My Archetype</button>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:13,color:"rgba(26,18,8,0.3)"}}>No spam. Your results will be sent to your inbox.</p>
+        <button onClick={submit} style={{width:"100%",padding:"20px 0",background:"linear-gradient(135deg,#8B6914,#B8920A)",border:"none",borderRadius:16,fontFamily:"'Cormorant Garamond',serif",fontSize:18,letterSpacing:3,textTransform:"uppercase",color:"#fff",fontWeight:700,cursor:"pointer",boxShadow:"0 8px 30px rgba(139,105,20,0.28)"}}>Reveal My Archetype</button>
       </div>
     );
   }
@@ -525,10 +554,11 @@
 
     useEffect(()=>{ if(phase==="quiz"&&deck.length===0) setPhase("email"); },[deck,phase]);
 
-    const handleEmailSubmit = ({name,email}) => {
+    const handleEmailSubmit = ({name,email,optIn}) => {
       const tv = tallyValues(liked);
       const arch = getArchetype(tv);
-      setUserData({name,email});
+      // optIn flag travels with userData — Kit wiring uses it to decide whether to subscribe
+      setUserData({name,email,optIn});
       setTopValues(tv);
       setArchetype(arch);
       setPhase("results");
