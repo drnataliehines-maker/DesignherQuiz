@@ -554,10 +554,27 @@
 
     useEffect(()=>{ if(phase==="quiz"&&deck.length===0) setPhase("email"); },[deck,phase]);
 
-    const handleEmailSubmit = ({name,email,optIn}) => {
+ const handleEmailSubmit = ({name,email,optIn}) => {
       const tv = tallyValues(liked);
       const arch = getArchetype(tv);
-      // optIn flag travels with userData — Kit wiring uses it to decide whether to subscribe
+
+      // ── Send subscriber to Kit form 9345301 ──
+      const kitData = new FormData();
+      kitData.append("email_address", email);
+      kitData.append("fields[first_name]", name);
+      kitData.append("fields[archetype]", arch.name);
+      kitData.append("fields[top_value_1]", tv[0] || "");
+      kitData.append("fields[top_value_2]", tv[1] || "");
+      kitData.append("fields[top_value_3]", tv[2] || "");
+      kitData.append("fields[top_value_4]", tv[3] || "");
+      kitData.append("fields[top_value_5]", tv[4] || "");
+      kitData.append("fields[marketing_optin]", optIn ? "yes" : "no");
+
+      fetch("https://app.kit.com/forms/9345301/subscriptions", {
+        method: "POST",
+        body: kitData,
+      }).catch(err => console.log("Kit submission error:", err));
+
       setUserData({name,email,optIn});
       setTopValues(tv);
       setArchetype(arch);
