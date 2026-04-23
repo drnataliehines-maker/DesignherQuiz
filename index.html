@@ -16,7 +16,7 @@
     input::placeholder{color:rgba(26,18,8,0.32);}
     input:focus{outline:none;border-color:rgba(139,105,20,0.65)!important;box-shadow:0 0 0 3px rgba(139,105,20,0.1);}
     ::-webkit-scrollbar{width:4px;}
-    ::-webkit-scrollbar-thumb{background:rgba(139,105,20,0.25);border-radius:2px;}
+    ::-webkit-scrollbar-thumb{background:rgba(139,105,20,0.25);border-radius:2px;}@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}
   </style>
 </head>
 <body>
@@ -468,45 +468,28 @@
   }
 
   // ─── RESULTS ──────────────────────────────────────────────────────────────────
-  function ResultsScreen({ topValues, archetype, userName, onRestart }) {
-    const [expanded, setExpanded] = useState(-1);
-    const a = archetype;
+   function ConfirmationScreen({ userName, onRestart }) {
     return (
-      <div style={{padding:"36px 22px",maxWidth:440,margin:"0 auto"}}>
-
-        {/* Archetype hero card */}
-        <div style={{background:a.bg,border:`2px solid ${a.color}30`,borderRadius:24,padding:"28px 24px",marginBottom:28,textAlign:"center",boxShadow:"0 8px 32px rgba(0,0,0,0.08)"}}>
-          <div style={{fontSize:12,letterSpacing:4,textTransform:"uppercase",color:a.color,fontFamily:"'Cormorant Garamond',serif",marginBottom:16,fontWeight:600}}>
-            Your Season Archetype
-          </div>
-          <div style={{fontSize:52,marginBottom:10}}>{a.emoji}</div>
-          <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:36,fontWeight:700,color:"#1A1208",lineHeight:1.1,margin:"0 0 12px"}}>
-            {userName.split(" ")[0]}, you are<br/><em style={{color:a.color}}>{a.name}</em>
-          </h2>
-          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:a.color,fontStyle:"italic",fontWeight:600,marginBottom:14,lineHeight:1.4}}>
-            {a.season}
-          </p>
-          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.62)",lineHeight:1.7,margin:0}}>
-            {a.description}
+      <div style={{padding:"36px 22px",maxWidth:440,margin:"0 auto",textAlign:"center"}}>
+        <div style={{fontSize:72,marginBottom:24,animation:"pulse 2s ease-in-out infinite"}}>✉️</div>
+        <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:32,fontWeight:700,color:"#1A1208",lineHeight:1.2,margin:"0 0 16px"}}>
+          {userName.split(" ")[0]}, your results are on the way.
+        </h2>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:19,color:"rgba(26,18,8,0.62)",lineHeight:1.7,margin:"0 0 28px"}}>
+          Check your inbox for your <em style={{color:"#8B6914",fontWeight:600}}>Season Archetype</em> and <em style={{color:"#8B6914",fontWeight:600}}>5 Core Values</em> — along with what they reveal about the season of life you're in right now.
+        </p>
+        <div style={{background:"linear-gradient(135deg,#FFF8E7,#FFFDF8)",border:"1.5px solid rgba(139,105,20,0.22)",borderRadius:20,padding:"26px",marginBottom:28,boxShadow:"0 4px 20px rgba(139,105,20,0.07)"}}>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,color:"#1A1208",fontWeight:700,marginBottom:10}}>While you wait...</div>
+          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.52)",lineHeight:1.65,margin:"0 0 8px"}}>
+            Your results email will arrive within a few minutes. If you don't see it, check your spam or promotions folder.
           </p>
         </div>
-
-        {/* Your 5 values */}
-        <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,color:"#1A1208",marginBottom:6}}>Your 5 Core Values</div>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(26,18,8,0.45)",marginBottom:20,lineHeight:1.5}}>These are the values that called to you. Tap each to explore what alignment looks like in practice.</p>
-
-        {topValues.map((v,i)=>(
-          <ValueCard key={v} valueName={v} index={i} expanded={expanded===i} onToggle={()=>setExpanded(expanded===i?-1:i)}/>
-        ))}
-
-        {/* Workbook CTA */}
-        <div style={{marginTop:28,background:"linear-gradient(135deg,#FFF8E7,#FFFDF8)",border:"1.5px solid rgba(139,105,20,0.22)",borderRadius:20,padding:"26px",textAlign:"center",marginBottom:16,boxShadow:"0 4px 20px rgba(139,105,20,0.07)"}}>
+        <div style={{background:"linear-gradient(135deg,#FFF8E7,#FFFDF8)",border:"1.5px solid rgba(139,105,20,0.22)",borderRadius:20,padding:"26px",textAlign:"center",marginBottom:28,boxShadow:"0 4px 20px rgba(139,105,20,0.07)"}}>
           <div style={{fontSize:32,marginBottom:12}}>📖</div>
           <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,color:"#1A1208",fontWeight:700,marginBottom:10}}>Go Deeper with DesignHer</div>
-          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.52)",lineHeight:1.65,margin:"0 0 18px"}}>The Values Discovery Workbook walks you through all 36 monthly themes — from Foundation to Mastery — to help you build a life designed around who you actually are.</p>
-          <a href="https://designher.co" target="_blank" rel="noopener noreferrer" style={{display:"block",padding:"16px 0",background:"linear-gradient(135deg,#8B6914,#B8920A)",borderRadius:14,fontFamily:"'Cormorant Garamond',serif",fontSize:16,letterSpacing:3,textTransform:"uppercase",color:"#fff",fontWeight:700,textDecoration:"none",boxShadow:"0 6px 24px rgba(139,105,20,0.28)"}}>Get the Workbook →</a>
+          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.52)",lineHeight:1.65,margin:"0 0 18px"}}>The Activate Workbooks walk you through each value — helping you move from knowing your values to actually living them.</p>
+          <a href="https://designher.co" target="_blank" rel="noopener noreferrer" style={{display:"block",padding:"16px 0",background:"linear-gradient(135deg,#8B6914,#B8920A)",borderRadius:14,fontFamily:"'Cormorant Garamond',serif",fontSize:16,letterSpacing:3,textTransform:"uppercase",color:"#fff",fontWeight:700,textDecoration:"none",boxShadow:"0 6px 24px rgba(139,105,20,0.28)"}}>Browse the Workbooks →</a>
         </div>
-
         <div style={{textAlign:"center"}}>
           <button onClick={onRestart} style={{background:"transparent",border:"1.5px solid rgba(26,18,8,0.14)",borderRadius:12,padding:"12px 24px",fontFamily:"'Cormorant Garamond',serif",fontSize:14,letterSpacing:2,textTransform:"uppercase",color:"rgba(26,18,8,0.38)",cursor:"pointer"}}>Retake Quiz</button>
         </div>
@@ -578,7 +561,7 @@
       setUserData({name,email,optIn});
       setTopValues(tv);
       setArchetype(arch);
-      setPhase("results");
+      setPhase("confirmation");
     };
 
     const handleRestart = () => {
@@ -665,8 +648,8 @@
             )}
 
             {phase==="email" && <EmailScreen likedCount={liked.length} onSubmit={handleEmailSubmit}/>}
-            {phase==="results" && userData && archetype &&
-              <ResultsScreen topValues={topValues} archetype={archetype} userName={userData.name} onRestart={handleRestart}/>}
+            {phase==="confirmation" && userData &&
+              <ConfirmationScreen userName={userData.name} onRestart={handleRestart}/>}
           </div>
         </div>
 
