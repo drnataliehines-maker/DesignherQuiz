@@ -307,8 +307,12 @@
           background:v.bg,
           boxShadow:isTop?"0 20px 60px rgba(0,0,0,0.16),0 4px 16px rgba(0,0,0,0.06)":"0 8px 30px rgba(0,0,0,0.08)"}}>
 
-          {/* Photo — top 62% */}
-          {imgUrl && <img src={imgUrl} alt={woman.name} style={{position:"absolute",top:0,left:0,right:0,height:"62%",width:"100%",objectFit:"cover",objectPosition:"top center"}}/>}
+          {/* Photo — top 62%, sized to show the whole image without cropping */}
+          {imgUrl && (
+            <div style={{position:"absolute",top:0,left:0,right:0,height:"62%",width:"100%",background:v.bg,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+              <img src={imgUrl} alt={woman.name} style={{width:"100%",height:"100%",objectFit:"contain",objectPosition:"center"}}/>
+            </div>
+          )}
 
           {/* Monogram when no photo */}
           {!imgUrl && (
