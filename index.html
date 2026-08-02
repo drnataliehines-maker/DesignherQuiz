@@ -22,7 +22,7 @@
 <body>
 <div id="root"></div>
 <script type="text/babel">
-  const { useState, useEffect, useRef } = React;
+  const { useState, useEffect } = React;
 
   // ─── VALUES ──────────────────────────────────────────────────────────────────
   const VALUES = {
@@ -151,215 +151,129 @@
     return best;
   }
 
-  // ─── WOMEN (1:1 value mapping) ────────────────────────────────────────────────
-  const WOMEN = [
-    { name:"Oprah Winfrey",            title:"Media Mogul & Philanthropist",             wiki:"Oprah_Winfrey",            photo:null, value:"Authenticity" },
-    { name:"Michelle Obama",           title:"Former First Lady & Author",                wiki:"Michelle_Obama",           photo:null, value:"Legacy" },
-    { name:"Beyoncé",                  title:"Artist, Director & Entrepreneur",           wiki:"Beyoncé",                  photo:null, value:"Excellence" },
-    { name:"Serena Williams",          title:"Tennis Legend & Venture Capitalist",        wiki:"Serena_Williams",          photo:null, value:"Resilience" },
-    { name:"Malala Yousafzai",         title:"Nobel Peace Laureate & Activist",           wiki:"Malala_Yousafzai",         photo:null, value:"Courage" },
-    { name:"Rihanna",                  title:"Artist, Founder & Billionaire",             wiki:"Rihanna",                  photo:null, value:"Ambition" },
-    { name:"Kamala Harris",            title:"49th Vice President of the USA",            wiki:"Kamala_Harris",            photo:null, value:"Leadership" },
-    { name:"Viola Davis",              title:"EGOT-Winning Actress & Producer",           wiki:"Viola_Davis",              photo:null, value:"Self-Worth" },
-    { name:"Misty Copeland",           title:"First Black Principal Ballerina, ABT",      wiki:"Misty_Copeland",           photo:null, value:"Creativity" },
-    { name:"Lizzo",                    title:"Artist & Body Positivity Advocate",         wiki:"Lizzo",                    photo:null, value:"Joy" },
-    { name:"Simone Biles",             title:"Most Decorated Gymnast in History",         wiki:"Simone_Biles",             photo:null, value:"Boundaries" },
-    { name:"Lupita Nyong'o",           title:"Oscar-Winning Actress & Activist",          wiki:"Lupita_Nyong'o",           photo:null, value:"Radiance" },
-    { name:"Brené Brown",              title:"Researcher, Author & Speaker",              wiki:"Bren%C3%A9_Brown",         photo:null, value:"Vulnerability" },
-    { name:"Toni Morrison",            title:"Nobel Prize-Winning Author",                wiki:"Toni_Morrison",            photo:null, value:"Wisdom" },
-    { name:"Chimamanda Ngozi Adichie", title:"Author & Feminist Icon",                    wiki:"Chimamanda_Ngozi_Adichie", photo:null, value:"Truth" },
-    { name:"Ruth Bader Ginsburg",      title:"Supreme Court Justice & Icon",              wiki:"Ruth_Bader_Ginsburg",      photo:null, value:"Service" },
-    { name:"Maya Angelou",             title:"Poet, Author & Civil Rights Activist",      wiki:"Maya_Angelou",             photo:null, value:"Grace" },
-    { name:"Harriet Tubman",           title:"Abolitionist & Liberation Leader",          wiki:"Harriet_Tubman",           photo:null, value:"Freedom" },
-    { name:"Issa Rae",                 title:"Creator, Producer & Entrepreneur",          wiki:"Issa_Rae",                 photo:null, value:"Reinvention" },
-    { name:"Sheryl Sandberg",          title:"Tech Executive & Author",                   wiki:"Sheryl_Sandberg",          photo:null, value:"Vision" },
-    { name:"Gabrielle Union",          title:"Actress & Activist",                        wiki:"Gabrielle_Union",          photo:null, value:"Healing" },
-    { name:"Kerry Washington",         title:"Actress, Director & Activist",              wiki:"Kerry_Washington",         photo:null, value:"Influence" },
-    { name:"Ava DuVernay",             title:"Director, Producer & Activist",             wiki:"Ava_DuVernay",             photo:null, value:"Purpose" },
-    { name:"Janelle Monáe",            title:"Artist, Actress & Futurist",                wiki:"Janelle_Mon%C3%A1e",       photo:null, value:"Boldness" },
-    { name:"Tracee Ellis Ross",        title:"Actress, Producer & Entrepreneur",          wiki:"Tracee_Ellis_Ross",        photo:null, value:"Celebration" },
-    { name:"Alicia Keys",              title:"Grammy-Winning Artist & Activist",          wiki:"Alicia_Keys",              photo:null, value:"Presence" },
-    { name:"Naomi Osaka",              title:"Tennis Champion & Mental Health Advocate",  wiki:"Naomi_Osaka",              photo:null, value:"Clarity" },
-    { name:"Stacey Abrams",            title:"Author, Politician & Voting Rights Leader", wiki:"Stacey_Abrams",            photo:null, value:"Discipline" },
-    { name:"Angela Davis",             title:"Scholar, Activist & Author",                wiki:"Angela_Davis",             photo:null, value:"Power" },
-    { name:"Eartha Kitt",              title:"Actress, Singer & Icon",                    wiki:"Eartha_Kitt",              photo:null, value:"Sovereignty" },
-    { name:"Nina Simone",              title:"Musician, Singer & Civil Rights Activist",  wiki:"Nina_Simone",              photo:null, value:"Community" },
-    { name:"Tina Turner",              title:"Queen of Rock & Roll",                      wiki:"Tina_Turner",              photo:null, value:"Faith" },
-    { name:"Cicely Tyson",             title:"Actress & Cultural Icon",                   wiki:"Cicely_Tyson",             photo:null, value:"Gratitude" },
-    { name:"Shonda Rhimes",            title:"Showrunner, Producer & Author",             wiki:"Shonda_Rhimes",            photo:null, value:"Abundance" },
-    { name:"Janet Jackson",            title:"Performer, Actress & Icon",                 wiki:"Janet_Jackson",            photo:null, value:"Balance" },
-    { name:"Mary J. Blige",            title:"Singer, Actress & Activist",                wiki:"Mary_J._Blige",            photo:null, value:"Generosity" },
-  ];
-
   // ─── HELPERS ─────────────────────────────────────────────────────────────────
-  function tallyValues(liked) {
-    const counts = {};
-    liked.forEach(w => { counts[w.value] = (counts[w.value]||0)+1; });
-    const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-    const top = sorted.slice(0,5).map(([v])=>v);
-    if (top.length < 5) {
-      for (const v of Object.keys(VALUES)) { if(!top.includes(v)){top.push(v);if(top.length===5)break;} }
-    }
-    return top;
+  function estimateComparisons(n) {
+    let total = 0;
+    for (let k = 2; k <= n; k++) total += Math.ceil(Math.log2(k));
+    return total;
   }
 
-  function useWikiData(wikiTitle, skip) {
-    const [data, setData] = useState(null);
-    useEffect(()=>{
-      if(skip) return;
-      let cancelled = false;
-      fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${wikiTitle}`)
-        .then(r=>r.json()).then(d=>{if(!cancelled)setData(d);}).catch(()=>{});
-      return ()=>{cancelled=true;};
-    },[wikiTitle, skip]);
-    return data;
-  }
-
-  // ─── BIO PANEL ───────────────────────────────────────────────────────────────
-  function BioPanel({ woman, wikiData, onClose, onLike, onPass }) {
-    const v = VALUES[woman.value];
+  // ─── VALUE SELECT ────────────────────────────────────────────────────────────
+  function SelectionScreen({ selected, onToggle, onContinue }) {
+    const names = Object.keys(VALUES);
+    const atCap = selected.length >= 10;
     return (
-      <div style={{position:"fixed",inset:0,zIndex:200,display:"flex",flexDirection:"column",justifyContent:"flex-end",background:"rgba(26,18,8,0.45)",backdropFilter:"blur(6px)"}} onClick={onClose}>
-        <div onClick={e=>e.stopPropagation()} style={{background:"#FFFDF8",borderRadius:"28px 28px 0 0",padding:"28px 24px 40px",maxHeight:"72vh",overflowY:"auto",boxShadow:"0 -8px 40px rgba(0,0,0,0.14)"}}>
-          <div style={{width:44,height:3,background:"rgba(26,18,8,0.1)",borderRadius:2,margin:"0 auto 22px"}}/>
-          <div style={{display:"inline-flex",alignItems:"center",gap:8,background:v.bg,border:`1px solid ${v.color}30`,borderRadius:20,padding:"6px 14px",marginBottom:18}}>
-            <span style={{fontSize:16}}>{v.emoji}</span>
-            <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:13,letterSpacing:2,textTransform:"uppercase",color:v.color,fontWeight:600}}>{woman.value}</span>
-          </div>
-          <div style={{display:"flex",gap:16,marginBottom:18,alignItems:"flex-start"}}>
-            {(woman.photo||wikiData?.thumbnail)&&(
-              <img src={woman.photo||wikiData.thumbnail.source} alt={woman.name}
-                style={{width:72,height:72,borderRadius:14,objectFit:"cover",border:`2px solid ${v.color}25`,flexShrink:0}}/>
-            )}
-            <div>
-              <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,color:"#1A1208",lineHeight:1.2,marginBottom:4}}>{woman.name}</div>
-              <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:13,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(26,18,8,0.4)"}}>{woman.title}</div>
-            </div>
-          </div>
-          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:18,color:"rgba(26,18,8,0.68)",lineHeight:1.7,marginBottom:20}}>
-            {wikiData?.extract ? wikiData.extract.split(". ").slice(0,3).join(". ")+"." : "Loading…"}
-          </p>
-          {wikiData?.content_urls?.desktop?.page&&(
-            <a href={wikiData.content_urls.desktop.page} target="_blank" rel="noopener noreferrer"
-              style={{display:"inline-block",fontFamily:"'Cormorant Garamond',serif",fontSize:13,letterSpacing:2,textTransform:"uppercase",color:v.color,textDecoration:"none",marginBottom:24,borderBottom:`1px solid ${v.color}40`,paddingBottom:2}}>
-              Learn More on Wikipedia ↗
-            </a>
-          )}
-          <div style={{display:"flex",gap:12}}>
-            <button onClick={()=>{onClose();onPass();}} style={{flex:1,padding:"15px 0",background:"#fff",border:"1.5px solid rgba(168,48,31,0.28)",borderRadius:14,fontFamily:"'Cormorant Garamond',serif",fontSize:15,letterSpacing:2,textTransform:"uppercase",color:"rgba(168,48,31,0.75)",cursor:"pointer"}}>✕ Pass</button>
-            <button onClick={()=>{onClose();onLike();}} style={{flex:1,padding:"15px 0",background:v.color,border:"none",borderRadius:14,fontFamily:"'Cormorant Garamond',serif",fontSize:15,letterSpacing:2,textTransform:"uppercase",color:"#fff",cursor:"pointer",fontWeight:600}}>✦ Admire</button>
-          </div>
+      <div style={{padding:"18px 20px 28px"}}>
+        <div style={{textAlign:"center",marginBottom:22}}>
+          <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:26,fontWeight:700,color:"#1A1208",lineHeight:1.2,margin:"0 0 8px"}}>Choose Your <em style={{color:"#8B6914"}}>10</em></h2>
+          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(26,18,8,0.5)",lineHeight:1.5}}>Tap the values that matter most to you right now. Choose exactly 10 — we'll rank them next.</p>
         </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:26}}>
+          {names.map(name=>{
+            const v = VALUES[name];
+            const isSelected = selected.includes(name);
+            const order = isSelected ? selected.indexOf(name)+1 : null;
+            const disabled = !isSelected && atCap;
+            return (
+              <div key={name} onClick={()=>{ if(!disabled) onToggle(name); }}
+                style={{position:"relative",background:isSelected?v.bg:"#fff",
+                  border:`1.5px solid ${isSelected?v.color+"60":"rgba(26,18,8,0.08)"}`,
+                  borderRadius:16,padding:"14px 14px 12px",cursor:disabled?"default":"pointer",
+                  opacity:disabled?0.4:1,transition:"all 0.15s",
+                  boxShadow:isSelected?"0 4px 14px rgba(0,0,0,0.06)":"none"}}>
+                {isSelected && (
+                  <div style={{position:"absolute",top:8,right:8,width:20,height:20,borderRadius:"50%",background:v.color,color:"#fff",fontSize:11,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Cormorant Garamond',serif"}}>{order}</div>
+                )}
+                <div style={{fontSize:22,marginBottom:6}}>{v.emoji}</div>
+                <div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontWeight:700,color:"#1A1208",lineHeight:1.2}}>{name}</div>
+              </div>
+            );
+          })}
+        </div>
+        <button onClick={onContinue} disabled={selected.length!==10}
+          style={{width:"100%",padding:"18px 0",
+            background:selected.length===10?"linear-gradient(135deg,#8B6914,#B8920A)":"rgba(26,18,8,0.1)",
+            border:"none",borderRadius:16,fontFamily:"'Cormorant Garamond',serif",fontSize:17,letterSpacing:3,textTransform:"uppercase",
+            color:selected.length===10?"#fff":"rgba(26,18,8,0.3)",fontWeight:700,
+            cursor:selected.length===10?"pointer":"default",
+            boxShadow:selected.length===10?"0 8px 30px rgba(139,105,20,0.28)":"none",transition:"all 0.2s"}}>
+          {selected.length===10 ? "Continue to Ranking" : `Select ${10-selected.length} more`}
+        </button>
       </div>
     );
   }
 
-  // ─── WOMAN CARD ──────────────────────────────────────────────────────────────
-  // swipeDir is now controlled by the PARENT so buttons animate correctly
-  function WomanCard({ woman, isTop, forcedSwipeDir, onSwipeComplete, onInfo }) {
-    const v = VALUES[woman.value];
-    const wikiData = useWikiData(woman.wiki, !!woman.photo);
-    const [drag, setDrag] = useState({x:0,y:0,dragging:false});
-    const [localSwipe, setLocalSwipe] = useState(null);
-    const startRef = useRef(null);
-    const imgUrl = woman.photo || wikiData?.thumbnail?.source || null;
+  // ─── VALUE OPTION CARD (rank screen) ────────────────────────────────────────────
+  function ValueOptionCard({ name, v, onClick }) {
+    return (
+      <div onClick={onClick}
+        style={{background:v.bg,border:`2px solid ${v.color}35`,borderRadius:22,padding:"32px 24px",
+          textAlign:"center",cursor:"pointer",transition:"transform 0.15s",boxShadow:"0 6px 24px rgba(0,0,0,0.06)"}}
+        onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.02)";}}
+        onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";}}>
+        <div style={{fontSize:44,marginBottom:14}}>{v.emoji}</div>
+        <div style={{fontFamily:"'Playfair Display',serif",fontSize:26,fontWeight:700,color:v.color,marginBottom:10}}>{name}</div>
+        <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:15,color:"rgba(26,18,8,0.55)",lineHeight:1.55}}>{v.description}</div>
+      </div>
+    );
+  }
 
-    // either a forced swipe from parent buttons OR a local gesture
-    const activeSwipe = forcedSwipeDir || localSwipe;
+  // ─── RANK (pairwise comparison via binary insertion) ───────────────────────────
+  function RankScreen({ values, onComplete }) {
+    const [state, setState] = useState(()=>{
+      if (values.length<=1) return { sorted:values.slice(), pending:[], current:null, lo:0, hi:0, comparisonsDone:0 };
+      const first = values[0];
+      const rest = values.slice(1);
+      return { sorted:[first], pending:rest.slice(1), current:rest[0], lo:0, hi:1, comparisonsDone:0 };
+    });
+
+    const total = estimateComparisons(values.length);
 
     useEffect(()=>{
-      if (forcedSwipeDir) {
-        const t = setTimeout(()=>{ onSwipeComplete(forcedSwipeDir==="right"?"like":"pass"); }, 400);
-        return ()=>clearTimeout(t);
-      }
-    },[forcedSwipeDir]);
+      if (state.current===null) onComplete(state.sorted);
+    },[state.current]);
 
-    const triggerLocal = (dir) => {
-      setLocalSwipe(dir);
-      setTimeout(()=>{ setLocalSwipe(null); onSwipeComplete(dir==="right"?"like":"pass"); }, 380);
+    if (state.current===null) {
+      return (
+        <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:18,color:"rgba(26,18,8,0.32)"}}>Calculating your ranking…</span>
+        </div>
+      );
+    }
+
+    const mid = Math.floor((state.lo+state.hi)/2);
+    const optionA = state.current;
+    const optionB = state.sorted[mid];
+
+    const choose = (pickedA) => {
+      setState(s=>{
+        const m = Math.floor((s.lo+s.hi)/2);
+        let lo=s.lo, hi=s.hi;
+        if (pickedA) hi=m; else lo=m+1;
+        const comparisonsDone = s.comparisonsDone+1;
+        if (lo<hi) return {...s, lo, hi, comparisonsDone};
+        const newSorted = [...s.sorted.slice(0,lo), s.current, ...s.sorted.slice(lo)];
+        if (s.pending.length===0) return {...s, sorted:newSorted, current:null, comparisonsDone};
+        const nextCurrent = s.pending[0];
+        const nextPending = s.pending.slice(1);
+        return { sorted:newSorted, pending:nextPending, current:nextCurrent, lo:0, hi:newSorted.length, comparisonsDone };
+      });
     };
 
-    const onPointerDown=(e)=>{ if(!isTop)return; if(e.target.closest("[data-info-btn]"))return; startRef.current={x:e.clientX,y:e.clientY}; setDrag({x:0,y:0,dragging:true}); };
-    const onPointerMove=(e)=>{ if(!drag.dragging||!startRef.current)return; setDrag({x:e.clientX-startRef.current.x,y:e.clientY-startRef.current.y,dragging:true}); };
-    const onPointerUp=()=>{
-      if(!drag.dragging) return;
-      if(drag.x>80) triggerLocal("right");
-      else if(drag.x<-80) triggerLocal("left");
-      else setDrag({x:0,y:0,dragging:false});
-      startRef.current=null;
-    };
-
-    const tilt = isTop&&drag.dragging ? drag.x/15 : 0;
-    const tx = activeSwipe==="right"?650:activeSwipe==="left"?-650:drag.x;
-    const ty = activeSwipe?-60:drag.y*0.3;
-    const likeVis = isTop&&(drag.x>20||activeSwipe==="right");
-    const passVis = isTop&&(drag.x<-20||activeSwipe==="left");
+    const progress = Math.min(100, (state.comparisonsDone/total)*100);
 
     return (
-      <div onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp}
-        style={{position:"absolute",width:"100%",height:"100%",borderRadius:28,
-          cursor:isTop?"grab":"default",userSelect:"none",touchAction:"none",
-          transform:`translateX(${tx}px) translateY(${ty}px) rotate(${tilt}deg)`,
-          transition:activeSwipe||!drag.dragging?"transform 0.4s cubic-bezier(.25,.46,.45,.94),opacity 0.4s":"none",
-          opacity:activeSwipe?0:1}}>
-
-        <div style={{width:"100%",height:"100%",borderRadius:28,overflow:"hidden",position:"relative",
-          background:v.bg,
-          boxShadow:isTop?"0 20px 60px rgba(0,0,0,0.16),0 4px 16px rgba(0,0,0,0.06)":"0 8px 30px rgba(0,0,0,0.08)"}}>
-
-          {/* Photo — top 62%, sized to show the whole image without cropping */}
-          {imgUrl && (
-            <div style={{position:"absolute",top:0,left:0,right:0,height:"62%",width:"100%",background:v.bg,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
-              <img src={imgUrl} alt={woman.name} style={{width:"100%",height:"100%",objectFit:"contain",objectPosition:"center"}}/>
-            </div>
-          )}
-
-          {/* Monogram when no photo */}
-          {!imgUrl && (
-            <div style={{position:"absolute",top:"8%",left:"50%",transform:"translateX(-50%)",fontSize:110,fontFamily:"'Playfair Display',serif",fontWeight:700,color:`${v.color}10`,letterSpacing:4,lineHeight:1,userSelect:"none",pointerEvents:"none"}}>
-              {woman.name.split(" ").map(w=>w[0]).join("")}
-            </div>
-          )}
-
-          {/* Gradient fade from photo into card */}
-          {imgUrl && <div style={{position:"absolute",top:"46%",left:0,right:0,bottom:0,background:`linear-gradient(to bottom, transparent, ${v.bg} 72%)`}}/>}
-
-          {/* Info button — only on top card */}
-          {isTop && (
-            <button data-info-btn="1" onClick={e=>{e.stopPropagation();onInfo(woman,wikiData);}}
-              style={{position:"absolute",top:14,right:14,width:38,height:38,borderRadius:"50%",
-                background:"rgba(255,255,255,0.92)",border:`1.5px solid ${v.color}35`,
-                color:v.color,fontSize:16,cursor:"pointer",display:"flex",alignItems:"center",
-                justifyContent:"center",zIndex:10,boxShadow:"0 2px 10px rgba(0,0,0,0.1)"}}>ℹ</button>
-          )}
-
-          {/* Text block — only show on top card to prevent stacked names showing through */}
-          {isTop && (
-            <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"16px 22px 24px"}}>
-              <div style={{fontFamily:"'Playfair Display',serif",fontSize:40,fontWeight:700,color:v.color,lineHeight:1,marginBottom:10,letterSpacing:-0.5}}>
-                {woman.value}
-              </div>
-              <div style={{width:32,height:2,background:`${v.color}45`,borderRadius:1,marginBottom:10}}/>
-              <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700,color:"#1A1208",lineHeight:1.15,marginBottom:3}}>
-                {woman.name}
-              </div>
-              <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:13,letterSpacing:1,color:"rgba(26,18,8,0.45)"}}>
-                {woman.title}
-              </div>
-            </div>
-          )}
-
-          {/* Swipe overlays */}
-          <div style={{position:"absolute",inset:0,borderRadius:28,border:"4px solid #27AE60",opacity:likeVis?Math.min(1,drag.x/100):0,transition:"opacity 0.1s",pointerEvents:"none",display:"flex",alignItems:"center",justifyContent:"center"}}>
-            <div style={{background:"rgba(255,255,255,0.95)",borderRadius:14,padding:"10px 24px",boxShadow:"0 4px 20px rgba(0,0,0,0.1)"}}>
-              <span style={{fontFamily:"'Playfair Display',serif",fontSize:26,color:"#27AE60",fontWeight:700}}>✦ Admire</span>
-            </div>
-          </div>
-          <div style={{position:"absolute",inset:0,borderRadius:28,border:"4px solid #C0392B",opacity:passVis?Math.min(1,Math.abs(drag.x)/100):0,transition:"opacity 0.1s",pointerEvents:"none",display:"flex",alignItems:"center",justifyContent:"center"}}>
-            <div style={{background:"rgba(255,255,255,0.95)",borderRadius:14,padding:"10px 24px",boxShadow:"0 4px 20px rgba(0,0,0,0.1)"}}>
-              <span style={{fontFamily:"'Playfair Display',serif",fontSize:26,color:"#C0392B",fontWeight:700}}>✕ Pass</span>
-            </div>
-          </div>
+      <div style={{padding:"18px 20px 28px",display:"flex",flexDirection:"column",flex:1}}>
+        <div style={{height:3,background:"rgba(26,18,8,0.07)",borderRadius:2}}>
+          <div style={{height:"100%",width:`${progress}%`,background:"linear-gradient(90deg,#8B6914,#B8920A)",borderRadius:2,transition:"width 0.3s ease"}}/>
+        </div>
+        <div style={{textAlign:"center",margin:"20px 0 26px"}}>
+          <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:24,fontWeight:700,color:"#1A1208"}}>Which matters more to you?</h2>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:16,flex:1,justifyContent:"center"}}>
+          <ValueOptionCard name={optionA} v={VALUES[optionA]} onClick={()=>choose(true)}/>
+          <div style={{textAlign:"center",fontFamily:"'Cormorant Garamond',serif",fontSize:13,letterSpacing:3,textTransform:"uppercase",color:"rgba(26,18,8,0.28)"}}>or</div>
+          <ValueOptionCard name={optionB} v={VALUES[optionB]} onClick={()=>choose(false)}/>
         </div>
       </div>
     );
@@ -370,11 +284,11 @@
     return (
       <div style={{textAlign:"center",padding:"44px 32px",maxWidth:400,margin:"0 auto"}}>
         <div style={{fontSize:12,letterSpacing:5,textTransform:"uppercase",color:"#8B6914",fontFamily:"'Cormorant Garamond',serif",marginBottom:16}}>DesignHer · Values Discovery</div>
-        <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:48,fontWeight:700,color:"#1A1208",lineHeight:1.05,margin:"0 0 20px"}}>Who Do You<br/><em style={{color:"#8B6914"}}>Admire?</em></h1>
+        <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:48,fontWeight:700,color:"#1A1208",lineHeight:1.05,margin:"0 0 20px"}}>What Do You<br/><em style={{color:"#8B6914"}}>Value Most?</em></h1>
         <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:20,color:"rgba(26,18,8,0.58)",lineHeight:1.6,marginBottom:36}}>
-          Each card shows a woman and the value she represents. Swipe right if that value resonates with you. Swipe left to pass. Don't know her — or disagree she embodies that value? Swipe on the value itself.
+          First, choose the 10 values that matter most to you. Then we'll show them to you two at a time — pick the one that matters more, until we know exactly how they rank.
         </p>
-        {[["✦","Swipe on the value, not just the woman"],["✦","Don't know her? Tap ℹ for her story"],["✦","No right or wrong answers"]].map(([i,t])=>(
+        {[["✦","Select your top 10 from 36 values"],["✦","Pick a winner in each head-to-head"],["✦","No right or wrong answers"]].map(([i,t])=>(
           <div key={t} style={{display:"flex",gap:14,alignItems:"center",marginBottom:12,textAlign:"left"}}>
             <span style={{color:"#8B6914",fontSize:12}}>{i}</span>
             <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.55)"}}>{t}</span>
@@ -388,7 +302,7 @@
   }
 
   // ─── EMAIL ───────────────────────────────────────────────────────────────────
-  function EmailScreen({ likedCount, onSubmit }) {
+  function EmailScreen({ onSubmit }) {
     const [email,setEmail]=useState("");
     const [name,setName]=useState("");
     const [error,setError]=useState("");
@@ -408,7 +322,7 @@
       <div style={{textAlign:"center",padding:"44px 32px",maxWidth:400,margin:"0 auto"}}>
         <div style={{fontSize:52,marginBottom:16}}>✨</div>
         <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:38,fontWeight:700,color:"#1A1208",lineHeight:1.15,marginBottom:14}}>Your Archetype<br/><em style={{color:"#8B6914"}}>Awaits.</em></h2>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:19,color:"rgba(26,18,8,0.6)",marginBottom:8,lineHeight:1.5}}>You admired <strong style={{color:"#8B6914"}}>{likedCount} women</strong>.</p>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:19,color:"rgba(26,18,8,0.6)",marginBottom:8,lineHeight:1.5}}>You ranked your <strong style={{color:"#8B6914"}}>top 10 values</strong>.</p>
         <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(26,18,8,0.42)",marginBottom:28,lineHeight:1.5}}>Enter your details to reveal your season archetype, your 5 core values, and what they mean for your life right now.</p>
 
         <input value={name} onChange={e=>{setName(e.target.value);setError("");}} placeholder="First name" style={inp}/>
@@ -503,46 +417,32 @@
 
   // ─── APP ──────────────────────────────────────────────────────────────────────
   function DesignHerQuiz() {
-    const [phase, setPhase]         = useState("welcome");
-    const [deck, setDeck]           = useState([...WOMEN]);
-    const [liked, setLiked]         = useState([]);
-    const [bioPanel, setBioPanel]   = useState(null);
-    const [userData, setUserData]   = useState(null);
-    const [topValues, setTopValues] = useState([]);
-    const [archetype, setArchetype] = useState(null);
-    // Controls the top card's swipe animation from OUTSIDE (buttons)
-    const [forcedSwipe, setForcedSwipe] = useState(null);
-    const isAnimating = useRef(false);
+    const [phase, setPhase]                   = useState("welcome");
+    const [selectedValues, setSelectedValues] = useState([]);
+    const [rankedValues, setRankedValues]     = useState([]);
+    const [userData, setUserData]             = useState(null);
+    const [topValues, setTopValues]           = useState([]);
+    const [archetype, setArchetype]           = useState(null);
 
-    const progress = ((WOMEN.length - deck.length) / WOMEN.length) * 100;
-
-    // Called when any swipe completes (gesture or button)
-    const handleSwipeComplete = (action) => {
-      isAnimating.current = false;
-      setForcedSwipe(null);
-      if (action === "like") {
-        const woman = deck[deck.length - 1];
-        setLiked(p => [...p, woman]);
-      }
-      setDeck(p => p.slice(0, -1));
+    const toggleValue = (name) => {
+      setSelectedValues(prev => {
+        if (prev.includes(name)) return prev.filter(v=>v!==name);
+        if (prev.length>=10) return prev;
+        return [...prev, name];
+      });
     };
 
-    // Button handlers — set forced swipe direction, card animates then calls handleSwipeComplete
-    const handlePassBtn = () => {
-      if (deck.length === 0 || isAnimating.current) return;
-      isAnimating.current = true;
-      setForcedSwipe("left");
-    };
-    const handleLikeBtn = () => {
-      if (deck.length === 0 || isAnimating.current) return;
-      isAnimating.current = true;
-      setForcedSwipe("right");
+    const handleSelectionContinue = () => {
+      if (selectedValues.length===10) setPhase("rank");
     };
 
-    useEffect(()=>{ if(phase==="quiz"&&deck.length===0) setPhase("email"); },[deck,phase]);
+    const handleRankComplete = (ranked) => {
+      setRankedValues(ranked);
+      setPhase("email");
+    };
 
- const handleEmailSubmit = ({name,email,optIn}) => {
-      const tv = tallyValues(liked);
+    const handleEmailSubmit = ({name,email,optIn}) => {
+      const tv = rankedValues.slice(0,5);
       const arch = getArchetype(tv);
 
       // ── Send subscriber to Kit form 9345301 ──
@@ -569,103 +469,42 @@
     };
 
     const handleRestart = () => {
-      setDeck([...WOMEN]); setLiked([]); setBioPanel(null);
+      setSelectedValues([]); setRankedValues([]);
       setUserData(null); setTopValues([]); setArchetype(null);
-      setForcedSwipe(null); isAnimating.current=false;
       setPhase("welcome");
     };
 
     return (
-      <>
-        <div style={{minHeight:"100vh",background:"#FAF7F0",display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
-          {/* Header */}
-          <div style={{width:"100%",maxWidth:440,padding:"20px 24px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <span style={{fontFamily:"'Playfair Display',serif",fontSize:16,fontStyle:"italic",color:"#8B6914",letterSpacing:1}}>DesignHer</span>
-            {phase==="quiz"&&<span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:14,color:"rgba(26,18,8,0.38)",letterSpacing:1}}>{WOMEN.length-deck.length} / {WOMEN.length}</span>}
-          </div>
-
-          {/* Progress */}
-          {phase==="quiz"&&(
-            <div style={{width:"100%",maxWidth:440,padding:"10px 24px 0"}}>
-              <div style={{height:3,background:"rgba(26,18,8,0.07)",borderRadius:2}}>
-                <div style={{height:"100%",width:`${progress}%`,background:"linear-gradient(90deg,#8B6914,#B8920A)",borderRadius:2,transition:"width 0.4s ease"}}/>
-              </div>
-            </div>
-          )}
-
-          <div style={{flex:1,width:"100%",maxWidth:440,display:"flex",flexDirection:"column"}}>
-            {phase==="welcome" && <WelcomeScreen onStart={()=>setPhase("quiz")}/>}
-
-            {phase==="quiz" && (
-              <div style={{flex:1,display:"flex",flexDirection:"column",padding:"18px 20px 22px"}}>
-                {/* Card stack */}
-                <div style={{position:"relative",flex:1,minHeight:470,maxHeight:530}}>
-                  {deck.length===0 ? (
-                    <div style={{height:"100%",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                      <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:18,color:"rgba(26,18,8,0.32)"}}>Tallying your values…</span>
-                    </div>
-                  ) : deck.slice(-3).map((woman,i,arr)=>{
-                    const isTop = i===arr.length-1;
-                    const offset = arr.length-1-i;
-                    return (
-                      <div key={woman.name} style={{position:"absolute",inset:0,
-                        transform:`scale(${1-offset*0.04}) translateY(${offset*16}px)`,
-                        zIndex:i,transition:"transform 0.3s ease"}}>
-                        <WomanCard
-                          woman={woman}
-                          isTop={isTop}
-                          forcedSwipeDir={isTop ? forcedSwipe : null}
-                          onSwipeComplete={handleSwipeComplete}
-                          onInfo={(w,wd)=>setBioPanel({woman:w,wikiData:wd})}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Hint */}
-                <div style={{textAlign:"center",margin:"12px 0",fontFamily:"'Cormorant Garamond',serif",fontSize:14,color:"rgba(26,18,8,0.28)",letterSpacing:1}}>
-                  Swipe on the value · Tap ℹ if you don't know her
-                </div>
-
-                {/* Buttons */}
-                <div style={{display:"flex",gap:20,justifyContent:"center",alignItems:"center"}}>
-                  <button onClick={handlePassBtn}
-                    style={{width:66,height:66,borderRadius:"50%",background:"#fff",border:"2px solid rgba(168,48,31,0.22)",fontSize:24,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(168,48,31,0.65)",transition:"all 0.2s",boxShadow:"0 4px 16px rgba(0,0,0,0.07)"}}
-                    onMouseEnter={e=>{e.currentTarget.style.background="rgba(168,48,31,0.06)";e.currentTarget.style.transform="scale(1.1)";}}
-                    onMouseLeave={e=>{e.currentTarget.style.background="#fff";e.currentTarget.style.transform="scale(1)";}}>✕</button>
-                  <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:11,letterSpacing:2,textTransform:"uppercase",color:"rgba(26,18,8,0.22)",textAlign:"center",lineHeight:2.2}}>
-                    Pass · <span style={{color:"#8B6914"}}>✦</span> · Admire
-                  </div>
-                  <button onClick={handleLikeBtn}
-                    style={{width:66,height:66,borderRadius:"50%",background:"#fff",border:"2px solid rgba(139,105,20,0.3)",fontSize:24,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#8B6914",transition:"all 0.2s",boxShadow:"0 4px 16px rgba(0,0,0,0.07)"}}
-                    onMouseEnter={e=>{e.currentTarget.style.background="rgba(139,105,20,0.06)";e.currentTarget.style.transform="scale(1.1)";}}
-                    onMouseLeave={e=>{e.currentTarget.style.background="#fff";e.currentTarget.style.transform="scale(1)";}}>✦</button>
-                </div>
-
-                {liked.length>0&&(
-                  <div style={{textAlign:"center",marginTop:14,fontFamily:"'Cormorant Garamond',serif",fontSize:14,color:"rgba(139,105,20,0.65)"}}>
-                    {liked.length} {liked.length===1?"woman":"women"} admired
-                  </div>
-                )}
-              </div>
-            )}
-
-            {phase==="email" && <EmailScreen likedCount={liked.length} onSubmit={handleEmailSubmit}/>}
-            {phase==="confirmation" && userData &&
-              <ConfirmationScreen userName={userData.name} onRestart={handleRestart}/>}
-          </div>
+      <div style={{minHeight:"100vh",background:"#FAF7F0",display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
+        {/* Header */}
+        <div style={{width:"100%",maxWidth:440,padding:"20px 24px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style={{fontFamily:"'Playfair Display',serif",fontStyle:"italic",fontSize:16,color:"#8B6914",letterSpacing:1}}>DesignHer</span>
+          {phase==="select"&&<span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:14,color:"rgba(26,18,8,0.38)",letterSpacing:1}}>{selectedValues.length} / 10</span>}
         </div>
 
-        {bioPanel && (
-          <BioPanel
-            woman={bioPanel.woman} wikiData={bioPanel.wikiData}
-            onClose={()=>setBioPanel(null)}
-            onLike={()=>{ setBioPanel(null); handleLikeBtn(); }}
-            onPass={()=>{ setBioPanel(null); handlePassBtn(); }}
-          />
+        {/* Progress — selection phase only; rank phase renders its own */}
+        {phase==="select"&&(
+          <div style={{width:"100%",maxWidth:440,padding:"10px 24px 0"}}>
+            <div style={{height:3,background:"rgba(26,18,8,0.07)",borderRadius:2}}>
+              <div style={{height:"100%",width:`${(selectedValues.length/10)*100}%`,background:"linear-gradient(90deg,#8B6914,#B8920A)",borderRadius:2,transition:"width 0.3s ease"}}/>
+            </div>
+          </div>
         )}
-      </>
+
+        <div style={{flex:1,width:"100%",maxWidth:440,display:"flex",flexDirection:"column"}}>
+          {phase==="welcome" && <WelcomeScreen onStart={()=>setPhase("select")}/>}
+
+          {phase==="select" &&
+            <SelectionScreen selected={selectedValues} onToggle={toggleValue} onContinue={handleSelectionContinue}/>}
+
+          {phase==="rank" &&
+            <RankScreen values={selectedValues} onComplete={handleRankComplete}/>}
+
+          {phase==="email" && <EmailScreen onSubmit={handleEmailSubmit}/>}
+          {phase==="confirmation" && userData &&
+            <ConfirmationScreen userName={userData.name} onRestart={handleRestart}/>}
+        </div>
+      </div>
     );
   }
 
