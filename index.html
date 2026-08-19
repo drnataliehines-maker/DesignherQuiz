@@ -141,11 +141,15 @@
     },
   ];
 
-  function getArchetype(topValues) {
+  // Scores every archetype against the FULL ranked list (not just the top 5), weighting
+  // each match by how highly the user ranked it — rank 1 counts most, rank 10 counts least.
+  // This makes ties much rarer than a flat overlap count; when one still occurs, the
+  // archetype listed first above wins, same as before.
+  function getArchetype(rankedValues) {
     let best = ARCHETYPES[0];
     let bestScore = -1;
     ARCHETYPES.forEach(arch => {
-      const score = topValues.filter(v => arch.values.includes(v)).length;
+      const score = rankedValues.reduce((sum, v, i) => sum + (arch.values.includes(v) ? rankedValues.length - i : 0), 0);
       if (score > bestScore) { bestScore = score; best = arch; }
     });
     return best;
@@ -156,6 +160,38 @@
     let total = 0;
     for (let k = 2; k <= n; k++) total += Math.ceil(Math.log2(k));
     return total;
+  }
+
+  // ─── PROGRESS PERSISTENCE (localStorage) ────────────────────────────────────────
+  const PROGRESS_KEY = "designherQuizProgress";
+  const RANK_STATE_KEY = "designherQuizRankState";
+
+  function loadProgress() {
+    try {
+      const raw = localStorage.getItem(PROGRESS_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }
+  function saveProgress(data) {
+    try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(data)); } catch {}
+  }
+  function clearProgress() {
+    try { localStorage.removeItem(PROGRESS_KEY); } catch {}
+  }
+
+  function loadRankState(values) {
+    try {
+      const raw = localStorage.getItem(RANK_STATE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return parsed.valuesKey === JSON.stringify(values) ? parsed : null;
+    } catch { return null; }
+  }
+  function saveRankState(values, state, history) {
+    try { localStorage.setItem(RANK_STATE_KEY, JSON.stringify({ valuesKey: JSON.stringify(values), state, history })); } catch {}
+  }
+  function clearRankState() {
+    try { localStorage.removeItem(RANK_STATE_KEY); } catch {}
   }
 
   // ─── VALUE SELECT ────────────────────────────────────────────────────────────
@@ -220,18 +256,32 @@
 
   // ─── RANK (pairwise comparison via binary insertion) ───────────────────────────
   function RankScreen({ values, onComplete }) {
-    const [state, setState] = useState(()=>{
+    const initState = () => {
       if (values.length<=1) return { sorted:values.slice(), pending:[], current:null, lo:0, hi:0, comparisonsDone:0 };
       const first = values[0];
       const rest = values.slice(1);
       return { sorted:[first], pending:rest.slice(1), current:rest[0], lo:0, hi:1, comparisonsDone:0 };
+    };
+
+    const [state, setState] = useState(()=>{
+      const saved = loadRankState(values);
+      return saved ? saved.state : initState();
+    });
+    const [history, setHistory] = useState(()=>{
+      const saved = loadRankState(values);
+      return saved ? saved.history : [];
     });
 
     const total = estimateComparisons(values.length);
 
     useEffect(()=>{
-      if (state.current===null) onComplete(state.sorted);
-    },[state.current]);
+      if (state.current===null) {
+        clearRankState();
+        onComplete(state.sorted);
+      } else {
+        saveRankState(values, state, history);
+      }
+    },[state, history]);
 
     if (state.current===null) {
       return (
@@ -246,6 +296,7 @@
     const optionB = state.sorted[mid];
 
     const choose = (pickedA) => {
+      setHistory(h => [...h, state]);
       setState(s=>{
         const m = Math.floor((s.lo+s.hi)/2);
         let lo=s.lo, hi=s.hi;
@@ -260,6 +311,13 @@
       });
     };
 
+    const undo = () => {
+      if (history.length===0) return;
+      const prev = history[history.length-1];
+      setHistory(h => h.slice(0,-1));
+      setState(prev);
+    };
+
     const progress = Math.min(100, (state.comparisonsDone/total)*100);
 
     return (
@@ -267,8 +325,15 @@
         <div style={{height:3,background:"rgba(26,18,8,0.07)",borderRadius:2}}>
           <div style={{height:"100%",width:`${progress}%`,background:"linear-gradient(90deg,#8B6914,#B8920A)",borderRadius:2,transition:"width 0.3s ease"}}/>
         </div>
-        <div style={{textAlign:"center",margin:"20px 0 26px"}}>
+        <div style={{textAlign:"center",margin:"20px 0 10px"}}>
           <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:24,fontWeight:700,color:"#1A1208"}}>Which matters more to you?</h2>
+        </div>
+        <div style={{textAlign:"center",marginBottom:16,minHeight:20}}>
+          {history.length>0 && (
+            <span onClick={undo} style={{fontFamily:"'Cormorant Garamond',serif",fontSize:14,letterSpacing:1,color:"#8B6914",cursor:"pointer",textDecoration:"underline",textUnderlineOffset:3}}>
+              ↺ Undo last pick
+            </span>
+          )}
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:16,flex:1,justifyContent:"center"}}>
           <ValueOptionCard name={optionA} v={VALUES[optionA]} onClick={()=>choose(true)}/>
@@ -386,20 +451,30 @@
   }
 
   // ─── RESULTS ──────────────────────────────────────────────────────────────────
-   function ConfirmationScreen({ userName, onRestart }) {
+  function ConfirmationScreen({ userName, archetype, topValues, onRestart }) {
+    const [expandedIndex, setExpandedIndex] = useState(null);
     return (
       <div style={{padding:"36px 22px",maxWidth:440,margin:"0 auto",textAlign:"center"}}>
-        <div style={{fontSize:72,marginBottom:24,animation:"pulse 2s ease-in-out infinite"}}>✉️</div>
-        <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:32,fontWeight:700,color:"#1A1208",lineHeight:1.2,margin:"0 0 16px"}}>
-          {userName.split(" ")[0]}, your results are on the way.
-        </h2>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:19,color:"rgba(26,18,8,0.62)",lineHeight:1.7,margin:"0 0 28px"}}>
-          Check your inbox for your <em style={{color:"#8B6914",fontWeight:600}}>Season Archetype</em> and <em style={{color:"#8B6914",fontWeight:600}}>5 Core Values</em> — along with what they reveal about the season of life you're in right now.
-        </p>
+        <div style={{fontSize:12,letterSpacing:4,textTransform:"uppercase",color:"#8B6914",fontFamily:"'Cormorant Garamond',serif",marginBottom:14}}>{userName.split(" ")[0]}'s Results</div>
+
+        <div style={{background:archetype.bg,border:`1.5px solid ${archetype.color}35`,borderRadius:22,padding:"30px 24px",marginBottom:28,boxShadow:"0 4px 20px rgba(0,0,0,0.05)"}}>
+          <div style={{fontSize:42,marginBottom:10}}>{archetype.emoji}</div>
+          <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:28,fontWeight:700,color:archetype.color,lineHeight:1.15,margin:"0 0 8px"}}>{archetype.name}</h2>
+          <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:16,color:"rgba(26,18,8,0.55)",marginBottom:14}}>{archetype.season}</div>
+          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.65)",lineHeight:1.65,margin:0}}>{archetype.description}</p>
+        </div>
+
+        <div style={{textAlign:"left",marginBottom:28}}>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,color:"#1A1208",marginBottom:14,textAlign:"center"}}>Your 5 Core Values</div>
+          {topValues.map((name,i)=>(
+            <ValueCard key={name} valueName={name} index={i} expanded={expandedIndex===i} onToggle={()=>setExpandedIndex(p=>p===i?null:i)}/>
+          ))}
+        </div>
+
         <div style={{background:"linear-gradient(135deg,#FFF8E7,#FFFDF8)",border:"1.5px solid rgba(139,105,20,0.22)",borderRadius:20,padding:"26px",marginBottom:28,boxShadow:"0 4px 20px rgba(139,105,20,0.07)"}}>
-          <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,color:"#1A1208",fontWeight:700,marginBottom:10}}>While you wait...</div>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,color:"#1A1208",fontWeight:700,marginBottom:10}}>Want to keep this?</div>
           <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.52)",lineHeight:1.65,margin:"0 0 8px"}}>
-            Your results email will arrive within a few minutes. If you don't see it, check your spam or promotions folder.
+            We're also sending your archetype and values to your inbox. If you don't see it in a few minutes, check your spam or promotions folder.
           </p>
         </div>
         <div style={{background:"linear-gradient(135deg,#FFF8E7,#FFFDF8)",border:"1.5px solid rgba(139,105,20,0.22)",borderRadius:20,padding:"26px",textAlign:"center",marginBottom:28,boxShadow:"0 4px 20px rgba(139,105,20,0.07)"}}>
@@ -417,12 +492,23 @@
 
   // ─── APP ──────────────────────────────────────────────────────────────────────
   function DesignHerQuiz() {
-    const [phase, setPhase]                   = useState("welcome");
-    const [selectedValues, setSelectedValues] = useState([]);
-    const [rankedValues, setRankedValues]     = useState([]);
+    const [phase, setPhase]                   = useState(()=>{
+      const saved = loadProgress();
+      const restorable = ["select","rank","email"];
+      return saved && restorable.includes(saved.phase) ? saved.phase : "welcome";
+    });
+    const [selectedValues, setSelectedValues] = useState(()=> loadProgress()?.selectedValues || []);
+    const [rankedValues, setRankedValues]     = useState(()=> loadProgress()?.rankedValues || []);
     const [userData, setUserData]             = useState(null);
     const [topValues, setTopValues]           = useState([]);
     const [archetype, setArchetype]           = useState(null);
+
+    // Persist enough to survive a refresh mid-quiz; welcome/confirmation don't need it.
+    useEffect(()=>{
+      if (phase==="select" || phase==="rank" || phase==="email") {
+        saveProgress({ phase, selectedValues, rankedValues });
+      }
+    },[phase, selectedValues, rankedValues]);
 
     const toggleValue = (name) => {
       setSelectedValues(prev => {
@@ -443,7 +529,7 @@
 
     const handleEmailSubmit = ({name,email,optIn}) => {
       const tv = rankedValues.slice(0,5);
-      const arch = getArchetype(tv);
+      const arch = getArchetype(rankedValues);
 
       // ── Send subscriber to Kit form 9345301 ──
       const kitData = new FormData();
@@ -462,6 +548,7 @@
         body: kitData,
       }).catch(err => console.log("Kit submission error:", err));
 
+      clearProgress();
       setUserData({name,email,optIn});
       setTopValues(tv);
       setArchetype(arch);
@@ -469,6 +556,7 @@
     };
 
     const handleRestart = () => {
+      clearProgress();
       setSelectedValues([]); setRankedValues([]);
       setUserData(null); setTopValues([]); setArchetype(null);
       setPhase("welcome");
@@ -501,8 +589,8 @@
             <RankScreen values={selectedValues} onComplete={handleRankComplete}/>}
 
           {phase==="email" && <EmailScreen onSubmit={handleEmailSubmit}/>}
-          {phase==="confirmation" && userData &&
-            <ConfirmationScreen userName={userData.name} onRestart={handleRestart}/>}
+          {phase==="confirmation" && userData && archetype &&
+            <ConfirmationScreen userName={userData.name} archetype={archetype} topValues={topValues} onRestart={handleRestart}/>}
         </div>
       </div>
     );
