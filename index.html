@@ -531,7 +531,7 @@
       const tv = rankedValues.slice(0,5);
       const arch = getArchetype(rankedValues);
 
-      // ── Send subscriber to Kit form 9345301 ──
+      // ── Send subscriber to Kit form 9773625 ──
       const kitData = new FormData();
       kitData.append("email_address", email);
       kitData.append("fields[first_name]", name);
@@ -543,7 +543,7 @@
       kitData.append("fields[top_value_5]", tv[4] || "");
       kitData.append("fields[marketing_optin]", optIn ? "yes" : "no");
 
-      fetch("https://app.kit.com/forms/9345301/subscriptions", {
+      fetch("https://app.kit.com/forms/9773625/subscriptions", {
         method: "POST",
         body: kitData,
       }).catch(err => console.log("Kit submission error:", err));
