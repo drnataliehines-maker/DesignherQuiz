@@ -155,21 +155,533 @@
     return best;
   }
 
-  // ─── HELPERS ─────────────────────────────────────────────────────────────────
-  function estimateComparisons(n) {
-    let total = 0;
-    for (let k = 2; k <= n; k++) total += Math.ceil(Math.log2(k));
-    return total;
+  // ─── QUESTIONS ───────────────────────────────────────────────────────────────
+  // Each answer scores 2 points to its primary value (p) and 1 point to its secondary (s).
+  // Balanced: every value is a primary exactly twice and a secondary exactly twice (max 6 pts).
+  const QUESTIONS = [
+    {
+      "type": "Scenario",
+      "q": "A close friend's birthday dinner lands on the night before a big work deadline. What do you do?",
+      "answers": [
+        {
+          "t": "Go, but leave early so you're rested for tomorrow",
+          "p": "Balance",
+          "s": "Sovereignty"
+        },
+        {
+          "t": "Go and be fully there. The deadline can wait until morning.",
+          "p": "Presence",
+          "s": "Abundance"
+        },
+        {
+          "t": "Tell her honestly you can't make it, and plan a night for just the two of you",
+          "p": "Boundaries",
+          "s": "Truth"
+        },
+        {
+          "t": "Offer to help plan the evening, because celebrating people matters to you",
+          "p": "Joy",
+          "s": "Celebration"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "Your manager offers you a role leading a team you've never managed. What's your first thought?",
+      "answers": [
+        {
+          "t": "\"Finally. I've been ready for this.\"",
+          "p": "Ambition",
+          "s": "Power"
+        },
+        {
+          "t": "\"What could this team become with the right direction?\"",
+          "p": "Vision",
+          "s": "Legacy"
+        },
+        {
+          "t": "\"Does this actually fit where I'm headed?\"",
+          "p": "Purpose",
+          "s": "Clarity"
+        },
+        {
+          "t": "\"I'm nervous, and I'm saying yes anyway.\"",
+          "p": "Courage",
+          "s": "Faith"
+        }
+      ]
+    },
+    {
+      "type": "This or that",
+      "q": "Would you rather have...",
+      "answers": [
+        {
+          "t": "A life designed completely on your own terms",
+          "p": "Sovereignty",
+          "s": "Freedom"
+        },
+        {
+          "t": "A life full of people who show up for each other",
+          "p": "Community",
+          "s": "Vulnerability"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You made a mistake at work, and other people noticed. What's your move?",
+      "answers": [
+        {
+          "t": "Own it right away and explain what happened",
+          "p": "Truth",
+          "s": "Authenticity"
+        },
+        {
+          "t": "Fix it, then build a process so it never happens again",
+          "p": "Excellence",
+          "s": "Discipline"
+        },
+        {
+          "t": "Forgive yourself quickly. Everyone slips sometimes.",
+          "p": "Grace",
+          "s": "Self-Worth"
+        },
+        {
+          "t": "Treat it as information and come back sharper",
+          "p": "Resilience",
+          "s": "Wisdom"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You wake up to an unexpected free Saturday. How do you spend it?",
+      "answers": [
+        {
+          "t": "Start the creative project you keep putting off",
+          "p": "Creativity",
+          "s": "Joy"
+        },
+        {
+          "t": "Rest completely, with no plans and no guilt",
+          "p": "Healing",
+          "s": "Balance"
+        },
+        {
+          "t": "Help out someone who could use a hand",
+          "p": "Service",
+          "s": "Generosity"
+        },
+        {
+          "t": "Try something you've never done before",
+          "p": "Boldness",
+          "s": "Reinvention"
+        }
+      ]
+    },
+    {
+      "type": "This or that",
+      "q": "Would you rather be remembered for...",
+      "answers": [
+        {
+          "t": "What you built",
+          "p": "Legacy",
+          "s": "Ambition"
+        },
+        {
+          "t": "How you made people feel",
+          "p": "Healing",
+          "s": "Presence"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "A friend asks for honest feedback on her business idea, and you can see real problems with it. What do you do?",
+      "answers": [
+        {
+          "t": "Tell her kindly but plainly what you see",
+          "p": "Courage",
+          "s": "Truth"
+        },
+        {
+          "t": "Ask questions until she spots the gaps herself",
+          "p": "Wisdom",
+          "s": "Leadership"
+        },
+        {
+          "t": "Start with what's genuinely strong, then get to what needs work",
+          "p": "Gratitude",
+          "s": "Abundance"
+        },
+        {
+          "t": "Offer your time to help her work through the weak spots",
+          "p": "Generosity",
+          "s": "Service"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You've been in the same job for years. It's fine, but it doesn't feel like you anymore. What happens next?",
+      "answers": [
+        {
+          "t": "Start planning your exit, even before you know what's next",
+          "p": "Freedom",
+          "s": "Courage"
+        },
+        {
+          "t": "Trust that the right door will open when it's time",
+          "p": "Faith",
+          "s": "Grace"
+        },
+        {
+          "t": "Get very specific about what you want before you make a move",
+          "p": "Clarity",
+          "s": "Vision"
+        },
+        {
+          "t": "Start a side project that lets you try on a new version of yourself",
+          "p": "Reinvention",
+          "s": "Creativity"
+        }
+      ]
+    },
+    {
+      "type": "This or that",
+      "q": "When you do great work, would you rather...",
+      "answers": [
+        {
+          "t": "Be recognized for it in front of everyone",
+          "p": "Radiance",
+          "s": "Boldness"
+        },
+        {
+          "t": "Know quietly that you gave it your best",
+          "p": "Self-Worth",
+          "s": "Excellence"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "Someone keeps talking over you in meetings. How do you handle it?",
+      "answers": [
+        {
+          "t": "Say \"I'm not finished\" and keep going",
+          "p": "Power",
+          "s": "Boldness"
+        },
+        {
+          "t": "Talk to them one-on-one and set the expectation",
+          "p": "Leadership",
+          "s": "Boundaries"
+        },
+        {
+          "t": "Stay steady and keep being yourself. Your work speaks for itself.",
+          "p": "Authenticity",
+          "s": "Resilience"
+        },
+        {
+          "t": "Notice who else gets talked over, and start backing them up",
+          "p": "Influence",
+          "s": "Service"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You get a surprise bonus. What do you do with it?",
+      "answers": [
+        {
+          "t": "Mark the moment with something meaningful for yourself",
+          "p": "Self-Worth",
+          "s": "Joy"
+        },
+        {
+          "t": "Put it toward a long-term goal",
+          "p": "Vision",
+          "s": "Legacy"
+        },
+        {
+          "t": "Share part of it with someone who needs it",
+          "p": "Generosity",
+          "s": "Gratitude"
+        },
+        {
+          "t": "Use it to buy yourself time or breathing room",
+          "p": "Freedom",
+          "s": "Sovereignty"
+        }
+      ]
+    },
+    {
+      "type": "This or that",
+      "q": "Would you rather your days have...",
+      "answers": [
+        {
+          "t": "A rhythm you can count on",
+          "p": "Balance",
+          "s": "Discipline"
+        },
+        {
+          "t": "Room for surprises",
+          "p": "Joy",
+          "s": "Freedom"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You're going through a hard season. What gets you through?",
+      "answers": [
+        {
+          "t": "Letting a few trusted people see what you're carrying",
+          "p": "Vulnerability",
+          "s": "Community"
+        },
+        {
+          "t": "Getting back up every morning, one day at a time",
+          "p": "Discipline",
+          "s": "Resilience"
+        },
+        {
+          "t": "Looking for what this season is teaching you",
+          "p": "Wisdom",
+          "s": "Healing"
+        },
+        {
+          "t": "Trusting it's leading somewhere, even if you can't see where yet",
+          "p": "Faith",
+          "s": "Purpose"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You're at a party where you barely know anyone. What are you most likely doing?",
+      "answers": [
+        {
+          "t": "Finding one person and having a real conversation",
+          "p": "Presence",
+          "s": "Authenticity"
+        },
+        {
+          "t": "Introducing people who should know each other",
+          "p": "Influence",
+          "s": "Leadership"
+        },
+        {
+          "t": "Bringing the energy to the room",
+          "p": "Radiance",
+          "s": "Celebration"
+        },
+        {
+          "t": "Enjoying it on your terms, and leaving when you're ready",
+          "p": "Sovereignty",
+          "s": "Boundaries"
+        }
+      ]
+    },
+    {
+      "type": "This or that",
+      "q": "Would you rather...",
+      "answers": [
+        {
+          "t": "Chase one big dream for years",
+          "p": "Purpose",
+          "s": "Vision"
+        },
+        {
+          "t": "Celebrate lots of small wins along the way",
+          "p": "Celebration",
+          "s": "Gratitude"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You're offered a well-paid opportunity that doesn't sit right with you. What do you do?",
+      "answers": [
+        {
+          "t": "Turn it down without second-guessing",
+          "p": "Authenticity",
+          "s": "Clarity"
+        },
+        {
+          "t": "Take it, knowing opportunities keep coming and you can change course later",
+          "p": "Abundance",
+          "s": "Power"
+        },
+        {
+          "t": "Negotiate it into something you can stand behind",
+          "p": "Leadership",
+          "s": "Influence"
+        },
+        {
+          "t": "Talk it through with someone you trust before deciding",
+          "p": "Vulnerability",
+          "s": "Wisdom"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "Someone who hurt you in the past reaches out to apologize. How do you respond?",
+      "answers": [
+        {
+          "t": "Accept it and genuinely wish them well",
+          "p": "Grace",
+          "s": "Healing"
+        },
+        {
+          "t": "Thank them, and keep your distance",
+          "p": "Boundaries",
+          "s": "Self-Worth"
+        },
+        {
+          "t": "Tell them honestly how it affected you",
+          "p": "Truth",
+          "s": "Vulnerability"
+        },
+        {
+          "t": "See it as a chance to close the chapter for good",
+          "p": "Clarity",
+          "s": "Reinvention"
+        }
+      ]
+    },
+    {
+      "type": "This or that",
+      "q": "Would you rather be...",
+      "answers": [
+        {
+          "t": "Truly excellent at one thing",
+          "p": "Excellence",
+          "s": "Ambition"
+        },
+        {
+          "t": "Good at many things, and always learning a new one",
+          "p": "Reinvention",
+          "s": "Creativity"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "A friend wins an award you were also up for. What's your honest reaction?",
+      "answers": [
+        {
+          "t": "Be the first to congratulate her",
+          "p": "Celebration",
+          "s": "Generosity"
+        },
+        {
+          "t": "Feel the sting, then let it go",
+          "p": "Resilience",
+          "s": "Grace"
+        },
+        {
+          "t": "Use it as fuel for your next goal",
+          "p": "Ambition",
+          "s": "Excellence"
+        },
+        {
+          "t": "Remember there's more than enough success to go around",
+          "p": "Abundance",
+          "s": "Faith"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You're asked to speak at an event on short notice. What do you say?",
+      "answers": [
+        {
+          "t": "\"Yes!\" You'll figure it out on the way.",
+          "p": "Boldness",
+          "s": "Courage"
+        },
+        {
+          "t": "\"Yes, if I can prepare properly.\"",
+          "p": "Discipline",
+          "s": "Radiance"
+        },
+        {
+          "t": "\"I know someone who deserves this spotlight more.\"",
+          "p": "Service",
+          "s": "Community"
+        },
+        {
+          "t": "\"Yes. I have something to say, and I'm owning that stage.\"",
+          "p": "Power",
+          "s": "Influence"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "Picture your life ten years from now. What makes you proudest?",
+      "answers": [
+        {
+          "t": "The work you created",
+          "p": "Creativity",
+          "s": "Radiance"
+        },
+        {
+          "t": "The people around you",
+          "p": "Community",
+          "s": "Presence"
+        },
+        {
+          "t": "The peace you feel",
+          "p": "Gratitude",
+          "s": "Balance"
+        },
+        {
+          "t": "The difference you made",
+          "p": "Legacy",
+          "s": "Purpose"
+        }
+      ]
+    }
+  ];
+
+  // Turns answers into a full ranked list of all 36 values.
+  // Ties: more primary hits wins, then whichever value scored most recently.
+  function scoreAnswers(answers) {
+    const tally = {};
+    Object.keys(VALUES).forEach((v,i)=>{ tally[v] = { pts:0, prim:0, last:-1, order:i }; });
+    answers.forEach((ai, qi) => {
+      if (ai === null || ai === undefined) return;
+      const a = QUESTIONS[qi].answers[ai];
+      if (tally[a.p]) { tally[a.p].pts += 2; tally[a.p].prim += 1; tally[a.p].last = qi; }
+      if (tally[a.s]) { tally[a.s].pts += 1; tally[a.s].last = Math.max(tally[a.s].last, qi); }
+    });
+    return Object.keys(tally).sort((x,y)=>{
+      const A=tally[x], B=tally[y];
+      return (B.pts-A.pts) || (B.prim-A.prim) || (B.last-A.last) || (A.order-B.order);
+    });
+  }
+
+  function shuffledOrders() {
+    return QUESTIONS.map(q => {
+      const idx = q.answers.map((_,i)=>i);
+      for (let i=idx.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [idx[i],idx[j]]=[idx[j],idx[i]]; }
+      return idx;
+    });
   }
 
   // ─── PROGRESS PERSISTENCE (localStorage) ────────────────────────────────────────
-  const PROGRESS_KEY = "designherQuizProgress";
-  const RANK_STATE_KEY = "designherQuizRankState";
+  const PROGRESS_KEY = "designherQuizProgressV2";
+  try { localStorage.removeItem("designherQuizProgress"); localStorage.removeItem("designherQuizRankState"); } catch {}
 
   function loadProgress() {
     try {
       const raw = localStorage.getItem(PROGRESS_KEY);
-      return raw ? JSON.parse(raw) : null;
+      const p = raw ? JSON.parse(raw) : null;
+      if (!p || !Array.isArray(p.answers) || p.answers.length !== QUESTIONS.length) return null;
+      return p;
     } catch { return null; }
   }
   function saveProgress(data) {
@@ -179,170 +691,51 @@
     try { localStorage.removeItem(PROGRESS_KEY); } catch {}
   }
 
-  function loadRankState(values) {
-    try {
-      const raw = localStorage.getItem(RANK_STATE_KEY);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      return parsed.valuesKey === JSON.stringify(values) ? parsed : null;
-    } catch { return null; }
-  }
-  function saveRankState(values, state, history) {
-    try { localStorage.setItem(RANK_STATE_KEY, JSON.stringify({ valuesKey: JSON.stringify(values), state, history })); } catch {}
-  }
-  function clearRankState() {
-    try { localStorage.removeItem(RANK_STATE_KEY); } catch {}
-  }
+  // ─── QUESTION SCREEN ─────────────────────────────────────────────────────────
+  function QuestionScreen({ qIndex, order, chosen, onAnswer, onBack }) {
+    const q = QUESTIONS[qIndex];
+    const [picked, setPicked] = useState(null);
+    useEffect(()=>{ setPicked(null); }, [qIndex]);
 
-  // ─── VALUE SELECT ────────────────────────────────────────────────────────────
-  function SelectionScreen({ selected, onToggle, onContinue }) {
-    const names = Object.keys(VALUES);
-    const atCap = selected.length >= 10;
+    const choose = (ai) => {
+      if (picked !== null) return;
+      setPicked(ai);
+      setTimeout(()=>onAnswer(ai), 280);
+    };
+
     return (
-      <div style={{padding:"18px 20px 28px"}}>
-        <div style={{textAlign:"center",marginBottom:22}}>
-          <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:26,fontWeight:700,color:"#1A1208",lineHeight:1.2,margin:"0 0 8px"}}>Choose Your <em style={{color:"#8B6914"}}>10</em></h2>
-          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(26,18,8,0.5)",lineHeight:1.5}}>Tap the values that matter most to you right now. Choose exactly 10 — we'll rank them next.</p>
+      <div style={{padding:"30px 24px 40px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:22,minHeight:24}}>
+          {qIndex>0
+            ? <button onClick={onBack} style={{background:"transparent",border:"none",padding:0,fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(26,18,8,0.45)",cursor:"pointer"}}>‹ Back</button>
+            : <span/>}
+          {q.type==="This or that" &&
+            <span style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:15,color:"#8B6914"}}>This or that</span>}
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:26}}>
-          {names.map(name=>{
-            const v = VALUES[name];
-            const isSelected = selected.includes(name);
-            const order = isSelected ? selected.indexOf(name)+1 : null;
-            const disabled = !isSelected && atCap;
+
+        <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:q.type==="This or that"?30:25,fontWeight:700,color:"#1A1208",lineHeight:1.25,margin:"0 0 26px"}}>{q.q}</h2>
+
+        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+          {order.map(ai => {
+            const isOn = picked===ai || (picked===null && chosen===ai);
             return (
-              <div key={name} onClick={()=>{ if(!disabled) onToggle(name); }}
-                style={{position:"relative",background:isSelected?v.bg:"#fff",
-                  border:`1.5px solid ${isSelected?v.color+"60":"rgba(26,18,8,0.08)"}`,
-                  borderRadius:16,padding:"14px 14px 12px",cursor:disabled?"default":"pointer",
-                  opacity:disabled?0.4:1,transition:"all 0.15s",
-                  boxShadow:isSelected?"0 4px 14px rgba(0,0,0,0.06)":"none"}}>
-                {isSelected && (
-                  <div style={{position:"absolute",top:8,right:8,width:20,height:20,borderRadius:"50%",background:v.color,color:"#fff",fontSize:11,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Cormorant Garamond',serif"}}>{order}</div>
-                )}
-                <div style={{fontSize:22,marginBottom:6}}>{v.emoji}</div>
-                <div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontWeight:700,color:"#1A1208",lineHeight:1.2}}>{name}</div>
-              </div>
+              <button key={ai} onClick={()=>choose(ai)}
+                style={{textAlign:"left",width:"100%",padding:q.type==="This or that"?"22px 20px":"17px 18px",
+                  background:isOn?"#FFF8E7":"#fff",
+                  border:"1.5px solid "+(isOn?"#8B6914":"rgba(139,105,20,0.2)"),
+                  borderRadius:14,cursor:"pointer",transition:"all 0.2s",
+                  fontFamily:"'Cormorant Garamond',serif",fontSize:q.type==="This or that"?21:19,lineHeight:1.4,
+                  color:isOn?"#5C4510":"#1A1208",
+                  boxShadow:isOn?"0 4px 18px rgba(139,105,20,0.14)":"none"}}>
+                {q.answers[ai].t}
+              </button>
             );
           })}
         </div>
-        <button onClick={onContinue} disabled={selected.length!==10}
-          style={{width:"100%",padding:"18px 0",
-            background:selected.length===10?"linear-gradient(135deg,#8B6914,#B8920A)":"rgba(26,18,8,0.1)",
-            border:"none",borderRadius:16,fontFamily:"'Cormorant Garamond',serif",fontSize:17,letterSpacing:3,textTransform:"uppercase",
-            color:selected.length===10?"#fff":"rgba(26,18,8,0.3)",fontWeight:700,
-            cursor:selected.length===10?"pointer":"default",
-            boxShadow:selected.length===10?"0 8px 30px rgba(139,105,20,0.28)":"none",transition:"all 0.2s"}}>
-          {selected.length===10 ? "Continue to Ranking" : `Select ${10-selected.length} more`}
-        </button>
       </div>
     );
   }
 
-  // ─── VALUE OPTION CARD (rank screen) ────────────────────────────────────────────
-  function ValueOptionCard({ name, v, onClick }) {
-    return (
-      <div onClick={onClick}
-        style={{background:v.bg,border:`2px solid ${v.color}35`,borderRadius:22,padding:"32px 24px",
-          textAlign:"center",cursor:"pointer",transition:"transform 0.15s",boxShadow:"0 6px 24px rgba(0,0,0,0.06)"}}
-        onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.02)";}}
-        onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";}}>
-        <div style={{fontSize:44,marginBottom:14}}>{v.emoji}</div>
-        <div style={{fontFamily:"'Playfair Display',serif",fontSize:26,fontWeight:700,color:v.color,marginBottom:10}}>{name}</div>
-        <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:15,color:"rgba(26,18,8,0.55)",lineHeight:1.55}}>{v.description}</div>
-      </div>
-    );
-  }
-
-  // ─── RANK (pairwise comparison via binary insertion) ───────────────────────────
-  function RankScreen({ values, onComplete }) {
-    const initState = () => {
-      if (values.length<=1) return { sorted:values.slice(), pending:[], current:null, lo:0, hi:0, comparisonsDone:0 };
-      const first = values[0];
-      const rest = values.slice(1);
-      return { sorted:[first], pending:rest.slice(1), current:rest[0], lo:0, hi:1, comparisonsDone:0 };
-    };
-
-    const [state, setState] = useState(()=>{
-      const saved = loadRankState(values);
-      return saved ? saved.state : initState();
-    });
-    const [history, setHistory] = useState(()=>{
-      const saved = loadRankState(values);
-      return saved ? saved.history : [];
-    });
-
-    const total = estimateComparisons(values.length);
-
-    useEffect(()=>{
-      if (state.current===null) {
-        clearRankState();
-        onComplete(state.sorted);
-      } else {
-        saveRankState(values, state, history);
-      }
-    },[state, history]);
-
-    if (state.current===null) {
-      return (
-        <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center"}}>
-          <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:18,color:"rgba(26,18,8,0.32)"}}>Calculating your ranking…</span>
-        </div>
-      );
-    }
-
-    const mid = Math.floor((state.lo+state.hi)/2);
-    const optionA = state.current;
-    const optionB = state.sorted[mid];
-
-    const choose = (pickedA) => {
-      setHistory(h => [...h, state]);
-      setState(s=>{
-        const m = Math.floor((s.lo+s.hi)/2);
-        let lo=s.lo, hi=s.hi;
-        if (pickedA) hi=m; else lo=m+1;
-        const comparisonsDone = s.comparisonsDone+1;
-        if (lo<hi) return {...s, lo, hi, comparisonsDone};
-        const newSorted = [...s.sorted.slice(0,lo), s.current, ...s.sorted.slice(lo)];
-        if (s.pending.length===0) return {...s, sorted:newSorted, current:null, comparisonsDone};
-        const nextCurrent = s.pending[0];
-        const nextPending = s.pending.slice(1);
-        return { sorted:newSorted, pending:nextPending, current:nextCurrent, lo:0, hi:newSorted.length, comparisonsDone };
-      });
-    };
-
-    const undo = () => {
-      if (history.length===0) return;
-      const prev = history[history.length-1];
-      setHistory(h => h.slice(0,-1));
-      setState(prev);
-    };
-
-    const progress = Math.min(100, (state.comparisonsDone/total)*100);
-
-    return (
-      <div style={{padding:"18px 20px 28px",display:"flex",flexDirection:"column",flex:1}}>
-        <div style={{height:3,background:"rgba(26,18,8,0.07)",borderRadius:2}}>
-          <div style={{height:"100%",width:`${progress}%`,background:"linear-gradient(90deg,#8B6914,#B8920A)",borderRadius:2,transition:"width 0.3s ease"}}/>
-        </div>
-        <div style={{textAlign:"center",margin:"20px 0 10px"}}>
-          <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:24,fontWeight:700,color:"#1A1208"}}>Which matters more to you?</h2>
-        </div>
-        <div style={{textAlign:"center",marginBottom:16,minHeight:20}}>
-          {history.length>0 && (
-            <span onClick={undo} style={{fontFamily:"'Cormorant Garamond',serif",fontSize:14,letterSpacing:1,color:"#8B6914",cursor:"pointer",textDecoration:"underline",textUnderlineOffset:3}}>
-              ↺ Undo last pick
-            </span>
-          )}
-        </div>
-        <div style={{display:"flex",flexDirection:"column",gap:16,flex:1,justifyContent:"center"}}>
-          <ValueOptionCard name={optionA} v={VALUES[optionA]} onClick={()=>choose(true)}/>
-          <div style={{textAlign:"center",fontFamily:"'Cormorant Garamond',serif",fontSize:13,letterSpacing:3,textTransform:"uppercase",color:"rgba(26,18,8,0.28)"}}>or</div>
-          <ValueOptionCard name={optionB} v={VALUES[optionB]} onClick={()=>choose(false)}/>
-        </div>
-      </div>
-    );
-  }
 
   // ─── WELCOME ─────────────────────────────────────────────────────────────────
   function WelcomeScreen({ onStart }) {
@@ -351,9 +744,9 @@
         <div style={{fontSize:12,letterSpacing:5,textTransform:"uppercase",color:"#8B6914",fontFamily:"'Cormorant Garamond',serif",marginBottom:16}}>DesignHer · Values Discovery</div>
         <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:48,fontWeight:700,color:"#1A1208",lineHeight:1.05,margin:"0 0 20px"}}>What Do You<br/><em style={{color:"#8B6914"}}>Value Most?</em></h1>
         <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:20,color:"rgba(26,18,8,0.58)",lineHeight:1.6,marginBottom:36}}>
-          First, choose the 10 values that matter most to you. Then we'll show them to you two at a time — pick the one that matters more, until we know exactly how they rank.
+          Answer 21 quick questions about everyday moments. Go with your gut. We'll read your values from the choices you make and reveal the archetype that fits the season you're in.
         </p>
-        {[["✦","Select your top 10 from 36 values"],["✦","Pick a winner in each head-to-head"],["✦","No right or wrong answers"]].map(([i,t])=>(
+        {[["✦","21 questions, about 5 minutes"],["✦","Real-life scenarios and quick this-or-that picks"],["✦","No right or wrong answers"]].map(([i,t])=>(
           <div key={t} style={{display:"flex",gap:14,alignItems:"center",marginBottom:12,textAlign:"left"}}>
             <span style={{color:"#8B6914",fontSize:12}}>{i}</span>
             <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.55)"}}>{t}</span>
@@ -387,7 +780,7 @@
       <div style={{textAlign:"center",padding:"44px 32px",maxWidth:400,margin:"0 auto"}}>
         <div style={{fontSize:52,marginBottom:16}}>✨</div>
         <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:38,fontWeight:700,color:"#1A1208",lineHeight:1.15,marginBottom:14}}>Your Archetype<br/><em style={{color:"#8B6914"}}>Awaits.</em></h2>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:19,color:"rgba(26,18,8,0.6)",marginBottom:8,lineHeight:1.5}}>You ranked your <strong style={{color:"#8B6914"}}>top 10 values</strong>.</p>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:19,color:"rgba(26,18,8,0.6)",marginBottom:8,lineHeight:1.5}}>You answered all <strong style={{color:"#8B6914"}}>21 questions</strong>.</p>
         <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(26,18,8,0.42)",marginBottom:28,lineHeight:1.5}}>Enter your details to reveal your season archetype, your 5 core values, and what they mean for your life right now.</p>
 
         <input value={name} onChange={e=>{setName(e.target.value);setError("");}} placeholder="First name" style={inp}/>
@@ -492,44 +885,42 @@
 
   // ─── APP ──────────────────────────────────────────────────────────────────────
   function DesignHerQuiz() {
-    const [phase, setPhase]                   = useState(()=>{
-      const saved = loadProgress();
-      const restorable = ["select","rank","email"];
-      return saved && restorable.includes(saved.phase) ? saved.phase : "welcome";
-    });
-    const [selectedValues, setSelectedValues] = useState(()=> loadProgress()?.selectedValues || []);
-    const [rankedValues, setRankedValues]     = useState(()=> loadProgress()?.rankedValues || []);
-    const [userData, setUserData]             = useState(null);
-    const [topValues, setTopValues]           = useState([]);
-    const [archetype, setArchetype]           = useState(null);
+    const saved = loadProgress();
+    const [phase, setPhase]         = useState(()=> saved && ["questions","email"].includes(saved.phase) ? saved.phase : "welcome");
+    const [answers, setAnswers]     = useState(()=> saved?.answers || Array(QUESTIONS.length).fill(null));
+    const [qIndex, setQIndex]       = useState(()=> saved?.qIndex || 0);
+    const [orders, setOrders]       = useState(()=> saved?.orders || shuffledOrders());
+    const [userData, setUserData]   = useState(null);
+    const [topValues, setTopValues] = useState([]);
+    const [archetype, setArchetype] = useState(null);
 
-    // Persist enough to survive a refresh mid-quiz; welcome/confirmation don't need it.
+    // Persist enough to survive a refresh mid-quiz.
     useEffect(()=>{
-      if (phase==="select" || phase==="rank" || phase==="email") {
-        saveProgress({ phase, selectedValues, rankedValues });
-      }
-    },[phase, selectedValues, rankedValues]);
+      if (phase==="questions" || phase==="email") saveProgress({ phase, answers, qIndex, orders });
+    },[phase, answers, qIndex, orders]);
 
-    const toggleValue = (name) => {
-      setSelectedValues(prev => {
-        if (prev.includes(name)) return prev.filter(v=>v!==name);
-        if (prev.length>=10) return prev;
-        return [...prev, name];
-      });
+    useEffect(()=>{ window.scrollTo(0,0); },[phase, qIndex]);
+
+    const handleStart = () => {
+      setAnswers(Array(QUESTIONS.length).fill(null));
+      setOrders(shuffledOrders());
+      setQIndex(0);
+      setPhase("questions");
     };
 
-    const handleSelectionContinue = () => {
-      if (selectedValues.length===10) setPhase("rank");
+    const handleAnswer = (ai) => {
+      const next = answers.slice(); next[qIndex] = ai;
+      setAnswers(next);
+      if (qIndex < QUESTIONS.length-1) setQIndex(qIndex+1);
+      else setPhase("email");
     };
 
-    const handleRankComplete = (ranked) => {
-      setRankedValues(ranked);
-      setPhase("email");
-    };
+    const handleBack = () => { if (qIndex>0) setQIndex(qIndex-1); };
 
     const handleEmailSubmit = ({name,email,optIn}) => {
-      const tv = rankedValues.slice(0,5);
-      const arch = getArchetype(rankedValues);
+      const ranked = scoreAnswers(answers);
+      const tv = ranked.slice(0,5);
+      const arch = getArchetype(ranked.slice(0,10));
 
       // ── Send subscriber to Kit form 9773625 ──
       const kitData = new FormData();
@@ -557,36 +948,34 @@
 
     const handleRestart = () => {
       clearProgress();
-      setSelectedValues([]); setRankedValues([]);
+      setAnswers(Array(QUESTIONS.length).fill(null)); setQIndex(0); setOrders(shuffledOrders());
       setUserData(null); setTopValues([]); setArchetype(null);
       setPhase("welcome");
     };
+
+    const progress = phase==="questions" ? (qIndex/QUESTIONS.length)*100 : 0;
 
     return (
       <div style={{minHeight:"100vh",background:"#FAF7F0",display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
         {/* Header */}
         <div style={{width:"100%",maxWidth:440,padding:"20px 24px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <span style={{fontFamily:"'Playfair Display',serif",fontStyle:"italic",fontSize:16,color:"#8B6914",letterSpacing:1}}>DesignHer</span>
-          {phase==="select"&&<span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:14,color:"rgba(26,18,8,0.38)",letterSpacing:1}}>{selectedValues.length} / 10</span>}
+          {phase==="questions"&&<span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:14,color:"rgba(26,18,8,0.45)",letterSpacing:1}}>{qIndex+1} of {QUESTIONS.length}</span>}
         </div>
 
-        {/* Progress — selection phase only; rank phase renders its own */}
-        {phase==="select"&&(
+        {phase==="questions"&&(
           <div style={{width:"100%",maxWidth:440,padding:"10px 24px 0"}}>
             <div style={{height:3,background:"rgba(26,18,8,0.07)",borderRadius:2}}>
-              <div style={{height:"100%",width:`${(selectedValues.length/10)*100}%`,background:"linear-gradient(90deg,#8B6914,#B8920A)",borderRadius:2,transition:"width 0.3s ease"}}/>
+              <div style={{height:"100%",width:`${progress}%`,background:"linear-gradient(90deg,#8B6914,#B8920A)",borderRadius:2,transition:"width 0.3s ease"}}/>
             </div>
           </div>
         )}
 
         <div style={{flex:1,width:"100%",maxWidth:440,display:"flex",flexDirection:"column"}}>
-          {phase==="welcome" && <WelcomeScreen onStart={()=>setPhase("select")}/>}
+          {phase==="welcome" && <WelcomeScreen onStart={handleStart}/>}
 
-          {phase==="select" &&
-            <SelectionScreen selected={selectedValues} onToggle={toggleValue} onContinue={handleSelectionContinue}/>}
-
-          {phase==="rank" &&
-            <RankScreen values={selectedValues} onComplete={handleRankComplete}/>}
+          {phase==="questions" &&
+            <QuestionScreen qIndex={qIndex} order={orders[qIndex]} chosen={answers[qIndex]} onAnswer={handleAnswer} onBack={handleBack}/>}
 
           {phase==="email" && <EmailScreen onSubmit={handleEmailSubmit}/>}
           {phase==="confirmation" && userData && archetype &&
