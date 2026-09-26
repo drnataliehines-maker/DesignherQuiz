@@ -744,10 +744,24 @@
     return (
       <div style={{textAlign:"center",padding:"38px 26px 48px",maxWidth:430,margin:"0 auto"}}>
         <div style={{display:"inline-block",padding:"7px 16px",borderRadius:999,background:"rgba(194,96,58,0.12)",fontSize:12,fontWeight:700,letterSpacing:2.5,textTransform:"uppercase",color:"#A8441F",fontFamily:"'DM Sans',sans-serif",marginBottom:20}}>Values Discovery</div>
-        <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:54,fontWeight:700,color:"#2A1B10",lineHeight:1.02,margin:"0 0 22px",letterSpacing:-0.5}}>What Do You<br/><em style={{color:"#C2603A"}}>Value Most?</em></h1>
+        <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:54,fontWeight:700,color:"#2A1B10",lineHeight:1.02,margin:"0 0 22px",letterSpacing:-0.5}}>Are You Living<br/><em style={{color:"#C2603A"}}>Your Best Life?</em></h1>
         <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"rgba(42,27,16,0.82)",lineHeight:1.65,marginBottom:34}}>
-          Answer 21 quick questions about everyday moments. Go with your gut. We'll read your values from the choices you make and reveal the archetype that fits the season you're in.
+          If the answer is no, or you are not sure, take this short quiz. Answer 21 questions about everyday moments and go with your gut. Your choices will show you the values you are built on, so you can start designing the life you actually want.
         </p>
+        <div style={{textAlign:"left",background:"#fff",border:"1px solid rgba(194,96,58,0.18)",borderRadius:18,padding:"22px 20px",marginBottom:30,boxShadow:"0 2px 10px rgba(168,68,31,0.06)"}}>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,lineHeight:1.65,color:"rgba(42,27,16,0.85)",marginBottom:14}}>
+            There is a common idea that the best life looks the same for everyone: the marriage, the children, the title, the travel photos, the right labels. Social media is full of it.
+          </p>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,lineHeight:1.65,color:"rgba(42,27,16,0.85)",marginBottom:14}}>
+            Then the story turns. A marriage ends, or a long quiet struggle comes to light, and everyone asks the same thing: how could this happen when they had it all?
+          </p>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,lineHeight:1.65,color:"rgba(42,27,16,0.85)",marginBottom:14}}>
+            Did they, though? A life can check every box on someone else's list and still leave out what matters most to you.
+          </p>
+          <p style={{fontFamily:"'Playfair Display',serif",fontSize:19,fontStyle:"italic",lineHeight:1.45,color:"#A8441F",margin:0}}>
+            Your best life is built on your values, not on the standard version.
+          </p>
+        </div>
         {[["✦","21 questions, about 5 minutes"],["✦","Real-life scenarios and quick this-or-that picks"],["✦","No right or wrong answers"]].map(([i,t])=>(
           <div key={t} style={{display:"flex",gap:13,alignItems:"center",marginBottom:11,textAlign:"left",background:"#fff",border:"1px solid rgba(194,96,58,0.18)",borderRadius:14,padding:"13px 16px"}}>
             <span style={{color:"#C2603A",fontSize:13}}>{i}</span>
@@ -755,7 +769,7 @@
           </div>
         ))}
         <button onClick={onStart} style={{width:"100%",marginTop:32,padding:"20px 0",background:"linear-gradient(135deg,#B5761F 0%,#C2603A 100%)",border:"none",borderRadius:18,fontFamily:"'DM Sans',sans-serif",fontSize:16,letterSpacing:1.6,textTransform:"uppercase",color:"#fff",fontWeight:700,cursor:"pointer",boxShadow:"0 10px 26px rgba(194,96,58,0.32)"}}>
-          Discover My Archetype
+          Who Am I?
         </button>
       </div>
     );
