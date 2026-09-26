@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>DesignHer · Values Discovery Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html,body{height:100%;background:#FAF7F0;}
+    #root{height:100%;}
+    input::placeholder{color:rgba(26,18,8,0.32);}
+    input:focus{outline:none;border-color:rgba(139,105,20,0.65)!important;box-shadow:0 0 0 3px rgba(139,105,20,0.1);}
+    ::-webkit-scrollbar{width:4px;}
+    ::-webkit-scrollbar-thumb{background:rgba(139,105,20,0.25);border-radius:2px;}@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+  const { useState, useEffect } = React;
+
+  // ─── VALUES ──────────────────────────────────────────────────────────────────
+  const VALUES = {
+    Authenticity: { year:1, emoji:"✨", color:"#8B6914", bg:"#FFF8E7", description:"Being fully yourself — no performance, no shrinking — is a revolutionary act. You are most powerful when you are most real.", alignment:"Deep trust in relationships, magnetic presence, energy that doesn't deplete because you're not maintaining a mask.", misalignment:"Suffocating in environments that reward performance over truth. Feeling unseen even in a crowd." },
+    Legacy:       { year:1, emoji:"🏛️", color:"#6B4226", bg:"#FDF3EC", description:"Legacy is the answer to: What will remain when I'm gone? It is built in daily choices, not grand gestures.", alignment:"You make decisions with the long view in mind. You invest in people. You build things meant to outlast you.", misalignment:"So focused on leaving a mark that you miss the present. Or so present-focused that you never plant seeds." },
+    Excellence:   { year:2, emoji:"💎", color:"#276B2E", bg:"#F1F8F2", description:"Mediocrity is not an option for you. Whatever is worth doing is worth doing with skill, care, and mastery.", alignment:"Your work reflects precision and pride. You elevate every room you're in. People count on you to deliver.", misalignment:"Perfectionism and burnout. Frustration with others' good enough. Rest feeling like falling behind." },
+    Resilience:   { year:1, emoji:"🌊", color:"#1A5F8A", bg:"#EEF6FB", description:"You have an extraordinary capacity to absorb difficulty, adapt, and rise stronger. Setbacks are data, not defeat.", alignment:"You navigate change with grace. Your track record proves you don't stay down. Others draw strength from watching you rebuild.", misalignment:"Pushing through pain when rest is needed. Confusing relentless endurance with actual healing." },
+    Courage:      { year:1, emoji:"🔥", color:"#A8301F", bg:"#FDF0EE", description:"Courage isn't the absence of fear — it's choosing your truth, your growth, or someone else's freedom, even when afraid.", alignment:"You speak up when it costs you something. You act before you feel ready. People draw strength from your nerve.", misalignment:"Confusing recklessness with bravery. Burning out from always being the one who steps up." },
+    Ambition:     { year:2, emoji:"🚀", color:"#512A80", bg:"#F5F0FB", description:"You have a fire in you that won't be contained. You are driven to build, achieve, and create something that matters.", alignment:"You set audacious goals and pursue them relentlessly. You are energized by growth and momentum.", misalignment:"Restless in stagnant environments. Achievement becoming a substitute for actual fulfillment." },
+    Leadership:   { year:1, emoji:"👑", color:"#6B328E", bg:"#F8F1FC", description:"You are drawn to guiding, inspiring, and mobilizing others. You don't wait for permission — you set the vision.", alignment:"You lead teams, mentor others, take initiative, and create environments where people feel seen and empowered.", misalignment:"Feeling stifled when micromanaged. Depleted when you're the only one carrying the vision forward." },
+    "Self-Worth": { year:1, emoji:"💛", color:"#8B6914", bg:"#FFF8E7", description:"Your value is not earned. It is inherent. Self-worth is the foundation everything else is built on.", alignment:"You make choices from worthiness, not fear. You don't settle in love, work, or life, because you know what you deserve.", misalignment:"Overworking to prove value. Staying in rooms, relationships, or roles that don't honor who you are." },
+    Creativity:   { year:1, emoji:"🎨", color:"#B8440A", bg:"#FEF3EC", description:"Ideas flow through you in art, strategy, conversation, or design. Creative expression is a form of freedom.", alignment:"You thrive when given room to innovate, experiment, and make things beautiful. You're bored by the status quo.", misalignment:"Withering in rigid, repetitive environments. Work that doesn't allow invention drains your energy fast." },
+    Joy:          { year:2, emoji:"☀️", color:"#A06800", bg:"#FFFBEF", description:"Joy is not happiness — it's a deeper current that runs beneath circumstances. Choosing joy is an act of resistance.", alignment:"You find delight in small things. Lightness is your natural state when you're living in alignment. You make rooms brighter.", misalignment:"Using busyness to avoid joy. Feeling guilty for having fun when so much needs to be done." },
+    Boundaries:   { year:1, emoji:"🛡️", color:"#4A3878", bg:"#F4F1F9", description:"Boundaries are not walls — they are the perimeter of your self-respect. They teach others how to love you well.", alignment:"You protect your energy without guilt. Your relationships are honest and mutual because limits make love sustainable.", misalignment:"Chronic exhaustion from over-giving. Resentment building where boundaries were needed but never voiced." },
+    Radiance:     { year:3, emoji:"🌟", color:"#A06800", bg:"#FFFBEF", description:"Radiance is what happens when you stop hiding. It's your natural light, freed from performance, fear, and the need to be palatable.", alignment:"Your presence is felt before you speak. You glow with the confidence of someone who has decided to take up space.", misalignment:"Dimming your light to make others comfortable. Or confusing radiance with performance and exhausting yourself." },
+    Vulnerability:{ year:2, emoji:"💧", color:"#1050A0", bg:"#EEF4FC", description:"Vulnerability is not weakness — it is the birthplace of connection, creativity, and courage. It takes strength to be seen.", alignment:"You form deep bonds quickly. People trust you because you trust them first. Your openness disarms walls.", misalignment:"Oversharing without discernment. Or sealing yourself off because someone weaponized your openness." },
+    Wisdom:       { year:2, emoji:"🌙", color:"#141E6E", bg:"#EEEFFE", description:"You move from deep knowing — not just information, but discernment. You see patterns and offer perspective that transforms.", alignment:"People seek your counsel. You reflect before reacting. Your decisions are grounded in evidence and intuition.", misalignment:"Frustration when others won't slow down to think. Carrying the weight of seeing what others can't yet see." },
+    Truth:        { year:3, emoji:"🪞", color:"#1A2A3A", bg:"#F0F2F4", description:"Truth is the most intimate relationship you'll ever have — the one with yourself. Everything else is built on it.", alignment:"You name things as they are. Your word is trusted. You don't require agreement — you require honesty.", misalignment:"Harsh truth without compassion. Or protecting others from truth in ways that ultimately harm them." },
+    Service:      { year:2, emoji:"🕊️", color:"#206060", bg:"#EEF9F8", description:"You are fueled by giving — your time, wisdom, gifts — to lift others. Purpose lives in contribution.", alignment:"You are the person people call when they need real help. You find deep meaning in mentorship and advocacy.", misalignment:"Over-giving, neglecting your own needs. Attracting people who take without reciprocating." },
+    Grace:        { year:3, emoji:"🌺", color:"#8A2820", bg:"#FDF0EE", description:"Grace is the quality of moving through life with ease, composure, and mercy — for yourself and others.", alignment:"You extend patience where others rush to judgment. You handle difficulty with dignity. You are not easily rattled.", misalignment:"Grace becoming a mask for suppressed emotion. Performing composure while falling apart inside." },
+    Freedom:      { year:2, emoji:"🦋", color:"#1A5F8A", bg:"#EEF6FB", description:"Autonomy is oxygen for you. You need space to think, move, decide, and live on your own terms.", alignment:"You thrive in flexible, self-directed environments. You are entrepreneurial, boundary-pushing, fiercely independent.", misalignment:"Rigid structures and controlling people feel suffocating. Commitment without choice feels like a trap." },
+    Reinvention:  { year:3, emoji:"🦚", color:"#5A1878", bg:"#F6EEFB", description:"Reinvention is the courage to become someone new without abandoning who you've always been. It is evolution, not erasure.", alignment:"You shed outdated versions of yourself without grief. You embrace new chapters. Change is exciting, not threatening.", misalignment:"Reinventing to escape rather than to evolve. Or resisting change to protect an identity that no longer fits." },
+    Vision:       { year:2, emoji:"🔭", color:"#005A4A", bg:"#EEF9F7", description:"You see what doesn't exist yet — and you believe it enough to build toward it. Vision is the architecture of the future you're creating.", alignment:"You think long-term. You inspire others with the picture of what's possible. You plan with intention and flexibility.", misalignment:"Living so far in the future you miss the present. Or using vision as a substitute for execution." },
+    Healing:      { year:3, emoji:"🌱", color:"#276B2E", bg:"#F1F8F2", description:"Healing is wholeness in progress — not erasing the past, but integrating it so it makes you whole, not broken.", alignment:"You have done the inner work. You respond rather than react. Your past informs but doesn't define your choices.", misalignment:"Wearing wounds as identity. Or bypassing genuine healing by staying perpetually busy or performing wellness." },
+    Influence:    { year:3, emoji:"🌊", color:"#1050A0", bg:"#EEF4FC", description:"Influence is the ripple effect of your presence — it travels further than you can see. The way you show up changes rooms.", alignment:"People are moved by your story. Your reputation precedes you in the best way. You lead without needing a title.", misalignment:"Chasing visibility for its own sake. Influence becoming performance instead of genuine contribution." },
+    Purpose:      { year:1, emoji:"🌟", color:"#A06800", bg:"#FFFBEF", description:"You are not here by accident. Purpose is the thread that connects your gifts to the world's deepest needs.", alignment:"Your work feels meaningful even when it's hard. You return to your why during difficulty and it steadies you.", misalignment:"Busyness without direction. Achieving goals that don't satisfy because they were never truly yours." },
+    Boldness:     { year:3, emoji:"🦁", color:"#A8301F", bg:"#FDF0EE", description:"Boldness is the willingness to be seen — fully, loudly, unapologetically. It is taking the risk of standing out.", alignment:"You pitch the audacious idea. You say the thing nobody else will. You own the room.", misalignment:"Performing boldness for validation. Or being bold in safe contexts but shrinking where it actually costs something." },
+    Celebration:  { year:3, emoji:"🥂", color:"#8B6914", bg:"#FFF8E7", description:"Celebration is the practice of honoring how far you've come — not waiting until you've arrived. It is gratitude in motion.", alignment:"You mark milestones. You make space for joy after hard work. You celebrate others without diminishing yourself.", misalignment:"Moving the goalpost every time you arrive. Never pausing long enough to receive what you've earned." },
+    Presence:     { year:3, emoji:"🕯️", color:"#4A3030", bg:"#F9F3F3", description:"Presence is the gift of being fully here — in your body, in this moment, in this conversation. It is increasingly rare and always remembered.", alignment:"People feel seen when they're with you. You're not half-distracted. Your attention is a form of love.", misalignment:"Chronic distraction, even from things you love. Living in past regret or future anxiety instead of right now." },
+    Clarity:      { year:1, emoji:"🔮", color:"#206060", bg:"#EEF9F8", description:"Clarity is the luxury of truly knowing yourself — what you want, what you won't tolerate, and what matters most.", alignment:"You make decisions with confidence. Distractions don't derail you. You can say no easily because you know your yes.", misalignment:"Chronically overwhelmed by options. Saying yes to everything because you haven't named your priorities." },
+    Discipline:   { year:2, emoji:"🎯", color:"#6E2A0A", bg:"#FDF3EC", description:"Discipline is devotion in practice — the daily choices that make your vision real. It is love for your future self.", alignment:"Your habits match your goals. You show up consistently, even without motivation. You trust the process.", misalignment:"Rigidity that leaves no room for grace. Or using discipline as a cover for fear of rest and play." },
+    Power:        { year:2, emoji:"⚡", color:"#A8301F", bg:"#FDF0EE", description:"Power is your capacity to act, influence, and create change. Owning it without apology is one of the most radical things a woman can do.", alignment:"You take up space deliberately. You advocate for yourself and others. You don't dim your light for comfort.", misalignment:"Using power to control rather than elevate. Or giving your power away to avoid standing out." },
+    Sovereignty:  { year:3, emoji:"🗝️", color:"#512A80", bg:"#F5F0FB", description:"Sovereignty is ruling your own life. It is the refusal to outsource your happiness, your decisions, or your sense of self to anyone else.", alignment:"You are the CEO of your life. You take full responsibility for your choices, your energy, your direction.", misalignment:"Rebellion without direction — being contrarian as a form of sovereignty rather than genuinely self-governed." },
+    Community:    { year:2, emoji:"🤝", color:"#005A4A", bg:"#EEF9F7", description:"You understand that we rise together. Community isn't just support — it's accountability, belonging, and collective power.", alignment:"You invest in relationships. You show up for others. You build tables, not just climb ladders.", misalignment:"Isolation in the name of independence. Or losing yourself in community and forgetting your individual needs." },
+    Faith:        { year:2, emoji:"🌠", color:"#3A1870", bg:"#F5EEFB", description:"Faith is trusting the unseen — in yourself, in the process, in something larger. It is the courage to act before proof arrives.", alignment:"You move forward before all conditions are perfect. Uncertainty doesn't stop you. You have a track record of surviving your hardest moments.", misalignment:"Passivity disguised as trust. Waiting for signs instead of doing the work." },
+    Gratitude:    { year:1, emoji:"🌸", color:"#8A0E45", bg:"#FEF0F5", description:"Gratitude is not toxic positivity — it is the practice of noticing what is good while still naming what needs to change.", alignment:"You find meaning in ordinary moments. Difficulty doesn't cancel your appreciation for what is right.", misalignment:"Using gratitude to bypass legitimate grief or frustration. Dismissing your own needs as not that bad." },
+    Abundance:    { year:1, emoji:"🌿", color:"#276B2E", bg:"#F1F8F2", description:"Abundance is a way of seeing — one that notices what is present rather than mourning what is absent.", alignment:"You give freely because you trust there is more. You receive compliments, opportunities, and help without deflecting.", misalignment:"Chronic comparison. Hoarding time, money, or credit out of fear there won't be enough." },
+    Balance:      { year:3, emoji:"⚖️", color:"#3E5460", bg:"#EEF4F6", description:"Balance isn't equal weight — it's intentional integration. It means nothing is starved of attention for so long it collapses.", alignment:"You make conscious trade-offs. You can be ambitious and rested, driven and present, giving and boundaried.", misalignment:"The illusion of balance through busyness. Or using balance to justify under-committing to things that matter." },
+    Generosity:   { year:3, emoji:"🎁", color:"#8A0E45", bg:"#FEF0F5", description:"True generosity flows from overflow — not depletion. It is giving your best, not your leftovers, from a place of wholeness.", alignment:"You give freely with no strings. Your generosity creates ripples. People feel genuinely nourished by what you offer.", misalignment:"Giving from empty. Confusing people-pleasing with generosity. Expecting return in ways you haven't stated." },
+  };
+
+  // ─── ARCHETYPES ───────────────────────────────────────────────────────────────
+  // Each archetype = a season theme + the values that most signal it
+  const ARCHETYPES = [
+    {
+      name: "The Sovereign",
+      season: "You are in a season of radical self-ownership.",
+      description: "This is your year to stop seeking permission. You are reclaiming authority over your own life — your choices, your energy, your direction. Nothing gets to take up space that you didn't consciously invite in.",
+      emoji: "🗝️",
+      color: "#512A80",
+      bg: "#F5F0FB",
+      values: ["Sovereignty","Power","Boundaries","Freedom","Boldness","Courage","Self-Worth"],
+    },
+    {
+      name: "The Architect",
+      season: "You are in a season of intentional building.",
+      description: "You are not just dreaming — you are constructing. This season is about laying foundations that last, executing with precision, and turning vision into something you can hold. You are building your life on purpose.",
+      emoji: "🏛️",
+      color: "#6B4226",
+      bg: "#FDF3EC",
+      values: ["Vision","Ambition","Excellence","Discipline","Leadership","Legacy","Purpose"],
+    },
+    {
+      name: "The Healer",
+      season: "You are in a season of restoration.",
+      description: "Something in you is mending — and you are making space for it. This isn't weakness; it's the most courageous kind of work. You are choosing wholeness over hustle, integration over performance.",
+      emoji: "🌱",
+      color: "#276B2E",
+      bg: "#F1F8F2",
+      values: ["Healing","Vulnerability","Grace","Presence","Balance","Gratitude","Faith"],
+    },
+    {
+      name: "The Truth-Teller",
+      season: "You are in a season of radical honesty.",
+      description: "You are done performing. The stories you've been telling yourself — and the ones others have told about you — are being examined and released. What remains is truer, and lighter, than anything that came before.",
+      emoji: "🪞",
+      color: "#1A2A3A",
+      bg: "#F0F2F4",
+      values: ["Truth","Authenticity","Wisdom","Clarity","Presence","Boundaries","Self-Worth"],
+    },
+    {
+      name: "The Creator",
+      season: "You are in a season of becoming.",
+      description: "Something new is emerging through you — and you are brave enough to let it. This season is defined by experimentation, expression, and the thrill of making something that didn't exist before you touched it.",
+      emoji: "🎨",
+      color: "#B8440A",
+      bg: "#FEF3EC",
+      values: ["Creativity","Reinvention","Boldness","Purpose","Freedom","Joy","Abundance"],
+    },
+    {
+      name: "The Light-Bearer",
+      season: "You are in a season of radiant overflow.",
+      description: "You have tended to yourself long enough that you are now spilling over. Joy is not something you earn — it is something you embody. This season, your presence alone is a gift to every room you enter.",
+      emoji: "🌟",
+      color: "#A06800",
+      bg: "#FFFBEF",
+      values: ["Joy","Radiance","Celebration","Gratitude","Abundance","Generosity","Presence"],
+    },
+    {
+      name: "The Connector",
+      season: "You are in a season of deep belonging.",
+      description: "You are learning that strength and softness are not opposites. This season is about the courage to be truly known — by others and by yourself. The connections you forge now will shape the next chapter of your life.",
+      emoji: "🤝",
+      color: "#005A4A",
+      bg: "#EEF9F7",
+      values: ["Community","Service","Vulnerability","Generosity","Influence","Legacy","Healing"],
+    },
+    {
+      name: "The Pathfinder",
+      season: "You are in a season of brave new chapters.",
+      description: "The road ahead has never been walked before — and that's exactly why you're the one to walk it. This season calls you forward into territory that requires more faith than certainty, and more courage than comfort.",
+      emoji: "🦋",
+      color: "#1A5F8A",
+      bg: "#EEF6FB",
+      values: ["Freedom","Courage","Reinvention","Faith","Resilience","Purpose","Vision"],
+    },
+  ];
+
+  // Scores every archetype against the FULL ranked list (not just the top 5), weighting
+  // each match by how highly the user ranked it — rank 1 counts most, rank 10 counts least.
+  // This makes ties much rarer than a flat overlap count; when one still occurs, the
+  // archetype listed first above wins, same as before.
+  function getArchetype(rankedValues) {
+    let best = ARCHETYPES[0];
+    let bestScore = -1;
+    ARCHETYPES.forEach(arch => {
+      const score = rankedValues.reduce((sum, v, i) => sum + (arch.values.includes(v) ? rankedValues.length - i : 0), 0);
+      if (score > bestScore) { bestScore = score; best = arch; }
+    });
+    return best;
+  }
+
+  // ─── QUESTIONS ───────────────────────────────────────────────────────────────
+  // Each answer scores 2 points to its primary value (p) and 1 point to its secondary (s).
+  // Balanced: every value is a primary exactly twice and a secondary exactly twice (max 6 pts).
+  const QUESTIONS = [
+    {
+      "type": "Scenario",
+      "q": "A close friend's birthday dinner lands on the night before a big work deadline. What do you do?",
+      "answers": [
+        {
+          "t": "Go, but leave early so you're rested for tomorrow",
+          "p": "Balance",
+          "s": "Sovereignty"
+        },
+        {
+          "t": "Go and be fully there. The deadline can wait until morning.",
+          "p": "Presence",
+          "s": "Abundance"
+        },
+        {
+          "t": "Tell her honestly you can't make it, and plan a night for just the two of you",
+          "p": "Boundaries",
+          "s": "Truth"
+        },
+        {
+          "t": "Offer to help plan the evening, because celebrating people matters to you",
+          "p": "Joy",
+          "s": "Celebration"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "Your manager offers you a role leading a team you've never managed. What's your first thought?",
+      "answers": [
+        {
+          "t": "\"Finally. I've been ready for this.\"",
+          "p": "Ambition",
+          "s": "Power"
+        },
+        {
+          "t": "\"What could this team become with the right direction?\"",
+          "p": "Vision",
+          "s": "Legacy"
+        },
+        {
+          "t": "\"Does this actually fit where I'm headed?\"",
+          "p": "Purpose",
+          "s": "Clarity"
+        },
+        {
+          "t": "\"I'm nervous, and I'm saying yes anyway.\"",
+          "p": "Courage",
+          "s": "Faith"
+        }
+      ]
+    },
+    {
+      "type": "This or that",
+      "q": "Would you rather have...",
+      "answers": [
+        {
+          "t": "A life designed completely on your own terms",
+          "p": "Sovereignty",
+          "s": "Freedom"
+        },
+        {
+          "t": "A life full of people who show up for each other",
+          "p": "Community",
+          "s": "Vulnerability"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You made a mistake at work, and other people noticed. What's your move?",
+      "answers": [
+        {
+          "t": "Own it right away and explain what happened",
+          "p": "Truth",
+          "s": "Authenticity"
+        },
+        {
+          "t": "Fix it, then build a process so it never happens again",
+          "p": "Excellence",
+          "s": "Discipline"
+        },
+        {
+          "t": "Forgive yourself quickly. Everyone slips sometimes.",
+          "p": "Grace",
+          "s": "Self-Worth"
+        },
+        {
+          "t": "Treat it as information and come back sharper",
+          "p": "Resilience",
+          "s": "Wisdom"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You wake up to an unexpected free Saturday. How do you spend it?",
+      "answers": [
+        {
+          "t": "Start the creative project you keep putting off",
+          "p": "Creativity",
+          "s": "Joy"
+        },
+        {
+          "t": "Rest completely, with no plans and no guilt",
+          "p": "Healing",
+          "s": "Balance"
+        },
+        {
+          "t": "Help out someone who could use a hand",
+          "p": "Service",
+          "s": "Generosity"
+        },
+        {
+          "t": "Try something you've never done before",
+          "p": "Boldness",
+          "s": "Reinvention"
+        }
+      ]
+    },
+    {
+      "type": "This or that",
+      "q": "Would you rather be remembered for...",
+      "answers": [
+        {
+          "t": "What you built",
+          "p": "Legacy",
+          "s": "Ambition"
+        },
+        {
+          "t": "How you made people feel",
+          "p": "Healing",
+          "s": "Presence"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "A friend asks for honest feedback on her business idea, and you can see real problems with it. What do you do?",
+      "answers": [
+        {
+          "t": "Tell her kindly but plainly what you see",
+          "p": "Courage",
+          "s": "Truth"
+        },
+        {
+          "t": "Ask questions until she spots the gaps herself",
+          "p": "Wisdom",
+          "s": "Leadership"
+        },
+        {
+          "t": "Start with what's genuinely strong, then get to what needs work",
+          "p": "Gratitude",
+          "s": "Abundance"
+        },
+        {
+          "t": "Offer your time to help her work through the weak spots",
+          "p": "Generosity",
+          "s": "Service"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You've been in the same job for years. It's fine, but it doesn't feel like you anymore. What happens next?",
+      "answers": [
+        {
+          "t": "Start planning your exit, even before you know what's next",
+          "p": "Freedom",
+          "s": "Courage"
+        },
+        {
+          "t": "Trust that the right door will open when it's time",
+          "p": "Faith",
+          "s": "Grace"
+        },
+        {
+          "t": "Get very specific about what you want before you make a move",
+          "p": "Clarity",
+          "s": "Vision"
+        },
+        {
+          "t": "Start a side project that lets you try on a new version of yourself",
+          "p": "Reinvention",
+          "s": "Creativity"
+        }
+      ]
+    },
+    {
+      "type": "This or that",
+      "q": "When you do great work, would you rather...",
+      "answers": [
+        {
+          "t": "Be recognized for it in front of everyone",
+          "p": "Radiance",
+          "s": "Boldness"
+        },
+        {
+          "t": "Know quietly that you gave it your best",
+          "p": "Self-Worth",
+          "s": "Excellence"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "Someone keeps talking over you in meetings. How do you handle it?",
+      "answers": [
+        {
+          "t": "Say \"I'm not finished\" and keep going",
+          "p": "Power",
+          "s": "Boldness"
+        },
+        {
+          "t": "Talk to them one-on-one and set the expectation",
+          "p": "Leadership",
+          "s": "Boundaries"
+        },
+        {
+          "t": "Stay steady and keep being yourself. Your work speaks for itself.",
+          "p": "Authenticity",
+          "s": "Resilience"
+        },
+        {
+          "t": "Notice who else gets talked over, and start backing them up",
+          "p": "Influence",
+          "s": "Service"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You get a surprise bonus. What do you do with it?",
+      "answers": [
+        {
+          "t": "Mark the moment with something meaningful for yourself",
+          "p": "Self-Worth",
+          "s": "Joy"
+        },
+        {
+          "t": "Put it toward a long-term goal",
+          "p": "Vision",
+          "s": "Legacy"
+        },
+        {
+          "t": "Share part of it with someone who needs it",
+          "p": "Generosity",
+          "s": "Gratitude"
+        },
+        {
+          "t": "Use it to buy yourself time or breathing room",
+          "p": "Freedom",
+          "s": "Sovereignty"
+        }
+      ]
+    },
+    {
+      "type": "This or that",
+      "q": "Would you rather your days have...",
+      "answers": [
+        {
+          "t": "A rhythm you can count on",
+          "p": "Balance",
+          "s": "Discipline"
+        },
+        {
+          "t": "Room for surprises",
+          "p": "Joy",
+          "s": "Freedom"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You're going through a hard season. What gets you through?",
+      "answers": [
+        {
+          "t": "Letting a few trusted people see what you're carrying",
+          "p": "Vulnerability",
+          "s": "Community"
+        },
+        {
+          "t": "Getting back up every morning, one day at a time",
+          "p": "Discipline",
+          "s": "Resilience"
+        },
+        {
+          "t": "Looking for what this season is teaching you",
+          "p": "Wisdom",
+          "s": "Healing"
+        },
+        {
+          "t": "Trusting it's leading somewhere, even if you can't see where yet",
+          "p": "Faith",
+          "s": "Purpose"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You're at a party where you barely know anyone. What are you most likely doing?",
+      "answers": [
+        {
+          "t": "Finding one person and having a real conversation",
+          "p": "Presence",
+          "s": "Authenticity"
+        },
+        {
+          "t": "Introducing people who should know each other",
+          "p": "Influence",
+          "s": "Leadership"
+        },
+        {
+          "t": "Bringing the energy to the room",
+          "p": "Radiance",
+          "s": "Celebration"
+        },
+        {
+          "t": "Enjoying it on your terms, and leaving when you're ready",
+          "p": "Sovereignty",
+          "s": "Boundaries"
+        }
+      ]
+    },
+    {
+      "type": "This or that",
+      "q": "Would you rather...",
+      "answers": [
+        {
+          "t": "Chase one big dream for years",
+          "p": "Purpose",
+          "s": "Vision"
+        },
+        {
+          "t": "Celebrate lots of small wins along the way",
+          "p": "Celebration",
+          "s": "Gratitude"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You're offered a well-paid opportunity that doesn't sit right with you. What do you do?",
+      "answers": [
+        {
+          "t": "Turn it down without second-guessing",
+          "p": "Authenticity",
+          "s": "Clarity"
+        },
+        {
+          "t": "Take it, knowing opportunities keep coming and you can change course later",
+          "p": "Abundance",
+          "s": "Power"
+        },
+        {
+          "t": "Negotiate it into something you can stand behind",
+          "p": "Leadership",
+          "s": "Influence"
+        },
+        {
+          "t": "Talk it through with someone you trust before deciding",
+          "p": "Vulnerability",
+          "s": "Wisdom"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "Someone who hurt you in the past reaches out to apologize. How do you respond?",
+      "answers": [
+        {
+          "t": "Accept it and genuinely wish them well",
+          "p": "Grace",
+          "s": "Healing"
+        },
+        {
+          "t": "Thank them, and keep your distance",
+          "p": "Boundaries",
+          "s": "Self-Worth"
+        },
+        {
+          "t": "Tell them honestly how it affected you",
+          "p": "Truth",
+          "s": "Vulnerability"
+        },
+        {
+          "t": "See it as a chance to close the chapter for good",
+          "p": "Clarity",
+          "s": "Reinvention"
+        }
+      ]
+    },
+    {
+      "type": "This or that",
+      "q": "Would you rather be...",
+      "answers": [
+        {
+          "t": "Truly excellent at one thing",
+          "p": "Excellence",
+          "s": "Ambition"
+        },
+        {
+          "t": "Good at many things, and always learning a new one",
+          "p": "Reinvention",
+          "s": "Creativity"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "A friend wins an award you were also up for. What's your honest reaction?",
+      "answers": [
+        {
+          "t": "Be the first to congratulate her",
+          "p": "Celebration",
+          "s": "Generosity"
+        },
+        {
+          "t": "Feel the sting, then let it go",
+          "p": "Resilience",
+          "s": "Grace"
+        },
+        {
+          "t": "Use it as fuel for your next goal",
+          "p": "Ambition",
+          "s": "Excellence"
+        },
+        {
+          "t": "Remember there's more than enough success to go around",
+          "p": "Abundance",
+          "s": "Faith"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "You're asked to speak at an event on short notice. What do you say?",
+      "answers": [
+        {
+          "t": "\"Yes!\" You'll figure it out on the way.",
+          "p": "Boldness",
+          "s": "Courage"
+        },
+        {
+          "t": "\"Yes, if I can prepare properly.\"",
+          "p": "Discipline",
+          "s": "Radiance"
+        },
+        {
+          "t": "\"I know someone who deserves this spotlight more.\"",
+          "p": "Service",
+          "s": "Community"
+        },
+        {
+          "t": "\"Yes. I have something to say, and I'm owning that stage.\"",
+          "p": "Power",
+          "s": "Influence"
+        }
+      ]
+    },
+    {
+      "type": "Scenario",
+      "q": "Picture your life ten years from now. What makes you proudest?",
+      "answers": [
+        {
+          "t": "The work you created",
+          "p": "Creativity",
+          "s": "Radiance"
+        },
+        {
+          "t": "The people around you",
+          "p": "Community",
+          "s": "Presence"
+        },
+        {
+          "t": "The peace you feel",
+          "p": "Gratitude",
+          "s": "Balance"
+        },
+        {
+          "t": "The difference you made",
+          "p": "Legacy",
+          "s": "Purpose"
+        }
+      ]
+    }
+  ];
+
+  // Turns answers into a full ranked list of all 36 values.
+  // Ties: more primary hits wins, then whichever value scored most recently.
+  function scoreAnswers(answers) {
+    const tally = {};
+    Object.keys(VALUES).forEach((v,i)=>{ tally[v] = { pts:0, prim:0, last:-1, order:i }; });
+    answers.forEach((ai, qi) => {
+      if (ai === null || ai === undefined) return;
+      const a = QUESTIONS[qi].answers[ai];
+      if (tally[a.p]) { tally[a.p].pts += 2; tally[a.p].prim += 1; tally[a.p].last = qi; }
+      if (tally[a.s]) { tally[a.s].pts += 1; tally[a.s].last = Math.max(tally[a.s].last, qi); }
+    });
+    return Object.keys(tally).sort((x,y)=>{
+      const A=tally[x], B=tally[y];
+      return (B.pts-A.pts) || (B.prim-A.prim) || (B.last-A.last) || (A.order-B.order);
+    });
+  }
+
+  function shuffledOrders() {
+    return QUESTIONS.map(q => {
+      const idx = q.answers.map((_,i)=>i);
+      for (let i=idx.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [idx[i],idx[j]]=[idx[j],idx[i]]; }
+      return idx;
+    });
+  }
+
+  // ─── PROGRESS PERSISTENCE (localStorage) ────────────────────────────────────────
+  const PROGRESS_KEY = "designherQuizProgressV2";
+  try { localStorage.removeItem("designherQuizProgress"); localStorage.removeItem("designherQuizRankState"); } catch {}
+
+  function loadProgress() {
+    try {
+      const raw = localStorage.getItem(PROGRESS_KEY);
+      const p = raw ? JSON.parse(raw) : null;
+      if (!p || !Array.isArray(p.answers) || p.answers.length !== QUESTIONS.length) return null;
+      return p;
+    } catch { return null; }
+  }
+  function saveProgress(data) {
+    try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(data)); } catch {}
+  }
+  function clearProgress() {
+    try { localStorage.removeItem(PROGRESS_KEY); } catch {}
+  }
+
+  // ─── QUESTION SCREEN ─────────────────────────────────────────────────────────
+  function QuestionScreen({ qIndex, order, chosen, onAnswer, onBack }) {
+    const q = QUESTIONS[qIndex];
+    const [picked, setPicked] = useState(null);
+    useEffect(()=>{ setPicked(null); }, [qIndex]);
+
+    const choose = (ai) => {
+      if (picked !== null) return;
+      setPicked(ai);
+      setTimeout(()=>onAnswer(ai), 280);
+    };
+
+    return (
+      <div style={{padding:"30px 24px 40px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:22,minHeight:24}}>
+          {qIndex>0
+            ? <button onClick={onBack} style={{background:"transparent",border:"none",padding:0,fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(26,18,8,0.45)",cursor:"pointer"}}>‹ Back</button>
+            : <span/>}
+          {q.type==="This or that" &&
+            <span style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:15,color:"#8B6914"}}>This or that</span>}
+        </div>
+
+        <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:q.type==="This or that"?30:25,fontWeight:700,color:"#1A1208",lineHeight:1.25,margin:"0 0 26px"}}>{q.q}</h2>
+
+        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+          {order.map(ai => {
+            const isOn = picked===ai || (picked===null && chosen===ai);
+            return (
+              <button key={ai} onClick={()=>choose(ai)}
+                style={{textAlign:"left",width:"100%",padding:q.type==="This or that"?"22px 20px":"17px 18px",
+                  background:isOn?"#FFF8E7":"#fff",
+                  border:"1.5px solid "+(isOn?"#8B6914":"rgba(139,105,20,0.2)"),
+                  borderRadius:14,cursor:"pointer",transition:"all 0.2s",
+                  fontFamily:"'Cormorant Garamond',serif",fontSize:q.type==="This or that"?21:19,lineHeight:1.4,
+                  color:isOn?"#5C4510":"#1A1208",
+                  boxShadow:isOn?"0 4px 18px rgba(139,105,20,0.14)":"none"}}>
+                {q.answers[ai].t}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+
+  // ─── WELCOME ─────────────────────────────────────────────────────────────────
+  function WelcomeScreen({ onStart }) {
+    return (
+      <div style={{textAlign:"center",padding:"44px 32px",maxWidth:400,margin:"0 auto"}}>
+        <div style={{fontSize:12,letterSpacing:5,textTransform:"uppercase",color:"#8B6914",fontFamily:"'Cormorant Garamond',serif",marginBottom:16}}>DesignHer · Values Discovery</div>
+        <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:48,fontWeight:700,color:"#1A1208",lineHeight:1.05,margin:"0 0 20px"}}>What Do You<br/><em style={{color:"#8B6914"}}>Value Most?</em></h1>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:20,color:"rgba(26,18,8,0.58)",lineHeight:1.6,marginBottom:36}}>
+          Answer 21 quick questions about everyday moments. Go with your gut. We'll read your values from the choices you make and reveal the archetype that fits the season you're in.
+        </p>
+        {[["✦","21 questions, about 5 minutes"],["✦","Real-life scenarios and quick this-or-that picks"],["✦","No right or wrong answers"]].map(([i,t])=>(
+          <div key={t} style={{display:"flex",gap:14,alignItems:"center",marginBottom:12,textAlign:"left"}}>
+            <span style={{color:"#8B6914",fontSize:12}}>{i}</span>
+            <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.55)"}}>{t}</span>
+          </div>
+        ))}
+        <button onClick={onStart} style={{width:"100%",marginTop:32,padding:"20px 0",background:"linear-gradient(135deg,#8B6914,#B8920A)",border:"none",borderRadius:16,fontFamily:"'Cormorant Garamond',serif",fontSize:18,letterSpacing:3,textTransform:"uppercase",color:"#fff",fontWeight:700,cursor:"pointer",boxShadow:"0 8px 30px rgba(139,105,20,0.28)"}}>
+          Discover My Archetype
+        </button>
+      </div>
+    );
+  }
+
+  // ─── EMAIL ───────────────────────────────────────────────────────────────────
+  function EmailScreen({ onSubmit }) {
+    const [email,setEmail]=useState("");
+    const [name,setName]=useState("");
+    const [error,setError]=useState("");
+    const [optIn,setOptIn]=useState(false);
+
+    const submit=()=>{
+      if(!name.trim()){setError("Please enter your first name.");return;}
+      if(!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)){setError("Please enter a valid email.");return;}
+      // optIn=true  → subscribe to Kit (launches, new workbooks, updates)
+      // optIn=false → results delivery only, do NOT add to Kit marketing list
+      onSubmit({name:name.trim(), email:email.trim(), optIn});
+    };
+
+    const inp={width:"100%",padding:"16px 18px",background:"#fff",border:"1.5px solid rgba(139,105,20,0.28)",borderRadius:14,fontFamily:"'Cormorant Garamond',serif",fontSize:18,color:"#1A1208",boxSizing:"border-box",marginBottom:14};
+
+    return (
+      <div style={{textAlign:"center",padding:"44px 32px",maxWidth:400,margin:"0 auto"}}>
+        <div style={{fontSize:52,marginBottom:16}}>✨</div>
+        <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:38,fontWeight:700,color:"#1A1208",lineHeight:1.15,marginBottom:14}}>Your Archetype<br/><em style={{color:"#8B6914"}}>Awaits.</em></h2>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:19,color:"rgba(26,18,8,0.6)",marginBottom:8,lineHeight:1.5}}>You answered all <strong style={{color:"#8B6914"}}>21 questions</strong>.</p>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,color:"rgba(26,18,8,0.42)",marginBottom:28,lineHeight:1.5}}>Enter your details to reveal your season archetype, your 5 core values, and what they mean for your life right now.</p>
+
+        <input value={name} onChange={e=>{setName(e.target.value);setError("");}} placeholder="First name" style={inp}/>
+        <input value={email} onChange={e=>{setEmail(e.target.value);setError("");}} placeholder="Email address" type="email" style={inp}/>
+
+        <div onClick={()=>setOptIn(p=>!p)}
+          style={{display:"flex",alignItems:"flex-start",gap:12,textAlign:"left",cursor:"pointer",
+            background:optIn?"#FFF8E7":"#fff",
+            border:"1.5px solid "+(optIn?"rgba(139,105,20,0.4)":"rgba(26,18,8,0.1)"),
+            borderRadius:12,padding:"14px 16px",marginBottom:8,transition:"all 0.2s"}}>
+          <div style={{width:22,height:22,borderRadius:6,
+            border:"2px solid "+(optIn?"#8B6914":"rgba(26,18,8,0.2)"),
+            background:optIn?"#8B6914":"#fff",flexShrink:0,marginTop:1,
+            display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.2s"}}>
+            {optIn&&<span style={{color:"#fff",fontSize:13,fontWeight:700,lineHeight:1}}>✓</span>}
+          </div>
+          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:15,color:"rgba(26,18,8,0.65)",lineHeight:1.55,margin:0}}>
+            Yes — keep me posted on new DesignHer workbooks, launches, and updates.
+          </p>
+        </div>
+
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:13,color:"rgba(26,18,8,0.38)",marginBottom:24,textAlign:"left",lineHeight:1.5,paddingLeft:2}}>
+          Leave unchecked to receive your results only. You can subscribe anytime at designher.co.
+        </p>
+
+        {error&&<p style={{color:"#A8301F",fontFamily:"'Cormorant Garamond',serif",fontSize:15,marginBottom:12}}>{error}</p>}
+        <button onClick={submit} style={{width:"100%",padding:"20px 0",background:"linear-gradient(135deg,#8B6914,#B8920A)",border:"none",borderRadius:16,fontFamily:"'Cormorant Garamond',serif",fontSize:18,letterSpacing:3,textTransform:"uppercase",color:"#fff",fontWeight:700,cursor:"pointer",boxShadow:"0 8px 30px rgba(139,105,20,0.28)"}}>Reveal My Archetype</button>
+      </div>
+    );
+  }
+
+  // ─── VALUE CARD (results) ─────────────────────────────────────────────────────
+  function ValueCard({ valueName, index, expanded, onToggle }) {
+    const v = VALUES[valueName]; if(!v) return null;
+    const yearLabel = ["Foundation","Expansion","Mastery"][v.year-1];
+    return (
+      <div onClick={onToggle} style={{background:expanded?v.bg:"#fff",border:`1.5px solid ${expanded?v.color+"45":"rgba(26,18,8,0.07)"}`,borderRadius:18,marginBottom:12,cursor:"pointer",overflow:"hidden",transition:"all 0.3s",boxShadow:expanded?"0 4px 20px rgba(0,0,0,0.07)":"0 2px 8px rgba(0,0,0,0.04)"}}>
+        <div style={{display:"flex",alignItems:"center",gap:16,padding:"18px 20px"}}>
+          <div style={{width:52,height:52,borderRadius:"50%",background:v.bg,border:`2px solid ${v.color}35`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,flexShrink:0}}>{v.emoji}</div>
+          <div style={{flex:1}}>
+            <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,color:"#1A1208",fontWeight:700}}>{valueName}</div>
+            <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:12,letterSpacing:2,textTransform:"uppercase",color:v.color,marginTop:2}}>{yearLabel} · #{index+1}</div>
+          </div>
+          <div style={{color:"rgba(26,18,8,0.28)",fontSize:18,transition:"transform 0.3s",transform:expanded?"rotate(180deg)":"none"}}>▾</div>
+        </div>
+        {expanded&&(
+          <div style={{padding:"0 20px 20px",borderTop:`1px solid ${v.color}18`}}>
+            <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:18,color:"rgba(26,18,8,0.72)",lineHeight:1.7,marginBottom:16,marginTop:16}}>{v.description}</p>
+            <div style={{background:"#fff",borderLeft:`4px solid ${v.color}`,borderRadius:"0 10px 10px 0",padding:"14px 16px",marginBottom:10,boxShadow:"0 2px 8px rgba(0,0,0,0.04)"}}>
+              <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:11,letterSpacing:2,textTransform:"uppercase",color:v.color,marginBottom:6,fontWeight:600}}>✦ In Alignment</div>
+              <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.62)",lineHeight:1.65,margin:0}}>{v.alignment}</p>
+            </div>
+            <div style={{background:"#fff",borderLeft:"4px solid rgba(168,48,31,0.45)",borderRadius:"0 10px 10px 0",padding:"14px 16px",boxShadow:"0 2px 8px rgba(0,0,0,0.04)"}}>
+              <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:11,letterSpacing:2,textTransform:"uppercase",color:"rgba(168,48,31,0.65)",marginBottom:6,fontWeight:600}}>⚡ Out of Alignment</div>
+              <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.58)",lineHeight:1.65,margin:0}}>{v.misalignment}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ─── RESULTS ──────────────────────────────────────────────────────────────────
+  function ConfirmationScreen({ userName, archetype, topValues, onRestart }) {
+    const [expandedIndex, setExpandedIndex] = useState(null);
+    return (
+      <div style={{padding:"36px 22px",maxWidth:440,margin:"0 auto",textAlign:"center"}}>
+        <div style={{fontSize:12,letterSpacing:4,textTransform:"uppercase",color:"#8B6914",fontFamily:"'Cormorant Garamond',serif",marginBottom:14}}>{userName.split(" ")[0]}'s Results</div>
+
+        <div style={{background:archetype.bg,border:`1.5px solid ${archetype.color}35`,borderRadius:22,padding:"30px 24px",marginBottom:28,boxShadow:"0 4px 20px rgba(0,0,0,0.05)"}}>
+          <div style={{fontSize:42,marginBottom:10}}>{archetype.emoji}</div>
+          <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:28,fontWeight:700,color:archetype.color,lineHeight:1.15,margin:"0 0 8px"}}>{archetype.name}</h2>
+          <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:16,color:"rgba(26,18,8,0.55)",marginBottom:14}}>{archetype.season}</div>
+          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.65)",lineHeight:1.65,margin:0}}>{archetype.description}</p>
+        </div>
+
+        <div style={{textAlign:"left",marginBottom:28}}>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,color:"#1A1208",marginBottom:14,textAlign:"center"}}>Your 5 Core Values</div>
+          {topValues.map((name,i)=>(
+            <ValueCard key={name} valueName={name} index={i} expanded={expandedIndex===i} onToggle={()=>setExpandedIndex(p=>p===i?null:i)}/>
+          ))}
+        </div>
+
+        <div style={{background:"linear-gradient(135deg,#FFF8E7,#FFFDF8)",border:"1.5px solid rgba(139,105,20,0.22)",borderRadius:20,padding:"26px",marginBottom:28,boxShadow:"0 4px 20px rgba(139,105,20,0.07)"}}>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,color:"#1A1208",fontWeight:700,marginBottom:10}}>Want to keep this?</div>
+          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.52)",lineHeight:1.65,margin:"0 0 8px"}}>
+            We're also sending your archetype and values to your inbox. If you don't see it in a few minutes, check your spam or promotions folder.
+          </p>
+        </div>
+        <div style={{background:"linear-gradient(135deg,#FFF8E7,#FFFDF8)",border:"1.5px solid rgba(139,105,20,0.22)",borderRadius:20,padding:"26px",textAlign:"center",marginBottom:28,boxShadow:"0 4px 20px rgba(139,105,20,0.07)"}}>
+          <div style={{fontSize:32,marginBottom:12}}>📖</div>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,color:"#1A1208",fontWeight:700,marginBottom:10}}>Go Deeper with DesignHer</div>
+          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,color:"rgba(26,18,8,0.52)",lineHeight:1.65,margin:"0 0 18px"}}>The Activate Workbooks walk you through each value — helping you move from knowing your values to actually living them.</p>
+          <a href="https://designher.co" target="_blank" rel="noopener noreferrer" style={{display:"block",padding:"16px 0",background:"linear-gradient(135deg,#8B6914,#B8920A)",borderRadius:14,fontFamily:"'Cormorant Garamond',serif",fontSize:16,letterSpacing:3,textTransform:"uppercase",color:"#fff",fontWeight:700,textDecoration:"none",boxShadow:"0 6px 24px rgba(139,105,20,0.28)"}}>Browse the Workbooks →</a>
+        </div>
+        <div style={{textAlign:"center"}}>
+          <button onClick={onRestart} style={{background:"transparent",border:"1.5px solid rgba(26,18,8,0.14)",borderRadius:12,padding:"12px 24px",fontFamily:"'Cormorant Garamond',serif",fontSize:14,letterSpacing:2,textTransform:"uppercase",color:"rgba(26,18,8,0.38)",cursor:"pointer"}}>Retake Quiz</button>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── APP ──────────────────────────────────────────────────────────────────────
+  function DesignHerQuiz() {
+    const saved = loadProgress();
+    const [phase, setPhase]         = useState(()=> saved && ["questions","email"].includes(saved.phase) ? saved.phase : "welcome");
+    const [answers, setAnswers]     = useState(()=> saved?.answers || Array(QUESTIONS.length).fill(null));
+    const [qIndex, setQIndex]       = useState(()=> saved?.qIndex || 0);
+    const [orders, setOrders]       = useState(()=> saved?.orders || shuffledOrders());
+    const [userData, setUserData]   = useState(null);
+    const [topValues, setTopValues] = useState([]);
+    const [archetype, setArchetype] = useState(null);
+
+    // Persist enough to survive a refresh mid-quiz.
+    useEffect(()=>{
+      if (phase==="questions" || phase==="email") saveProgress({ phase, answers, qIndex, orders });
+    },[phase, answers, qIndex, orders]);
+
+    useEffect(()=>{ window.scrollTo(0,0); },[phase, qIndex]);
+
+    const handleStart = () => {
+      setAnswers(Array(QUESTIONS.length).fill(null));
+      setOrders(shuffledOrders());
+      setQIndex(0);
+      setPhase("questions");
+    };
+
+    const handleAnswer = (ai) => {
+      const next = answers.slice(); next[qIndex] = ai;
+      setAnswers(next);
+      if (qIndex < QUESTIONS.length-1) setQIndex(qIndex+1);
+      else setPhase("email");
+    };
+
+    const handleBack = () => { if (qIndex>0) setQIndex(qIndex-1); };
+
+    const handleEmailSubmit = ({name,email,optIn}) => {
+      const ranked = scoreAnswers(answers);
+      const tv = ranked.slice(0,5);
+      const arch = getArchetype(ranked.slice(0,10));
+
+      // ── Send subscriber to Kit form 9773625 ──
+      const kitData = new FormData();
+      kitData.append("email_address", email);
+      kitData.append("fields[first_name]", name);
+      kitData.append("fields[archetype]", arch.name);
+      kitData.append("fields[top_value_1]", tv[0] || "");
+      kitData.append("fields[top_value_2]", tv[1] || "");
+      kitData.append("fields[top_value_3]", tv[2] || "");
+      kitData.append("fields[top_value_4]", tv[3] || "");
+      kitData.append("fields[top_value_5]", tv[4] || "");
+      kitData.append("fields[marketing_optin]", optIn ? "yes" : "no");
+
+      fetch("https://app.kit.com/forms/9773625/subscriptions", {
+        method: "POST",
+        body: kitData,
+      }).catch(err => console.log("Kit submission error:", err));
+
+      clearProgress();
+      setUserData({name,email,optIn});
+      setTopValues(tv);
+      setArchetype(arch);
+      setPhase("confirmation");
+    };
+
+    const handleRestart = () => {
+      clearProgress();
+      setAnswers(Array(QUESTIONS.length).fill(null)); setQIndex(0); setOrders(shuffledOrders());
+      setUserData(null); setTopValues([]); setArchetype(null);
+      setPhase("welcome");
+    };
+
+    const progress = phase==="questions" ? (qIndex/QUESTIONS.length)*100 : 0;
+
+    return (
+      <div style={{minHeight:"100vh",background:"#FAF7F0",display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
+        {/* Header */}
+        <div style={{width:"100%",maxWidth:440,padding:"20px 24px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style={{fontFamily:"'Playfair Display',serif",fontStyle:"italic",fontSize:16,color:"#8B6914",letterSpacing:1}}>DesignHer</span>
+          {phase==="questions"&&<span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:14,color:"rgba(26,18,8,0.45)",letterSpacing:1}}>{qIndex+1} of {QUESTIONS.length}</span>}
+        </div>
+
+        {phase==="questions"&&(
+          <div style={{width:"100%",maxWidth:440,padding:"10px 24px 0"}}>
+            <div style={{height:3,background:"rgba(26,18,8,0.07)",borderRadius:2}}>
+              <div style={{height:"100%",width:`${progress}%`,background:"linear-gradient(90deg,#8B6914,#B8920A)",borderRadius:2,transition:"width 0.3s ease"}}/>
+            </div>
+          </div>
+        )}
+
+        <div style={{flex:1,width:"100%",maxWidth:440,display:"flex",flexDirection:"column"}}>
+          {phase==="welcome" && <WelcomeScreen onStart={handleStart}/>}
+
+          {phase==="questions" &&
+            <QuestionScreen qIndex={qIndex} order={orders[qIndex]} chosen={answers[qIndex]} onAnswer={handleAnswer} onBack={handleBack}/>}
+
+          {phase==="email" && <EmailScreen onSubmit={handleEmailSubmit}/>}
+          {phase==="confirmation" && userData && archetype &&
+            <ConfirmationScreen userName={userData.name} archetype={archetype} topValues={topValues} onRestart={handleRestart}/>}
+        </div>
+      </div>
+    );
+  }
+
+  const root = ReactDOM.createRoot(document.getElementById("root"));
+  root.render(<DesignHerQuiz/>);
+</script>
+</body>
+</html>
