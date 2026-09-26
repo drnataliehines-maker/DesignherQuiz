@@ -10,15 +10,147 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    html,body{height:100%;background:#FDF6EC;-webkit-font-smoothing:antialiased;}
-    body{background:linear-gradient(170deg,#FFF8EF 0%,#FCEDDC 55%,#F8E2CC 100%);background-attachment:fixed;}
-    #root{height:100%;}
-    input::placeholder{color:rgba(42,27,16,0.45);}
-    input:focus{outline:none;border-color:#C2603A!important;box-shadow:0 0 0 4px rgba(194,96,58,0.15);}
-    button:active{transform:scale(0.985);}
-    ::-webkit-scrollbar{width:4px;}
-    ::-webkit-scrollbar-thumb{background:rgba(194,96,58,0.35);border-radius:2px;}@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}
+    :root {
+      color-scheme: light;
+      --paper: #f5f4ee;
+      --surface: #ffffff;
+      --ink: #263730;
+      --muted: #66736c;
+      --forest: #376253;
+      --forest-dark: #294d40;
+      --coral: #b96c56;
+      --sage: #eaf0eb;
+      --line: #e2e8e2;
+      --shadow: 0 18px 55px rgba(39, 62, 51, .09);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100%; background: var(--paper); -webkit-font-smoothing: antialiased; }
+    body { color: var(--ink); font-family: 'DM Sans', Arial, sans-serif; }
+    #root { min-height: 100%; height: auto !important; }
+    input, button { font: inherit; }
+    input::placeholder { color: #89958e; opacity: 1; }
+    input:focus { outline: none; border-color: var(--forest) !important; box-shadow: 0 0 0 4px rgba(55, 98, 83, .13) !important; }
+    button { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid rgba(55, 98, 83, .45) !important; outline-offset: 3px; }
+    button:active { transform: translateY(1px); }
+    ::selection { background: #d9e7dc; color: var(--ink); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-thumb { background: #bdcbc1; border-radius: 8px; }
+
+    .app-shell { min-height: 100vh !important; width: 100%; background: var(--paper) !important; color: var(--ink); }
+    .brandbar { max-width: 1120px !important; padding: 23px 28px 18px !important; margin: 0 auto; border-bottom: 1px solid rgba(50, 78, 64, .10); }
+    .brand-wordmark { color: var(--forest-dark) !important; font-family: 'DM Sans', sans-serif !important; font-style: normal !important; font-size: 21px !important; font-weight: 700 !important; letter-spacing: -.7px !important; }
+    .brandbar span:last-child { color: var(--forest) !important; }
+    .progress-shell { max-width: 1120px !important; padding: 18px 28px 0 !important; margin: 0 auto; }
+    .progress-track { height: 8px !important; background: #e1e8e1 !important; border-radius: 999px !important; overflow: hidden; }
+    .progress-fill { background: var(--forest) !important; border-radius: 999px !important; box-shadow: none !important; }
+    .app-content { max-width: 1120px !important; padding: 0 28px; margin: 0 auto; }
+
+    .welcome-screen {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1.08fr) minmax(300px, .92fr);
+      grid-template-rows: auto auto auto auto auto auto auto;
+      gap: 14px 42px;
+      align-items: start;
+      text-align: left !important;
+      width: 100% !important;
+      max-width: 960px !important;
+      padding: 48px 54px 52px !important;
+      margin: 34px auto 60px !important;
+      background: var(--surface);
+      border: 1px solid rgba(53, 82, 67, .08);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+    .welcome-screen > :nth-child(1) { grid-column: 1 / -1; justify-self: start; }
+    .welcome-screen > :nth-child(2) { grid-column: 1; grid-row: 2; }
+    .welcome-screen > :nth-child(3) { grid-column: 1; grid-row: 3; }
+    .welcome-screen > :nth-child(4) { grid-column: 2; grid-row: 2 / span 5; align-self: stretch; }
+    .welcome-screen > :nth-child(5) { grid-column: 1; grid-row: 4; }
+    .welcome-screen > :nth-child(6) { grid-column: 1; grid-row: 5; }
+    .welcome-screen > :nth-child(7) { grid-column: 1; grid-row: 6; }
+    .welcome-screen > :nth-child(8) { grid-column: 1; grid-row: 7; }
+    .eyebrow { background: #edf3ee !important; color: var(--forest) !important; font-size: 11px !important; letter-spacing: 1.5px !important; padding: 9px 13px !important; margin: 0 0 8px !important; }
+    .welcome-screen h1 { font-family: 'Playfair Display', Georgia, serif !important; font-size: clamp(43px, 5vw, 62px) !important; font-weight: 400 !important; line-height: 1.04 !important; letter-spacing: -1.7px !important; color: var(--ink) !important; margin: 6px 0 8px !important; }
+    .welcome-screen h1 em { color: var(--forest) !important; font-weight: 400 !important; }
+    .welcome-intro { max-width: 510px; color: #58675f !important; font-size: 18px !important; line-height: 1.65 !important; margin: 0 0 12px !important; }
+    .welcome-story { display: flex; flex-direction: column; justify-content: center; background: #f1f4ef !important; border: 1px solid #e5ebe4 !important; border-radius: 22px !important; padding: 29px 28px !important; margin: 0 !important; box-shadow: none !important; }
+    .welcome-story p { color: #526159 !important; font-size: 16px !important; line-height: 1.72 !important; margin-bottom: 17px !important; }
+    .welcome-story p:last-child { color: var(--forest-dark) !important; font-family: 'Playfair Display', Georgia, serif !important; font-size: 23px !important; line-height: 1.4 !important; margin: 8px 0 0 !important; }
+    .welcome-feature { min-height: 54px; display: flex !important; align-items: center !important; gap: 13px !important; background: transparent !important; border: 0 !important; border-radius: 0 !important; border-top: 1px solid var(--line) !important; padding: 12px 2px !important; margin: 0 !important; }
+    .welcome-feature > span:first-child { width: 28px; height: 28px; display: grid; place-items: center; background: #edf3ee; border-radius: 50%; color: var(--forest) !important; font-size: 14px !important; }
+    .welcome-feature > span:last-child { color: #435249 !important; font-size: 15px !important; font-weight: 500 !important; }
+    .primary-cta { background: var(--forest) !important; border-radius: 14px !important; box-shadow: 0 8px 20px rgba(41, 77, 64, .18) !important; color: #fff !important; font-size: 15px !important; letter-spacing: .2px !important; text-transform: none !important; padding: 17px 22px !important; margin-top: 7px !important; transition: background .2s, transform .2s, box-shadow .2s; }
+    .primary-cta:hover { background: var(--forest-dark) !important; box-shadow: 0 10px 25px rgba(41, 77, 64, .24) !important; }
+
+    .question-screen {
+      max-width: 760px !important;
+      width: 100%;
+      min-height: 0 !important;
+      justify-content: flex-start !important;
+      padding: 32px 42px 40px !important;
+      margin: 24px auto 60px;
+      background: var(--surface);
+      border: 1px solid rgba(53, 82, 67, .08);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+    .question-meta { margin-bottom: 24px !important; }
+    .question-meta button { color: var(--forest) !important; font-size: 14px !important; font-weight: 600 !important; }
+    .question-meta span { background: #edf3ee !important; color: var(--forest) !important; letter-spacing: 1px !important; }
+    .question-title { font-family: 'Playfair Display', Georgia, serif !important; font-size: clamp(30px, 4vw, 39px) !important; font-weight: 400 !important; line-height: 1.18 !important; letter-spacing: -.65px !important; color: var(--ink) !important; margin-bottom: 27px !important; }
+    .answer-list { gap: 12px !important; }
+    .answer-option { min-height: 68px; padding: 18px 20px !important; background: #fff !important; border: 1.5px solid var(--line) !important; border-radius: 14px !important; color: #34443c !important; font-size: 17px !important; font-weight: 500 !important; line-height: 1.48 !important; box-shadow: 0 2px 5px rgba(40, 60, 49, .025) !important; transition: border-color .18s, background .18s, box-shadow .18s, transform .18s !important; }
+    .answer-option:hover { border-color: #a6b9aa !important; background: #f8faf7 !important; box-shadow: 0 4px 14px rgba(40, 60, 49, .07) !important; transform: translateY(-1px); }
+    .answer-option.is-selected { background: #edf3ee !important; border-color: var(--forest) !important; color: var(--forest-dark) !important; box-shadow: 0 0 0 2px rgba(55, 98, 83, .08) !important; }
+
+    .email-screen, .results-screen { width: 100% !important; max-width: 760px !important; padding: 44px 48px !important; margin: 28px auto 60px !important; background: var(--surface); border: 1px solid rgba(53, 82, 67, .08); border-radius: 24px; box-shadow: var(--shadow); }
+    .email-screen h2, .results-screen h2 { font-family: 'Playfair Display', Georgia, serif !important; font-weight: 400 !important; color: var(--ink) !important; }
+    .email-screen h2 em { color: var(--forest) !important; }
+    .email-screen strong { color: var(--forest) !important; }
+    .email-icon { width: 68px; height: 68px; display: grid; place-items: center; margin: 0 auto 17px !important; border-radius: 50%; background: #edf3ee; color: var(--forest); font-size: 32px !important; }
+    .email-screen input { min-height: 58px; padding: 15px 17px !important; background: #fbfcfa !important; border: 1.5px solid #dce4dc !important; border-radius: 12px !important; color: var(--ink) !important; font-size: 17px !important; }
+    .email-screen input::placeholder { color: #7b8980; }
+    .optin-card { border-color: #e3e9e3 !important; background: #f8faf7 !important; border-radius: 12px !important; }
+    .email-screen > p:nth-of-type(3) { color: var(--muted) !important; }
+    .email-submit { background: var(--forest) !important; border-radius: 13px !important; box-shadow: 0 8px 20px rgba(41, 77, 64, .18) !important; font-size: 15px !important; letter-spacing: .2px !important; text-transform: none !important; padding: 18px 20px !important; }
+    .results-screen { max-width: 850px !important; text-align: left !important; }
+    .results-kicker { color: var(--forest) !important; text-align: center !important; letter-spacing: 1.7px !important; }
+    .archetype-card { border-radius: 20px !important; padding: 34px !important; box-shadow: none !important; }
+    .value-card { border-radius: 14px !important; border-color: var(--line) !important; box-shadow: 0 2px 7px rgba(40, 60, 49, .04) !important; }
+    .value-card-heading { font-family: 'Playfair Display', Georgia, serif !important; color: var(--ink) !important; }
+    .workbook-card { background: #f1f4ef !important; border: 1px solid #e5ebe4 !important; border-radius: 18px !important; box-shadow: none !important; }
+    .workbook-link { background: var(--forest) !important; border-radius: 12px !important; box-shadow: none !important; font-size: 14px !important; letter-spacing: .4px !important; }
+
+    @media (max-width: 700px) {
+      .brandbar { padding: 18px 20px 14px !important; }
+      .progress-shell { padding: 14px 20px 0 !important; }
+      .app-content { padding: 0 16px; }
+      .welcome-screen { grid-template-columns: 1fr; grid-template-rows: auto; gap: 14px; padding: 30px 24px 28px !important; margin: 18px auto 35px !important; border-radius: 20px; }
+      .welcome-screen > :nth-child(n) { grid-column: 1; grid-row: auto; }
+      .welcome-screen > :nth-child(1) { margin-bottom: 1px !important; }
+      .welcome-screen > :nth-child(4) { order: 8; }
+      .welcome-screen > :nth-child(5) { order: 5; }
+      .welcome-screen > :nth-child(6) { order: 6; }
+      .welcome-screen > :nth-child(7) { order: 7; }
+      .welcome-screen > :nth-child(8) { order: 4; }
+      .welcome-screen h1 { font-size: clamp(42px, 12vw, 55px) !important; letter-spacing: -1.2px !important; }
+      .welcome-intro { font-size: 16px !important; }
+      .welcome-story { padding: 22px 21px !important; }
+      .welcome-story p { font-size: 15px !important; margin-bottom: 12px !important; }
+      .welcome-story p:last-child { font-size: 21px !important; }
+      .welcome-feature { min-height: 48px; padding: 10px 1px !important; }
+      .primary-cta { margin-top: 2px !important; }
+      .question-screen { padding: 25px 21px 26px !important; margin: 16px auto 30px; border-radius: 19px; }
+      .question-meta { margin-bottom: 20px !important; }
+      .question-title { font-size: 30px !important; margin-bottom: 22px !important; }
+      .answer-option { min-height: 62px; padding: 16px 16px !important; font-size: 16px !important; }
+      .email-screen, .results-screen { padding: 32px 22px !important; margin: 18px auto 32px !important; border-radius: 19px; }
+      .archetype-card { padding: 25px 20px !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
   </style>
 </head>
 <body>
@@ -706,8 +838,8 @@
     };
 
     return (
-      <div style={{padding:"26px 22px 36px",display:"flex",flexDirection:"column",justifyContent:"center",minHeight:"calc(100vh - 150px)"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,minHeight:26}}>
+      <div className="question-screen" style={{padding:"26px 22px 36px",display:"flex",flexDirection:"column",justifyContent:"center",minHeight:"calc(100vh - 150px)"}}>
+        <div className="question-meta" style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,minHeight:26}}>
           {qIndex>0
             ? <button onClick={onBack} style={{background:"transparent",border:"none",padding:0,fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:500,color:"rgba(42,27,16,0.62)",cursor:"pointer"}}>‹ Back</button>
             : <span/>}
@@ -715,13 +847,13 @@
             <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,letterSpacing:1.6,textTransform:"uppercase",color:"#A8441F",background:"rgba(194,96,58,0.13)",padding:"6px 12px",borderRadius:999}}>This or that</span>}
         </div>
 
-        <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:q.type==="This or that"?34:29,fontWeight:700,color:"#2A1B10",lineHeight:1.2,letterSpacing:-0.3,margin:"0 0 24px"}}>{q.q}</h2>
+        <h2 className="question-title" style={{fontFamily:"'Playfair Display',serif",fontSize:q.type==="This or that"?34:29,fontWeight:700,color:"#2A1B10",lineHeight:1.2,letterSpacing:-0.3,margin:"0 0 24px"}}>{q.q}</h2>
 
-        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+        <div className="answer-list" style={{display:"flex",flexDirection:"column",gap:12}}>
           {order.map(ai => {
             const isOn = picked===ai || (picked===null && chosen===ai);
             return (
-              <button key={ai} onClick={()=>choose(ai)}
+              <button key={ai} className={"answer-option"+(isOn?" is-selected":"")} onClick={()=>choose(ai)}
                 style={{textAlign:"left",width:"100%",padding:q.type==="This or that"?"22px 20px":"18px 18px",
                   background:isOn?"linear-gradient(135deg,#B5761F 0%,#C2603A 100%)":"#fff",
                   border:"2px solid "+(isOn?"#A8441F":"rgba(194,96,58,0.22)"),
@@ -742,34 +874,31 @@
   // ─── WELCOME ─────────────────────────────────────────────────────────────────
   function WelcomeScreen({ onStart }) {
     return (
-      <div style={{textAlign:"center",padding:"38px 26px 48px",maxWidth:430,margin:"0 auto"}}>
-        <div style={{display:"inline-block",padding:"7px 16px",borderRadius:999,background:"rgba(194,96,58,0.12)",fontSize:12,fontWeight:700,letterSpacing:2.5,textTransform:"uppercase",color:"#A8441F",fontFamily:"'DM Sans',sans-serif",marginBottom:20}}>Values Discovery</div>
-        <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:54,fontWeight:700,color:"#2A1B10",lineHeight:1.02,margin:"0 0 22px",letterSpacing:-0.5}}>Are You Living<br/><em style={{color:"#C2603A"}}>Your Best Life?</em></h1>
-        <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"rgba(42,27,16,0.82)",lineHeight:1.65,marginBottom:34}}>
-          If the answer is no, or you are not sure, take this short quiz. Answer 21 questions about everyday moments and go with your gut. Your choices will show you the values you are built on, so you can start designing the life you actually want.
+      <div className="welcome-screen" style={{textAlign:"center",padding:"38px 26px 48px",maxWidth:430,margin:"0 auto"}}>
+        <div className="eyebrow" style={{display:"inline-block",padding:"7px 16px",borderRadius:999,background:"rgba(194,96,58,0.12)",fontSize:12,fontWeight:700,letterSpacing:2.5,textTransform:"uppercase",color:"#A8441F",fontFamily:"'DM Sans',sans-serif",marginBottom:20}}>A values discovery</div>
+        <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:54,fontWeight:700,color:"#2A1B10",lineHeight:1.02,margin:"0 0 22px",letterSpacing:-0.5}}>A life that feels<br/><em style={{color:"#C2603A"}}>like yours.</em></h1>
+        <p className="welcome-intro" style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"rgba(42,27,16,0.82)",lineHeight:1.65,marginBottom:34}}>
+          In about five minutes, discover the values shaping your choices—and what a more fulfilling next chapter could look like.
         </p>
-        <div style={{textAlign:"left",background:"#fff",border:"1px solid rgba(194,96,58,0.18)",borderRadius:18,padding:"22px 20px",marginBottom:30,boxShadow:"0 2px 10px rgba(168,68,31,0.06)"}}>
+        <div className="welcome-story" style={{textAlign:"left",background:"#fff",border:"1px solid rgba(194,96,58,0.18)",borderRadius:18,padding:"22px 20px",marginBottom:30,boxShadow:"0 2px 10px rgba(168,68,31,0.06)"}}>
           <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,lineHeight:1.65,color:"rgba(42,27,16,0.85)",marginBottom:14}}>
-            There is a common idea that the best life looks the same for everyone: the marriage, the children, the title, the travel photos, the right labels. Social media is full of it.
+            There’s no one-size-fits-all version of a good life. The milestones that look right from the outside may not be the things that matter most to you.
           </p>
           <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,lineHeight:1.65,color:"rgba(42,27,16,0.85)",marginBottom:14}}>
-            Then the story turns. A marriage ends, or a long quiet struggle comes to light, and everyone asks the same thing: how could this happen when they had it all?
-          </p>
-          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,lineHeight:1.65,color:"rgba(42,27,16,0.85)",marginBottom:14}}>
-            Did they, though? A life can check every box on someone else's list and still leave out what matters most to you.
+            A few thoughtful questions can help you notice what feels true, what feels missing, and where you want to go next.
           </p>
           <p style={{fontFamily:"'Playfair Display',serif",fontSize:19,fontStyle:"italic",lineHeight:1.45,color:"#A8441F",margin:0}}>
-            Your best life is built on your values, not on the standard version.
+            Your values are a good place to begin.
           </p>
         </div>
         {[["✦","21 questions, about 5 minutes"],["✦","Real-life scenarios and quick this-or-that picks"],["✦","No right or wrong answers"]].map(([i,t])=>(
-          <div key={t} style={{display:"flex",gap:13,alignItems:"center",marginBottom:11,textAlign:"left",background:"#fff",border:"1px solid rgba(194,96,58,0.18)",borderRadius:14,padding:"13px 16px"}}>
+          <div key={t} className="welcome-feature" style={{display:"flex",gap:13,alignItems:"center",marginBottom:11,textAlign:"left",background:"#fff",border:"1px solid rgba(194,96,58,0.18)",borderRadius:14,padding:"13px 16px"}}>
             <span style={{color:"#C2603A",fontSize:13}}>{i}</span>
             <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:500,color:"rgba(42,27,16,0.85)"}}>{t}</span>
           </div>
         ))}
-        <button onClick={onStart} style={{width:"100%",marginTop:32,padding:"20px 0",background:"linear-gradient(135deg,#B5761F 0%,#C2603A 100%)",border:"none",borderRadius:18,fontFamily:"'DM Sans',sans-serif",fontSize:16,letterSpacing:1.6,textTransform:"uppercase",color:"#fff",fontWeight:700,cursor:"pointer",boxShadow:"0 10px 26px rgba(194,96,58,0.32)"}}>
-          Who Am I?
+        <button className="primary-cta" onClick={onStart} style={{width:"100%",marginTop:32,padding:"20px 0",background:"linear-gradient(135deg,#B5761F 0%,#C2603A 100%)",border:"none",borderRadius:18,fontFamily:"'DM Sans',sans-serif",fontSize:16,letterSpacing:1.6,textTransform:"uppercase",color:"#fff",fontWeight:700,cursor:"pointer",boxShadow:"0 10px 26px rgba(194,96,58,0.32)"}}>
+          Start the 5-minute quiz
         </button>
       </div>
     );
@@ -793,16 +922,18 @@
     const inp={width:"100%",padding:"16px 18px",background:"#fff",border:"1.5px solid rgba(139,105,20,0.28)",borderRadius:14,fontFamily:"'DM Sans',sans-serif",fontSize:18,color:"#2A1B10",boxSizing:"border-box",marginBottom:14};
 
     return (
-      <div style={{textAlign:"center",padding:"44px 32px",maxWidth:400,margin:"0 auto"}}>
-        <div style={{fontSize:52,marginBottom:16}}>✨</div>
+      <div className="email-screen" style={{textAlign:"center",padding:"44px 32px",maxWidth:400,margin:"0 auto"}}>
+        <div className="email-icon" aria-hidden="true" style={{fontSize:52,marginBottom:16}}>✦</div>
         <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:38,fontWeight:700,color:"#2A1B10",lineHeight:1.15,marginBottom:14}}>Your Archetype<br/><em style={{color:"#A85427"}}>Awaits.</em></h2>
         <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:19,color:"rgba(42,27,16,0.8)",marginBottom:8,lineHeight:1.5}}>You answered all <strong style={{color:"#A85427"}}>21 questions</strong>.</p>
         <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,color:"rgba(42,27,16,0.66)",marginBottom:28,lineHeight:1.5}}>Enter your details to reveal your season archetype, your 5 core values, and what they mean for your life right now.</p>
 
-        <input value={name} onChange={e=>{setName(e.target.value);setError("");}} placeholder="First name" style={inp}/>
-        <input value={email} onChange={e=>{setEmail(e.target.value);setError("");}} placeholder="Email address" type="email" style={inp}/>
+        <input aria-label="First name" autoComplete="given-name" value={name} onChange={e=>{setName(e.target.value);setError("");}} placeholder="First name" style={inp}/>
+        <input aria-label="Email address" autoComplete="email" value={email} onChange={e=>{setEmail(e.target.value);setError("");}} placeholder="Email address" type="email" style={inp}/>
 
-        <div onClick={()=>setOptIn(p=>!p)}
+        <div className="optin-card" role="checkbox" aria-checked={optIn} tabIndex={0}
+          onKeyDown={e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();setOptIn(p=>!p);}}}
+          onClick={()=>setOptIn(p=>!p)}
           style={{display:"flex",alignItems:"flex-start",gap:12,textAlign:"left",cursor:"pointer",
             background:optIn?"#FFF8E7":"#fff",
             border:"1.5px solid "+(optIn?"rgba(139,105,20,0.4)":"rgba(26,18,8,0.1)"),
@@ -822,8 +953,8 @@
           Leave unchecked to receive your results only. You can subscribe anytime at designher.co.
         </p>
 
-        {error&&<p style={{color:"#A8301F",fontFamily:"'DM Sans',sans-serif",fontSize:15,marginBottom:12}}>{error}</p>}
-        <button onClick={submit} style={{width:"100%",padding:"20px 0",background:"linear-gradient(135deg,#B5761F 0%,#C2603A 100%)",border:"none",borderRadius:18,fontFamily:"'DM Sans',sans-serif",fontSize:16,letterSpacing:1.6,textTransform:"uppercase",color:"#fff",fontWeight:700,cursor:"pointer",boxShadow:"0 10px 26px rgba(194,96,58,0.32)"}}>Reveal My Archetype</button>
+        {error&&<p role="alert" style={{color:"#A8301F",fontFamily:"'DM Sans',sans-serif",fontSize:15,marginBottom:12}}>{error}</p>}
+        <button className="email-submit" onClick={submit} style={{width:"100%",padding:"20px 0",background:"linear-gradient(135deg,#B5761F 0%,#C2603A 100%)",border:"none",borderRadius:18,fontFamily:"'DM Sans',sans-serif",fontSize:16,letterSpacing:1.6,textTransform:"uppercase",color:"#fff",fontWeight:700,cursor:"pointer",boxShadow:"0 10px 26px rgba(194,96,58,0.32)"}}>Reveal My Archetype</button>
       </div>
     );
   }
@@ -833,11 +964,13 @@
     const v = VALUES[valueName]; if(!v) return null;
     const yearLabel = ["Foundation","Expansion","Mastery"][v.year-1];
     return (
-      <div onClick={onToggle} style={{background:expanded?v.bg:"#fff",border:`1.5px solid ${expanded?v.color+"45":"rgba(26,18,8,0.07)"}`,borderRadius:18,marginBottom:12,cursor:"pointer",overflow:"hidden",transition:"all 0.3s",boxShadow:expanded?"0 4px 20px rgba(0,0,0,0.07)":"0 2px 8px rgba(0,0,0,0.04)"}}>
+      <div className="value-card" role="button" tabIndex={0} aria-expanded={expanded}
+        onKeyDown={e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();onToggle();}}}
+        onClick={onToggle} style={{background:expanded?v.bg:"#fff",border:`1.5px solid ${expanded?v.color+"45":"rgba(26,18,8,0.07)"}`,borderRadius:18,marginBottom:12,cursor:"pointer",overflow:"hidden",transition:"all 0.3s",boxShadow:expanded?"0 4px 20px rgba(0,0,0,0.07)":"0 2px 8px rgba(0,0,0,0.04)"}}>
         <div style={{display:"flex",alignItems:"center",gap:16,padding:"18px 20px"}}>
           <div style={{width:52,height:52,borderRadius:"50%",background:v.bg,border:`2px solid ${v.color}35`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,flexShrink:0}}>{v.emoji}</div>
           <div style={{flex:1}}>
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,color:"#2A1B10",fontWeight:700}}>{valueName}</div>
+            <div className="value-card-heading" style={{fontFamily:"'Playfair Display',serif",fontSize:20,color:"#2A1B10",fontWeight:700}}>{valueName}</div>
             <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,letterSpacing:2,textTransform:"uppercase",color:v.color,marginTop:2}}>{yearLabel} · #{index+1}</div>
           </div>
           <div style={{color:"rgba(26,18,8,0.28)",fontSize:18,transition:"transform 0.3s",transform:expanded?"rotate(180deg)":"none"}}>▾</div>
@@ -863,10 +996,10 @@
   function ConfirmationScreen({ userName, archetype, topValues, onRestart }) {
     const [expandedIndex, setExpandedIndex] = useState(null);
     return (
-      <div style={{padding:"36px 22px",maxWidth:440,margin:"0 auto",textAlign:"center"}}>
-        <div style={{fontSize:12,letterSpacing:4,textTransform:"uppercase",color:"#A85427",fontFamily:"'DM Sans',sans-serif",marginBottom:14}}>{userName.split(" ")[0]}'s Results</div>
+      <div className="results-screen" style={{padding:"36px 22px",maxWidth:440,margin:"0 auto",textAlign:"center"}}>
+        <div className="results-kicker" style={{fontSize:12,letterSpacing:4,textTransform:"uppercase",color:"#A85427",fontFamily:"'DM Sans',sans-serif",marginBottom:14}}>{userName.split(" ")[0]}'s Results</div>
 
-        <div style={{background:archetype.bg,border:`1.5px solid ${archetype.color}35`,borderRadius:22,padding:"30px 24px",marginBottom:28,boxShadow:"0 4px 20px rgba(0,0,0,0.05)"}}>
+        <div className="archetype-card" style={{background:archetype.bg,border:`1.5px solid ${archetype.color}35`,borderRadius:22,padding:"30px 24px",marginBottom:28,boxShadow:"0 4px 20px rgba(0,0,0,0.05)"}}>
           <div style={{fontSize:42,marginBottom:10}}>{archetype.emoji}</div>
           <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:28,fontWeight:700,color:archetype.color,lineHeight:1.15,margin:"0 0 8px"}}>{archetype.name}</h2>
           <div style={{fontFamily:"'DM Sans',sans-serif",fontStyle:"italic",fontSize:16,color:"rgba(42,27,16,0.78)",marginBottom:14}}>{archetype.season}</div>
@@ -886,11 +1019,11 @@
             We're also sending your archetype and values to your inbox. If you don't see it in a few minutes, check your spam or promotions folder.
           </p>
         </div>
-        <div style={{background:"linear-gradient(135deg,#FFF8E7,#FFFDF8)",border:"1.5px solid rgba(139,105,20,0.22)",borderRadius:20,padding:"26px",textAlign:"center",marginBottom:28,boxShadow:"0 4px 20px rgba(139,105,20,0.07)"}}>
+        <div className="workbook-card" style={{background:"linear-gradient(135deg,#FFF8E7,#FFFDF8)",border:"1.5px solid rgba(139,105,20,0.22)",borderRadius:20,padding:"26px",textAlign:"center",marginBottom:28,boxShadow:"0 4px 20px rgba(139,105,20,0.07)"}}>
           <div style={{fontSize:32,marginBottom:12}}>📖</div>
           <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,color:"#2A1B10",fontWeight:700,marginBottom:10}}>Go Deeper with DesignHer</div>
           <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:17,color:"rgba(26,18,8,0.52)",lineHeight:1.65,margin:"0 0 18px"}}>The Activate Workbooks walk you through each value and help you move from knowing your values to living them.</p>
-          <a href="https://designher.co" target="_blank" rel="noopener noreferrer" style={{display:"block",padding:"16px 0",background:"linear-gradient(135deg,#B5761F 0%,#C2603A 100%)",borderRadius:14,fontFamily:"'DM Sans',sans-serif",fontSize:16,letterSpacing:3,textTransform:"uppercase",color:"#fff",fontWeight:700,textDecoration:"none",boxShadow:"0 6px 24px rgba(139,105,20,0.28)"}}>Browse the Workbooks →</a>
+           <a className="workbook-link" href="https://designher.co" target="_blank" rel="noopener noreferrer" style={{display:"block",padding:"16px 0",background:"linear-gradient(135deg,#B5761F 0%,#C2603A 100%)",borderRadius:14,fontFamily:"'DM Sans',sans-serif",fontSize:16,letterSpacing:3,textTransform:"uppercase",color:"#fff",fontWeight:700,textDecoration:"none",boxShadow:"0 6px 24px rgba(139,105,20,0.28)"}}>Browse the Workbooks →</a>
         </div>
         <div style={{textAlign:"center"}}>
           <button onClick={onRestart} style={{background:"transparent",border:"1.5px solid rgba(26,18,8,0.14)",borderRadius:12,padding:"12px 24px",fontFamily:"'DM Sans',sans-serif",fontSize:14,letterSpacing:2,textTransform:"uppercase",color:"rgba(26,18,8,0.38)",cursor:"pointer"}}>Retake Quiz</button>
@@ -972,22 +1105,22 @@
     const progress = phase==="questions" ? ((qIndex+1)/QUESTIONS.length)*100 : 0;
 
     return (
-      <div style={{minHeight:"100vh",background:"transparent",display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
+      <div className="app-shell" style={{minHeight:"100vh",background:"transparent",display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
         {/* Header */}
-        <div style={{width:"100%",maxWidth:440,padding:"20px 24px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style={{fontFamily:"'Playfair Display',serif",fontStyle:"italic",fontWeight:700,fontSize:19,color:"#C2603A",letterSpacing:0.5}}>DesignHer</span>
+        <div className="brandbar" style={{width:"100%",maxWidth:440,padding:"20px 24px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span className="brand-wordmark" style={{fontFamily:"'Playfair Display',serif",fontStyle:"italic",fontWeight:700,fontSize:19,color:"#C2603A",letterSpacing:0.5}}>DesignHer<span aria-hidden="true" style={{color:"#b96c56",fontSize:22}}>·</span></span>
           {phase==="questions"&&<span style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:"#A8441F",letterSpacing:0.8}}>{qIndex+1} of {QUESTIONS.length}</span>}
         </div>
 
         {phase==="questions"&&(
-          <div style={{width:"100%",maxWidth:440,padding:"10px 24px 0"}}>
-            <div style={{height:7,background:"rgba(168,68,31,0.13)",borderRadius:99}}>
-              <div style={{height:"100%",width:`${progress}%`,background:"linear-gradient(90deg,#B5761F,#C2603A)",borderRadius:99,transition:"width 0.35s ease",boxShadow:"0 2px 8px rgba(194,96,58,0.35)"}}/>
+          <div className="progress-shell" aria-label={`Question ${qIndex+1} of ${QUESTIONS.length}`} style={{width:"100%",maxWidth:440,padding:"10px 24px 0"}}>
+            <div className="progress-track" style={{height:7,background:"rgba(168,68,31,0.13)",borderRadius:99}}>
+              <div className="progress-fill" style={{height:"100%",width:`${progress}%`,background:"linear-gradient(90deg,#B5761F,#C2603A)",borderRadius:99,transition:"width 0.35s ease",boxShadow:"0 2px 8px rgba(194,96,58,0.35)"}}/>
             </div>
           </div>
         )}
 
-        <div style={{flex:1,width:"100%",maxWidth:440,display:"flex",flexDirection:"column"}}>
+        <div className="app-content" style={{flex:1,width:"100%",maxWidth:440,display:"flex",flexDirection:"column"}}>
           {phase==="welcome" && <WelcomeScreen onStart={handleStart}/>}
 
           {phase==="questions" &&
